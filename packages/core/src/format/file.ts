@@ -118,7 +118,7 @@ export function parseImport(text: string): ParsedImport {
   if (text.length > 10 * 1024 * 1024) throw new ImportError('Tệp quá lớn (tối đa 10 MB).');
   let raw: unknown;
   try {
-    raw = JSON.parse(text.replace(/^FEFF/, ''));
+    raw = JSON.parse(text.replace(/^\uFEFF/, ''));
   } catch (e) {
     throw new ImportError('Không đọc được JSON: ' + (e instanceof Error ? e.message : 'cú pháp sai'));
   }
