@@ -2,6 +2,16 @@
 
 Mỗi phase hoàn thành thêm một mục: `## P0x — tên phase (ngày)` + danh sách thay đổi chính.
 
+## P02 — Trang chủ: quản lý project (2026-10-17)
+
+- `packages/core`: kiểu dữ liệu + schema zod định dạng `umlab` (sơ đồ/project, lỗi tiếng Việt theo đường dẫn `views[3].w: phải là số`), cấu trúc Y.Doc của project (`project/ydoc.ts`: tách Gantt theo task, đặc tả theo trường để hai người sửa hai phần không đè nhau), `regenerateIds` (sinh lại toàn bộ id + cập nhật tham chiếu), xuất/nhập tệp (`toProjectFile`, `toDiagramFile`, `parseImport`), chuỗi migrate `schemaVersion`.
+- `migrateLegacyUnipark`: tệp UniPark+ Diagram Studio cũ → 1 sơ đồ kiến trúc (group/node/text/shape/icon → `arch.group`/`arch.card`/`common.textbox`/`common.rectangle|oval|polygon`/`arch.icon`, gán `parentId` theo nhóm bao trọn, edges → `arch.link`) + Gantt theo sprint + Gantt theo module (port mô hình Gantt của tool cũ sang `core/gantt/model.ts`).
+- Mẫu project: Trống / Mẫu UniPark+ (thư mục Phân tích, Thiết kế, Quản lý dự án + sơ đồ kiến trúc + 2 Gantt).
+- Trang `/projects`: lưới thẻ (ô màu + icon, mô tả 2 dòng, “Cập nhật 2 giờ trước”, chip số sơ đồ theo loại, avatar thành viên) / danh sách bảng; tìm kiếm; sắp xếp Mới cập nhật · Tên A–Z (nhớ lựa chọn); trạng thái trống có nút tạo lớn + nhập JSON.
+- Hộp thoại tạo/sửa project (tên, mô tả, 8 màu, lưới icon, mẫu). Menu ⋯ / chuột phải: Mở, Đổi tên, Sửa thông tin, Chia sẻ, Nhân bản, Xuất JSON (`<ten>.umlab-project.json`), Xoá (gõ lại tên).
+- **Chia sẻ (bổ sung):** mời thành viên bằng email tài khoản UMLab, vai trò Chỉnh sửa / Chỉ xem, gỡ thành viên, rời project. Trang chủ tự làm mới khi project được chia sẻ/sửa ở máy khác (change stream).
+- Test: core `legacy.test.ts` (11 test: migrate fixture UniPark+, Y.Doc khứ hồi, hai người sửa hai task Gantt cùng lúc, xuất → nhập giống hệt id khác, lỗi schema); service test quyền A/B (FORBIDDEN, viewer không ghi được); Playwright `p02-projects.spec.ts` (tạo → đổi tên → nhân bản → xoá; nhập tệp cũ → 1 kiến trúc + 2 Gantt; xuất rồi nhập lại).
+
 ## P01 — Đăng ký, đăng nhập (2026-10-16)
 
 - Auth chạy ở main process (`src/main/auth.service.ts`): mật khẩu argon2id (hash-wasm, 19 MiB/2 vòng), luật ≥ 8 ký tự có chữ và số, email chuẩn hoá chữ thường + index unique.

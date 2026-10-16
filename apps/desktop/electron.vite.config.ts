@@ -36,7 +36,13 @@ export default defineConfig(({ mode }) => {
     },
     renderer: {
       root: resolve(__dirname, 'src/renderer'),
-      resolve: { alias: { ...shared, '@': resolve(__dirname, 'src/renderer/src') } },
+      resolve: {
+        alias: {
+          ...shared,
+          '@': resolve(__dirname, 'src/renderer/src'),
+          '@fixtures': resolve(__dirname, '../../docs/reference'),
+        },
+      },
       plugins: [react(), tailwindcss()],
       build: { chunkSizeWarningLimit: 4000 },
     },
