@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { PublicUser } from '@shared/api';
 import { umlab } from '@/lib/api';
+import { setSessionUser } from '../workspace/session';
 
 interface SessionState {
   user: PublicUser | null;
@@ -20,20 +21,26 @@ export const useSession = create<SessionState>((set, get) => ({
   endedReason: null,
   async refresh() {
     const user = umlab ? await umlab.auth.session() : null;
+    setSessionUser(user?.id ?? null);
     set({ user, ready: true });
     return user;
   },
   setUser(user) {
+    setSessionUser(user?.id ?? null);
     set({ user, endedReason: null });
   },
   async logout() {
+    setSessionUser(null);
     await umlab.auth.logout();
     set({ user: null });
   },
   init() {
     void get().refresh();
     if (!umlab) return () => {};
-    const off1 = umlab.auth.onSessionEnded((reason) => set({ user: null, endedReason: reason }));
+    const off1 = umlab.auth.onSessionEnded((reason) => {
+      setSessionUser(null);
+      set({ user: null, endedReason: reason });
+    });
     // Mạng có lại → hỏi lại phiên (lần mở app đầu tiên có thể đang offline).
     const off2 = umlab.conn.onStatus((s) => {
       if (s.state === 'online' && !get().user) void get().refresh();

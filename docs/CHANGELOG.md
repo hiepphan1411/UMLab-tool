@@ -2,6 +2,17 @@
 
 Mỗi phase hoàn thành thêm một mục: `## P0x — tên phase (ngày)` + danh sách thay đổi chính.
 
+## P03 — Dashboard project, cây thư mục, quản lý sơ đồ (2026-10-17)
+
+- **Đồng bộ realtime:** `ProjectSession` (renderer) giữ Y.Doc của project, gửi thay đổi gộp 250 ms qua IPC → main `insertOne` vào `project_updates`; nhận thay đổi máy khác qua change stream (bỏ qua của chính mình); khi kết nối lại thì nạp lại toàn bộ + gửi bù. Phiên dùng chung giữa dashboard và editor, khoá theo người dùng, đóng hết khi đăng xuất.
+- `core/project/ops.ts`: tạo/đổi tên/xoá thư mục (xoá cả nội dung hoặc chuyển nội dung lên cha), tạo/đổi tên/nhân bản/xoá sơ đồ, kéo thả trước/sau/vào trong với đánh lại thứ tự 0..n, chặn thả thư mục vào con cháu, nhập tệp `kind: diagram` (hỏi Dùng lại / Tạo bản sao khi trùng phần tử mô hình).
+- Dashboard `/p/:id`: thanh trên (breadcrumb, tìm sơ đồ, avatar người đang online, Nhập JSON, Chia sẻ); cột trái đổi độ rộng được với 3 chế độ **Cây thư mục** (kéo thả, chuột phải: Sơ đồ mới ▸ 8 loại, Thư mục mới, Đổi tên F2, Nhân bản, Xuất JSON, Xoá; phím ↑↓←→ Enter F2 Delete; nhớ trạng thái mở theo project; hiện ai đang xem sơ đồ nào) / **Theo loại** (8 nhóm + số lượng + đường dẫn thư mục mờ) / **Gần đây** (20 sơ đồ).
+- Nội dung chính: 8 thẻ “Tạo sơ đồ mới” → hỏi tên + thư mục → mở editor; danh sách thư mục con + sơ đồ dạng Lưới (ảnh thu nhỏ) / Danh sách (tên, loại, cập nhật, kích thước); chọn nhiều Shift/Ctrl → Chuyển thư mục, Xuất JSON gộp, Xoá; ô thống kê theo loại.
+- Khung editor chung `/p/:id/d/:did`: tên sơ đồ sửa tại chỗ, trạng thái lưu “Đã lưu · 10:32” / “Đang lưu…” / “Ngoại tuyến · chờ gửi”, Undo/Redo (`Y.UndoManager`, chỉ thao tác của mình, 200 bước, Ctrl+Z/Ctrl+Shift+Z/Ctrl+Y), Kiểm tra, Nhập/Xuất JSON, Xuất ảnh (do editor từng loại cung cấp), avatar người cùng xem; thông báo khi sơ đồ bị người khác xoá.
+- Vai trò “Chỉ xem”: ẩn thao tác sửa, main từ chối ghi.
+- Thay dialog 409 của kế hoạch web bằng CRDT + presence (không có xung đột phiên bản).
+- Test: core `ops.test.ts` (6 test); Playwright `p03-workspace.spec.ts` (thư mục lồng 3 cấp → tạo Use Case → đổi tên → kéo thả → F5 giữ nguyên → xoá thư mục hỏi 2 lựa chọn; **2 máy cùng mở project**: tạo/đổi tên thấy ngay, thấy avatar; thành viên chỉ xem không sửa được).
+
 ## P02 — Trang chủ: quản lý project (2026-10-17)
 
 - `packages/core`: kiểu dữ liệu + schema zod định dạng `umlab` (sơ đồ/project, lỗi tiếng Việt theo đường dẫn `views[3].w: phải là số`), cấu trúc Y.Doc của project (`project/ydoc.ts`: tách Gantt theo task, đặc tả theo trường để hai người sửa hai phần không đè nhau), `regenerateIds` (sinh lại toàn bộ id + cập nhật tham chiếu), xuất/nhập tệp (`toProjectFile`, `toDiagramFile`, `parseImport`), chuỗi migrate `schemaVersion`.

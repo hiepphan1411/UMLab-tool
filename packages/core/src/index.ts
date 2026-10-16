@@ -6,6 +6,7 @@ export * from './format/migrations';
 export * from './project/ydoc';
 export * from './project/bundle';
 export * from './project/templates';
+export * from './project/ops';
 export * from './gantt/model';
 export * from './diagram-types';
 export * from './util/ids';
