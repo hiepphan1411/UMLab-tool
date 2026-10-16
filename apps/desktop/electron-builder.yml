@@ -1,0 +1,42 @@
+appId: vn.umlab.desktop
+productName: UMLab
+copyright: Copyright © 2026 Phan Phuoc Hiep
+directories:
+  output: release/${version}
+  buildResources: build
+# Mọi phụ thuộc đã được bundle vào out/ (electron-vite) nên không cần node_modules trong gói.
+files:
+  - out/**
+  - package.json
+  - '!**/*.map'
+extraMetadata:
+  main: out/main/index.js
+asar: true
+npmRebuild: false
+nodeGypRebuild: false
+includeSubNodeModules: false
+win:
+  icon: build/icon.png
+  target:
+    - target: nsis
+      arch: [x64]
+    - target: portable
+      arch: [x64]
+  artifactName: UMLab-${version}-${arch}-${target}.${ext}
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: always
+  createStartMenuShortcut: true
+  shortcutName: UMLab
+  artifactName: UMLab-Setup-${version}.${ext}
+  deleteAppDataOnUninstall: false
+portable:
+  artifactName: UMLab-Portable-${version}.${ext}
+mac:
+  icon: build/icon.png
+  target: dmg
+linux:
+  icon: build/icon.png
+  target: AppImage

@@ -1,0 +1,43 @@
+{
+  "name": "umlab",
+  "private": true,
+  "version": "0.1.0",
+  "description": "UMLab — công cụ desktop vẽ sơ đồ UML/kiến trúc/ERD/Gantt, cộng tác thời gian thực qua MongoDB",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w @umlab/desktop",
+    "build": "npm run build -w @umlab/desktop",
+    "dist": "npm run dist -w @umlab/desktop",
+    "icons": "npm run build -w @umlab/uml-icons",
+    "test": "npm run test --workspaces --if-present",
+    "lint": "eslint .",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "check": "npm run lint && npm run typecheck && npm run test",
+    "format": "prettier --write .",
+    "prepare": "husky || true"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "eslint": "^9.39.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "globals": "^16.4.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.0",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,css}": "prettier --write"
+  }
+}

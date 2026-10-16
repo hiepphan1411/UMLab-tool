@@ -1,0 +1,40 @@
+import { defineConfig } from 'vite';
+
+// Standalone UniPark+ Diagram Studio (plain HTML, Tailwind via CDN) — no React/Tailwind plugins.
+export default defineConfig({
+  root: `${import.meta.dirname}/tools/diagram-studio`,
+  // Separate cache so this server doesn't overwrite the main app's optimized deps (causes 504 Outdated Optimize Dep).
+  cacheDir: `${import.meta.dirname}/node_modules/.vite-diagram`,
+  plugins: [
+    {
+      // The exported HTML has no <meta charset>, so browsers fall back to windows-1252 and mangle UTF-8 text/regexes.
+      name: 'diagram-studio-charset',
+      transformIndexHtml: {
+        order: 'pre',
+        handler: (html) =>
+          /<meta\s+charset=/i.test(html)
+            ? html
+            : `<meta charset="UTF-8">\n${html}`,
+      },
+    },
+    {
+      // Autosave/backup add-on kept in its own file so index.html can be replaced by a new export as-is.
+      name: 'diagram-studio-autosave',
+      transformIndexHtml: (html) => `${html}\n<script src="./autosave.js"></script>\n`,
+    },
+    {
+      // Nhập JSON kiểu "thêm vào", nút thu gọn panel trái, nút toàn màn hình - file riêng như autosave.js
+      name: 'diagram-studio-extras',
+      transformIndexHtml: (html) => `${html}\n<script src="./extras.js"></script>\n`,
+    },
+    {
+      // Nối thông minh (né khối, né chồng đường, cầu nhảy, tự đặt nhãn) + gợi ý bố cục + chặn bôi đen khi kéo
+      name: 'diagram-studio-smart-edges',
+      transformIndexHtml: (html) => `${html}\n<script src="./smart-edges.js"></script>\n`,
+    },
+  ],
+  server: {
+    port: 5175,
+    strictPort: true,
+  },
+});

@@ -1,0 +1,82 @@
+/* Token màu — chép từ tool cũ (docs/reference/diagram-studio/index.html), 3 trạng thái:
+   mặc định sáng, theo hệ thống (prefers-color-scheme: dark), và chọn tay qua [data-theme]. */
+:root {
+  --bg: #eef0f3;
+  --panel: #ffffff;
+  --panel-2: #f5f6f8;
+  --line: #e2e5ea;
+  --text: #1b2130;
+  --muted: #687085;
+  --accent: #2e62e6;
+  --accent-soft: #e7eefd;
+  --danger: #d14343;
+  --canvas: #e8eaee;
+  --dot: #c8cdd5;
+  --sel: #2e62e6;
+  --guide: #f2447e;
+  --ok: #1f9d66;
+  --warn: #d98a1c;
+  --shadow: 0 12px 32px rgba(15, 20, 30, 0.18);
+  --overlay: rgba(15, 18, 26, 0.45);
+  --font-ui: 'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-diagram: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: ui-monospace, 'Cascadia Code', Menlo, Consolas, monospace;
+  /* màu icon palette UML (packages/uml-icons) */
+  --uml-ic-accent: #2e62e6;
+  --uml-ic-fill: #e7eefd;
+  --uml-ic-line: #64748b;
+  --uml-ic-bg: #ffffff;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #15171c;
+    --panel: #1d2027;
+    --panel-2: #242833;
+    --line: #313644;
+    --text: #e5e8ef;
+    --muted: #939bad;
+    --accent: #6b94ff;
+    --accent-soft: #22325a;
+    --danger: #f07070;
+    --canvas: #111317;
+    --dot: #2a2f3a;
+    --sel: #6b94ff;
+    --guide: #ff6b9a;
+    --ok: #3cc48a;
+    --warn: #e7a547;
+    --shadow: 0 14px 36px rgba(0, 0, 0, 0.45);
+    --overlay: rgba(5, 7, 10, 0.6);
+    --uml-ic-accent: #7ea2ff;
+    --uml-ic-fill: #22325a;
+    --uml-ic-line: #9aa4b8;
+    --uml-ic-bg: #1d2027;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --bg: #15171c;
+  --panel: #1d2027;
+  --panel-2: #242833;
+  --line: #313644;
+  --text: #e5e8ef;
+  --muted: #939bad;
+  --accent: #6b94ff;
+  --accent-soft: #22325a;
+  --danger: #f07070;
+  --canvas: #111317;
+  --dot: #2a2f3a;
+  --sel: #6b94ff;
+  --guide: #ff6b9a;
+  --ok: #3cc48a;
+  --warn: #e7a547;
+  --shadow: 0 14px 36px rgba(0, 0, 0, 0.45);
+  --overlay: rgba(5, 7, 10, 0.6);
+  --uml-ic-accent: #7ea2ff;
+  --uml-ic-fill: #22325a;
+  --uml-ic-line: #9aa4b8;
+  --uml-ic-bg: #1d2027;
+  color-scheme: dark;
+}

@@ -1,0 +1,1055 @@
+{
+  "format": "unipark-diagram",
+  "version": 2,
+  "gantt": {
+    "title": "UniPark+ — Tiến độ khóa luận",
+    "reportDate": "",
+    "scale": "week",
+    "weekends": true,
+    "columns": {
+      "code": true,
+      "name": true,
+      "start": false,
+      "end": false,
+      "days": false,
+      "owner": true,
+      "progress": true
+    },
+    "tasks": [
+      {
+        "id": "s0",
+        "code": "Sprint 0",
+        "name": "Chuẩn bị",
+        "start": "2026-07-21",
+        "end": "2026-08-03",
+        "goal": "Hoàn thiện SRS, thiết kế kiến trúc hệ thống, setup hạ tầng dự án, xin phép nhà trường quay/chụp camera bãi xe.",
+        "deliverables": "Tài liệu SRS, sơ đồ kiến trúc & ERD, Git repo + Docker Compose sẵn sàng, wireframe UI/UX.",
+        "owner": "Cả nhóm",
+        "jira": "",
+        "progress": 100
+      },
+      {
+        "id": "s1",
+        "code": "Sprint 1",
+        "name": "Nền tảng & Auth",
+        "start": "2026-08-04",
+        "end": "2026-08-17",
+        "goal": "Xây dựng nền tảng backend (Auth Service) và khung frontend (Web Admin, Mobile App); đăng ký/đăng nhập, phân quyền.",
+        "deliverables": "Auth Service hoạt động, đăng nhập JWT, skeleton Web Admin & Mobile App.",
+        "owner": "Hiệp",
+        "jira": "",
+        "progress": 100
+      },
+      {
+        "id": "s2",
+        "code": "Sprint 2",
+        "name": "Check-in / Check-out",
+        "start": "2026-08-18",
+        "end": "2026-08-31",
+        "goal": "Xây luồng ra/vào bãi xe cơ bản qua RFID/QR, tích hợp ALPR, ví điện tử trừ theo lượt.",
+        "deliverables": "Check-in/out hoạt động end-to-end, ALPR đối chiếu biển số, ví điện tử cơ bản.",
+        "owner": "Hiệp + Giang",
+        "jira": "",
+        "progress": 80
+      },
+      {
+        "id": "s3",
+        "code": "Sprint 3",
+        "name": "Gói tháng & Thanh toán",
+        "start": "2026-09-01",
+        "end": "2026-09-14",
+        "goal": "Hoàn thiện chức năng mua gói tháng, quản lý gói dịch vụ, tích hợp cổng thanh toán QR Pay/Momo.",
+        "deliverables": "Mua gói tháng, quản lý gói dịch vụ (Admin), thanh toán qua QR Pay/Momo.",
+        "owner": "Hiệp",
+        "jira": "",
+        "progress": 80
+      },
+      {
+        "id": "s4",
+        "code": "Sprint 4",
+        "name": "AI Vision - Dữ liệu & Prototype",
+        "start": "2026-09-15",
+        "end": "2026-09-28",
+        "goal": "Thu thập ảnh camera bãi xe thực tế, gán nhãn dữ liệu, huấn luyện thử mô hình YOLOv8-OBB.",
+        "deliverables": "Dataset đã gán nhãn, model YOLOv8-OBB phiên bản đầu, đánh giá độ chính xác sơ bộ.",
+        "owner": "Giang",
+        "jira": "",
+        "progress": 95
+      },
+      {
+        "id": "s5",
+        "code": "Sprint 5",
+        "name": "AI Vision - Tích hợp",
+        "start": "2026-09-29",
+        "end": "2026-10-12",
+        "goal": "Tích hợp mô hình vào AI Service (FastAPI), xây cơ chế tracking, trigger ALPR khi phát hiện vi phạm.",
+        "deliverables": "AI Service hoạt động, tracking ổn định, luồng cảnh báo vi phạm end-to-end.",
+        "owner": "Giang",
+        "jira": "",
+        "progress": 95
+      },
+      {
+        "id": "s6a",
+        "code": "Sprint 6a",
+        "name": "Sổ uy tín",
+        "start": "2026-10-13",
+        "end": "2026-10-26",
+        "goal": "Xây audit log chỉ-ghi-thêm cho sổ uy tín, cơ chế cộng/trừ điểm.",
+        "deliverables": "Sổ uy tín hoạt động (audit log append-only, cộng/trừ điểm).",
+        "owner": "Hiệp",
+        "jira": "",
+        "progress": 50
+      },
+      {
+        "id": "s6b",
+        "code": "Sprint 6b",
+        "name": "Khách vãng lai",
+        "start": "2026-10-13",
+        "end": "2026-10-26",
+        "goal": "Hoàn thiện luồng khách vãng lai.",
+        "deliverables": "Luồng khách vãng lai hoàn chỉnh (ALPR + OTP).",
+        "owner": "Hiệp",
+        "jira": "",
+        "progress": 50
+      }
+    ]
+  },
+  "moduleGantt": {
+    "title": "UniPark+ — Tiến độ theo module",
+    "reportDate": "",
+    "scale": "week",
+    "weekends": true,
+    "columns": {
+      "code": true,
+      "name": true,
+      "start": false,
+      "end": false,
+      "days": false,
+      "owner": true,
+      "status": true,
+      "progress": true
+    },
+    "tasks": [
+      {
+        "id": "m_auth",
+        "code": "Sprint 1",
+        "name": "AuthModule",
+        "icon": "lucide:hand",
+        "start": "2026-08-04",
+        "end": "2026-08-17",
+        "owner": "Hiệp",
+        "progress": 100,
+        "goal": "Đăng ký/đăng nhập JWT, phân quyền RBAC.",
+        "deliverables": "(JWT, RBAC)"
+      },
+      {
+        "id": "m_vc",
+        "code": "Sprint 2",
+        "name": "VehicleCheckinModule",
+        "icon": "lucide:car-front",
+        "start": "2026-08-18",
+        "end": "2026-08-31",
+        "owner": "Hiệp + Giang",
+        "progress": 80,
+        "goal": "Park Session - RFID - ALPR - Barrier.",
+        "deliverables": "Check-in/out end-to-end, ALPR đối chiếu biển số."
+      },
+      {
+        "id": "m_pay",
+        "code": "Sprint 3",
+        "name": "PaymentModule",
+        "icon": "lucide:credit-card",
+        "start": "2026-09-01",
+        "end": "2026-09-14",
+        "owner": "Hiệp",
+        "progress": 80,
+        "goal": "Ví điện tử, gói tháng, thanh toán QR Pay/Momo.",
+        "deliverables": "Mua gói tháng, quản lý gói dịch vụ, thanh toán QR."
+      },
+      {
+        "id": "m_rep",
+        "code": "Sprint 6a",
+        "name": "ReputationModule",
+        "icon": "lucide:thumbs-up",
+        "start": "2026-10-13",
+        "end": "2026-10-26",
+        "owner": "Hiệp",
+        "progress": 50,
+        "goal": "Sổ uy tín append-only, cộng/trừ điểm.",
+        "deliverables": "Sổ uy tín hoạt động."
+      },
+      {
+        "id": "m_guest",
+        "code": "Sprint 6b",
+        "name": "GuestModule",
+        "icon": "lucide:user-round",
+        "start": "2026-10-13",
+        "end": "2026-10-26",
+        "owner": "Hiệp",
+        "progress": 50,
+        "goal": "Luồng khách vãng lai.",
+        "deliverables": "Luồng khách vãng lai hoàn chỉnh (ALPR + OTP)."
+      },
+      {
+        "id": "m_notif",
+        "code": "",
+        "name": "NotificationModule",
+        "icon": "lucide:bell",
+        "start": "2026-09-01",
+        "end": "2026-09-14",
+        "owner": "Hiệp",
+        "progress": 100,
+        "goal": "Đẩy thông báo FCM, thông báo trong ứng dụng, WebSocket.",
+        "deliverables": "(Đẩy thông báo)"
+      }
+    ]
+  },
+  "name": "UniPark+ Kiến trúc hệ thống",
+  "background": "#FFFFFF",
+  "elements": [
+    {
+      "id": "bg",
+      "name": "Nền sơ đồ",
+      "type": "shape",
+      "shape": "rect",
+      "x": 7.5,
+      "y": 7.5,
+      "w": 1494.0,
+      "h": 789.0,
+      "fill": "#F6F3EE",
+      "stroke": "#E6E1D8",
+      "strokeWidth": 1.2,
+      "radius": 18,
+      "locked": true
+    },
+    {
+      "id": "g_client",
+      "type": "group",
+      "x": 295.5,
+      "y": 18.0,
+      "w": 466.5,
+      "h": 108.0,
+      "title": "CLIENT APPLICATIONS",
+      "titleSize": 15,
+      "titleWeight": 500,
+      "titleColor": "#1F2937",
+      "strokeWidth": 1.4,
+      "dash": true,
+      "radius": 14,
+      "fill": "#E6EEF8",
+      "stroke": "#7393C2"
+    },
+    {
+      "id": "n_mobile",
+      "type": "node",
+      "x": 310.5,
+      "y": 52.5,
+      "w": 204.0,
+      "h": 63.0,
+      "title": "Mobile App",
+      "subtitle": "(React Native, Expo)",
+      "icons": [
+        {
+          "k": "lucide:smartphone",
+          "c": "#3B5F94"
+        }
+      ],
+      "layout": "left",
+      "iconSize": 30,
+      "titleSize": 15.5,
+      "subSize": 12.5,
+      "stroke": "#4A6FA5",
+      "fill": "#F9FBFF",
+      "strokeWidth": 1.6
+    },
+    {
+      "id": "n_web",
+      "type": "node",
+      "x": 555.0,
+      "y": 52.5,
+      "w": 192.0,
+      "h": 63.0,
+      "title": "Web Admin",
+      "subtitle": "(ReactJS)",
+      "icons": [
+        {
+          "k": "lucide:laptop",
+          "c": "#3B5F94"
+        }
+      ],
+      "layout": "left",
+      "iconSize": 32,
+      "titleSize": 15.5,
+      "subSize": 12.5,
+      "stroke": "#4A6FA5",
+      "fill": "#F9FBFF",
+      "strokeWidth": 1.6
+    },
+    {
+      "id": "g_gateway",
+      "type": "group",
+      "x": 379.5,
+      "y": 159.0,
+      "w": 307.5,
+      "h": 112.5,
+      "title": "GATEWAY",
+      "titleSize": 15,
+      "titleWeight": 500,
+      "titleColor": "#1F2937",
+      "strokeWidth": 1.4,
+      "dash": true,
+      "radius": 14,
+      "fill": "#ECEAE6",
+      "stroke": "#B5B0A8"
+    },
+    {
+      "id": "n_nginx",
+      "type": "node",
+      "x": 394.5,
+      "y": 190.5,
+      "w": 279.0,
+      "h": 67.5,
+      "title": "API Gateway – Nginx",
+      "subtitle": "(định tuyến, cân bằng tải, SSL)",
+      "icons": [
+        {
+          "k": "brand:nginx"
+        }
+      ],
+      "layout": "left",
+      "iconSize": 32,
+      "titleSize": 15,
+      "subSize": 12.5,
+      "stroke": "#A9A49C",
+      "fill": "#FFFFFF",
+      "strokeWidth": 1.4
+    },
+    {
+      "id": "g_backend",
+      "type": "group",
+      "x": 27.0,
+      "y": 294.0,
+      "w": 1005.0,
+      "h": 283.5,
+      "title": "UniPark+ BACKEND — Modular Monolith",
+      "titleSize": 15.5,
+      "titleWeight": 700,
+      "titleColor": "#1F2937",
+      "strokeWidth": 1.4,
+      "dash": true,
+      "radius": 14,
+      "fill": "#F9EBDD",
+      "stroke": "#E2B08A"
+    },
+    {
+      "id": "t_backend",
+      "type": "text",
+      "x": 27.0,
+      "y": 324.0,
+      "w": 1005.0,
+      "h": 21.0,
+      "text": "UniPark+ Backend - NestJS (1 tiến trình triển khai duy nhất)",
+      "fontSize": 14,
+      "weight": 400,
+      "color": "#1F2937",
+      "align": "center"
+    },
+    {
+      "id": "g_lr",
+      "type": "group",
+      "x": 40.5,
+      "y": 360.0,
+      "w": 978.0,
+      "h": 165.0,
+      "title": "direction LR",
+      "titleSize": 13,
+      "titleWeight": 400,
+      "titleColor": "#2B2F36",
+      "strokeWidth": 1.2,
+      "dash": false,
+      "radius": 10,
+      "fill": "#F7EEE4",
+      "stroke": "#BDB6AC",
+      "titleAlign": "center"
+    },
+    {
+      "id": "m_auth",
+      "type": "node",
+      "x": 54.0,
+      "y": 390.0,
+      "w": 129.0,
+      "h": 123.0,
+      "title": "AuthModule",
+      "subtitle": "(JWT, RBAC)",
+      "icons": [
+        {
+          "k": "lucide:hand",
+          "c": "#B8652F"
+        }
+      ],
+      "fill": "#FCE4D0",
+      "stroke": "#E1A06F",
+      "layout": "top",
+      "iconSize": 34,
+      "titleSize": 13.5,
+      "titleWeight": 700,
+      "subSize": 12.5,
+      "textColor": "#1F2937",
+      "subColor": "#2B2F36",
+      "strokeWidth": 1.6,
+      "radius": 9
+    },
+    {
+      "id": "m_vc",
+      "type": "node",
+      "x": 196.5,
+      "y": 390.0,
+      "w": 196.5,
+      "h": 123.0,
+      "title": "VehicleCheckinModule",
+      "subtitle": "(Park Session - RFID -\nALPR - Barrier)",
+      "icons": [
+        {
+          "k": "lucide:car-front",
+          "c": "#B8652F"
+        }
+      ],
+      "fill": "#FCE4D0",
+      "stroke": "#E1A06F",
+      "layout": "top",
+      "iconSize": 34,
+      "titleSize": 13.5,
+      "titleWeight": 700,
+      "subSize": 12.5,
+      "textColor": "#1F2937",
+      "subColor": "#2B2F36",
+      "strokeWidth": 1.6,
+      "radius": 9
+    },
+    {
+      "id": "m_pay",
+      "type": "node",
+      "x": 402.0,
+      "y": 390.0,
+      "w": 144.0,
+      "h": 123.0,
+      "title": "PaymentModule",
+      "subtitle": "(Ví điện tử,\ngói tháng)",
+      "icons": [
+        {
+          "k": "lucide:credit-card",
+          "c": "#B8652F"
+        }
+      ],
+      "fill": "#FCE4D0",
+      "stroke": "#E1A06F",
+      "layout": "top",
+      "iconSize": 34,
+      "titleSize": 13.5,
+      "titleWeight": 700,
+      "subSize": 12.5,
+      "textColor": "#1F2937",
+      "subColor": "#2B2F36",
+      "strokeWidth": 1.6,
+      "radius": 9
+    },
+    {
+      "id": "m_rep",
+      "type": "node",
+      "x": 555.0,
+      "y": 390.0,
+      "w": 150.0,
+      "h": 123.0,
+      "title": "ReputationModule",
+      "subtitle": "(Sổ uy tín\nappend-only)",
+      "icons": [
+        {
+          "k": "lucide:thumbs-up",
+          "c": "#B8652F"
+        }
+      ],
+      "fill": "#FCE4D0",
+      "stroke": "#E1A06F",
+      "layout": "top",
+      "iconSize": 34,
+      "titleSize": 13.5,
+      "titleWeight": 700,
+      "subSize": 12.5,
+      "textColor": "#1F2937",
+      "subColor": "#2B2F36",
+      "strokeWidth": 1.6,
+      "radius": 9
+    },
+    {
+      "id": "m_guest",
+      "type": "node",
+      "x": 715.5,
+      "y": 390.0,
+      "w": 129.0,
+      "h": 123.0,
+      "title": "GuestModule",
+      "subtitle": "(Khách vãng lai)",
+      "icons": [
+        {
+          "k": "lucide:user-round",
+          "c": "#B8652F"
+        }
+      ],
+      "fill": "#FCE4D0",
+      "stroke": "#E1A06F",
+      "layout": "top",
+      "iconSize": 34,
+      "titleSize": 13.5,
+      "titleWeight": 700,
+      "subSize": 12.5,
+      "textColor": "#1F2937",
+      "subColor": "#2B2F36",
+      "strokeWidth": 1.6,
+      "radius": 9
+    },
+    {
+      "id": "m_notif",
+      "type": "node",
+      "x": 855.0,
+      "y": 390.0,
+      "w": 147.0,
+      "h": 123.0,
+      "title": "NotificationModule",
+      "subtitle": "(Đẩy thông báo)",
+      "icons": [
+        {
+          "k": "lucide:bell",
+          "c": "#B8652F"
+        }
+      ],
+      "fill": "#FCE4D0",
+      "stroke": "#E1A06F",
+      "layout": "top",
+      "iconSize": 34,
+      "titleSize": 13.5,
+      "titleWeight": 700,
+      "subSize": 12.5,
+      "textColor": "#1F2937",
+      "subColor": "#2B2F36",
+      "strokeWidth": 1.6,
+      "radius": 9
+    },
+    {
+      "id": "g_data",
+      "type": "group",
+      "x": 27.0,
+      "y": 630.0,
+      "w": 1005.0,
+      "h": 165.0,
+      "title": "DATA & PERSISTENCE LAYER",
+      "titleSize": 15,
+      "titleWeight": 500,
+      "titleColor": "#1F2937",
+      "strokeWidth": 1.4,
+      "dash": true,
+      "radius": 14,
+      "fill": "#ECEAE6",
+      "stroke": "#B5B0A8"
+    },
+    {
+      "id": "n_pg",
+      "type": "node",
+      "x": 105.0,
+      "y": 670.5,
+      "w": 237.0,
+      "h": 103.5,
+      "title": "**POSTGRESQL**",
+      "subtitle": "Row-Level Security\n- tenant_id",
+      "icons": [
+        {
+          "k": "brand:postgresql"
+        }
+      ],
+      "layout": "left",
+      "iconSize": 46,
+      "titleSize": 16,
+      "subSize": 13,
+      "stroke": "#3D6DB5",
+      "strokeWidth": 1.8,
+      "radius": 9
+    },
+    {
+      "id": "n_mongo",
+      "type": "node",
+      "x": 397.5,
+      "y": 670.5,
+      "w": 240.0,
+      "h": 103.5,
+      "title": "**MONGODB**",
+      "subtitle": "",
+      "icons": [
+        {
+          "k": "brand:mongodb"
+        }
+      ],
+      "layout": "left",
+      "iconSize": 46,
+      "titleSize": 16,
+      "subSize": 13,
+      "stroke": "#3F9A4F",
+      "strokeWidth": 1.8,
+      "radius": 9
+    },
+    {
+      "id": "n_redis",
+      "type": "node",
+      "x": 690.0,
+      "y": 670.5,
+      "w": 240.0,
+      "h": 103.5,
+      "title": "**REDIS**",
+      "subtitle": "(Token Bucket)",
+      "icons": [
+        {
+          "k": "brand:redis"
+        }
+      ],
+      "layout": "left",
+      "iconSize": 46,
+      "titleSize": 16,
+      "subSize": 13,
+      "stroke": "#C8473A",
+      "strokeWidth": 1.8,
+      "radius": 9
+    },
+    {
+      "id": "g_ai",
+      "type": "group",
+      "x": 1054.5,
+      "y": 249.0,
+      "w": 427.5,
+      "h": 328.5,
+      "title": "AI & IoT INTEGRATION",
+      "titleSize": 15,
+      "titleWeight": 500,
+      "titleColor": "#1F2937",
+      "strokeWidth": 1.4,
+      "dash": true,
+      "radius": 14,
+      "fill": "#EEE5F4",
+      "stroke": "#A98BC4"
+    },
+    {
+      "id": "n_ai",
+      "type": "node",
+      "x": 1120.5,
+      "y": 292.5,
+      "w": 304.5,
+      "h": 64.5,
+      "title": "**AI SERVICE** (Python FastAPI)",
+      "subtitle": "YOLOv8-OBB - Tracking - ALPR",
+      "icons": [
+        {
+          "k": "lucide:brain",
+          "c": "#8B5CF6"
+        }
+      ],
+      "layout": "left",
+      "iconSize": 34,
+      "titleSize": 15,
+      "titleWeight": 400,
+      "subSize": 13,
+      "stroke": "#5E4E86",
+      "strokeWidth": 1.6
+    },
+    {
+      "id": "t_rest",
+      "type": "text",
+      "x": 1057.5,
+      "y": 367.5,
+      "w": 421.5,
+      "h": 21.0,
+      "text": "REST: khung hình / kết quả phát hiện",
+      "fontSize": 14,
+      "weight": 400,
+      "color": "#1F2937",
+      "align": "center"
+    },
+    {
+      "id": "n_mqtt",
+      "type": "node",
+      "x": 1069.5,
+      "y": 415.5,
+      "w": 190.5,
+      "h": 151.5,
+      "title": "**MQTT BROKER**",
+      "subtitle": "(Mosquitto)\nQoS 1/2 – đệm dữ liệu\nkhi backend gián đoạn",
+      "icons": [
+        {
+          "k": "lucide:radio",
+          "c": "#34507A"
+        }
+      ],
+      "layout": "top",
+      "iconSize": 38,
+      "titleSize": 15,
+      "subSize": 13,
+      "stroke": "#5E4E86",
+      "strokeWidth": 1.6
+    },
+    {
+      "id": "t_iot",
+      "type": "text",
+      "x": 1285.5,
+      "y": 418.5,
+      "w": 187.5,
+      "h": 21.0,
+      "text": "IOT DEVICES AT GATE",
+      "fontSize": 14,
+      "weight": 400,
+      "color": "#1F2937",
+      "align": "center"
+    },
+    {
+      "id": "n_iot",
+      "type": "node",
+      "x": 1285.5,
+      "y": 441.0,
+      "w": 184.5,
+      "h": 117.0,
+      "title": "**RFID - Camera - Barrier**",
+      "subtitle": "RFID - Camera - Barrier",
+      "icons": [
+        {
+          "k": "custom:rfid",
+          "c": "#5B7FA8"
+        },
+        {
+          "k": "lucide:cctv",
+          "c": "#475569"
+        },
+        {
+          "k": "custom:barrier",
+          "c": "#475569"
+        }
+      ],
+      "layout": "top",
+      "iconSize": 30,
+      "titleSize": 13.5,
+      "subSize": 12.5,
+      "stroke": "#4A6FA5",
+      "strokeWidth": 1.6
+    },
+    {
+      "id": "g_ext",
+      "type": "group",
+      "x": 1054.5,
+      "y": 627.0,
+      "w": 427.5,
+      "h": 150.0,
+      "title": "EXTERNAL INTEGRATION",
+      "titleSize": 15,
+      "titleWeight": 500,
+      "titleColor": "#1F2937",
+      "strokeWidth": 1.4,
+      "dash": true,
+      "radius": 14,
+      "fill": "#ECEAE6",
+      "stroke": "#B5B0A8"
+    },
+    {
+      "id": "n_payg",
+      "type": "node",
+      "x": 1069.5,
+      "y": 660.0,
+      "w": 187.5,
+      "h": 108.0,
+      "title": "**PAYMENT GATEWAY**",
+      "subtitle": "(QR Pay / Momo)",
+      "icons": [
+        {
+          "k": "lucide:credit-card",
+          "c": "#2F9E6B"
+        }
+      ],
+      "layout": "top",
+      "iconSize": 32,
+      "titleSize": 14,
+      "subSize": 13,
+      "stroke": "#A9A49C",
+      "strokeWidth": 1.4
+    },
+    {
+      "id": "n_fcm",
+      "type": "node",
+      "x": 1284.0,
+      "y": 660.0,
+      "w": 186.0,
+      "h": 108.0,
+      "title": "**FIREBASE CLOUD\nMESSAGING (FCM)**",
+      "subtitle": "",
+      "icons": [
+        {
+          "k": "brand:firebase"
+        }
+      ],
+      "layout": "top",
+      "iconSize": 32,
+      "titleSize": 14,
+      "subSize": 13,
+      "stroke": "#A9A49C",
+      "strokeWidth": 1.4
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_mobile_gw",
+      "from": {
+        "id": "n_mobile",
+        "side": "bottom",
+        "t": 0.5
+      },
+      "to": {
+        "id": "g_gateway",
+        "side": "top",
+        "t": 0.5
+      },
+      "color": "#3F63A0",
+      "width": 1.8,
+      "points": [
+        {
+          "x": 412.5,
+          "y": 142.5
+        },
+        {
+          "x": 533.2,
+          "y": 142.5
+        }
+      ]
+    },
+    {
+      "id": "e_web_gw",
+      "from": {
+        "id": "n_web",
+        "side": "bottom",
+        "t": 0.5
+      },
+      "to": {
+        "id": "g_gateway",
+        "side": "top",
+        "t": 0.5
+      },
+      "color": "#3F63A0",
+      "width": 1.8,
+      "points": [
+        {
+          "x": 651.0,
+          "y": 142.5
+        },
+        {
+          "x": 533.2,
+          "y": 142.5
+        }
+      ]
+    },
+    {
+      "id": "e_gw_backend",
+      "from": {
+        "id": "g_gateway",
+        "side": "bottom",
+        "t": 0.5
+      },
+      "to": {
+        "id": "g_backend",
+        "side": "top",
+        "t": 0.5037
+      },
+      "color": "#8E8A84",
+      "width": 1.8,
+      "routing": "straight"
+    },
+    {
+      "id": "e_auth_vc",
+      "from": {
+        "id": "m_auth",
+        "side": "bottom",
+        "t": 0.5
+      },
+      "to": {
+        "id": "m_vc",
+        "side": "bottom",
+        "t": 0.2977
+      },
+      "color": "#B5602E",
+      "width": 1.8,
+      "points": [
+        {
+          "x": 118.5,
+          "y": 594.0
+        },
+        {
+          "x": 255.0,
+          "y": 594.0
+        }
+      ]
+    },
+    {
+      "id": "e_vc_pg",
+      "from": {
+        "id": "m_vc",
+        "side": "bottom",
+        "t": 0.5267
+      },
+      "to": {
+        "id": "n_pg",
+        "side": "top",
+        "t": 0.8228
+      },
+      "color": "#B5602E",
+      "width": 1.8,
+      "routing": "straight"
+    },
+    {
+      "id": "e_vc_mongo",
+      "from": {
+        "id": "m_vc",
+        "side": "bottom",
+        "t": 0.5267
+      },
+      "to": {
+        "id": "n_mongo",
+        "side": "top",
+        "t": 0.4875
+      },
+      "color": "#B5602E",
+      "width": 1.8,
+      "points": [
+        {
+          "x": 300.0,
+          "y": 610.5
+        },
+        {
+          "x": 514.5,
+          "y": 610.5
+        }
+      ]
+    },
+    {
+      "id": "e_vc_redis",
+      "from": {
+        "id": "m_vc",
+        "side": "bottom",
+        "t": 0.6641
+      },
+      "to": {
+        "id": "n_redis",
+        "side": "top",
+        "t": 0.4875
+      },
+      "color": "#B5602E",
+      "width": 1.8,
+      "points": [
+        {
+          "x": 327.0,
+          "y": 597.0
+        },
+        {
+          "x": 807.0,
+          "y": 597.0
+        }
+      ],
+      "dash": true
+    },
+    {
+      "id": "e_pay_mqtt",
+      "from": {
+        "id": "m_pay",
+        "side": "bottom",
+        "t": 0.4896
+      },
+      "to": {
+        "id": "n_mqtt",
+        "side": "left",
+        "t": 0.4158
+      },
+      "color": "#B5602E",
+      "width": 1.8,
+      "points": [
+        {
+          "x": 472.5,
+          "y": 543.0
+        },
+        {
+          "x": 1041.0,
+          "y": 543.0
+        },
+        {
+          "x": 1041.0,
+          "y": 478.5
+        }
+      ]
+    },
+    {
+      "id": "e_notif_ai",
+      "from": {
+        "id": "m_notif",
+        "side": "right",
+        "t": 0.378
+      },
+      "to": {
+        "id": "n_ai",
+        "side": "left",
+        "t": 0.5
+      },
+      "color": "#7A4FA8",
+      "width": 1.8,
+      "points": [
+        {
+          "x": 1035.0,
+          "y": 436.5
+        },
+        {
+          "x": 1035.0,
+          "y": 324.8
+        }
+      ]
+    },
+    {
+      "id": "e_iot_mqtt",
+      "from": {
+        "id": "n_iot",
+        "side": "left",
+        "t": 0.5
+      },
+      "to": {
+        "id": "n_mqtt",
+        "side": "right",
+        "t": 0.5545
+      },
+      "color": "#B5602E",
+      "width": 1.8,
+      "routing": "straight"
+    },
+    {
+      "id": "e_mqtt_fcm",
+      "from": {
+        "id": "n_mqtt",
+        "side": "bottom",
+        "t": 0.5
+      },
+      "to": {
+        "id": "n_fcm",
+        "side": "top",
+        "t": 0.5
+      },
+      "color": "#B5602E",
+      "width": 1.8,
+      "points": [
+        {
+          "x": 1164.8,
+          "y": 607.5
+        },
+        {
+          "x": 1377.0,
+          "y": 607.5
+        }
+      ],
+      "arrowStart": true
+    }
+  ]
+}
