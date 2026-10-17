@@ -8,3 +8,4 @@ import './usecase';
 import './usecase-spec';
 import './class';
 import './erd';
+import './activity';

@@ -158,6 +158,7 @@ export function FlowTable({
   onRemove,
   onMove,
   onBranch,
+  stepMenu,
   label,
 }: {
   steps: Step[];
@@ -172,6 +173,8 @@ export function FlowTable({
   onRemove: (id: string, focusPrev: boolean) => void;
   onMove: (from: number, to: number) => void;
   onBranch?: (stepNo: number, kind: 'alternativeFlows' | 'exceptionFlows') => void;
+  /** Mục thêm vào menu ⋯ của bước (Xem trên Activity / Sequence…). */
+  stepMenu?: (s: Step) => MenuEntry[];
   label: string;
 }) {
   const [open, setOpen] = useState<Set<string>>(() => new Set());
@@ -220,6 +223,8 @@ export function FlowTable({
         },
         { label: 'Tạo luồng ngoại lệ từ bước này', onSelect: () => onBranch(s.no, 'exceptionFlows') },
       );
+    const extra = stepMenu?.(s) ?? [];
+    if (extra.length) items.push({ type: 'sep' }, ...extra);
     items.push(
       { type: 'sep' },
       { label: 'Chèn bước phía trên', onSelect: () => onInsert(i) },

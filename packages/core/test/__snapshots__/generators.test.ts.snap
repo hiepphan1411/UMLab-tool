@@ -1,0 +1,65 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Sinh Activity từ đặc tả (generators.md mục 1) > UC03: 3 làn, 3 Decision, 1 Merge, 2 Flow Final, 1 Activity Final; không hình nào đè nhau 1`] = `
+{
+  "edges": [
+    "merge@Hệ thống --> action(Kiểm tra gói tháng hoặc số dư ví.)@Hệ thống",
+    "initial@Sinh viên --> action(Quét thẻ RFID tại cổng vào.)@Sinh viên",
+    "action(Quét thẻ RFID tại cổng vào.)@Sinh viên --> action(Đọc mã thẻ và kiểm tra thẻ hợp lệ.)@Hệ thống",
+    "action(Đọc mã thẻ và kiểm tra thẻ hợp lệ.)@Hệ thống --> decision@Hệ thống",
+    "decision@Hệ thống -[else]-> action(Chụp ảnh biển số và nhận dạng (ALPR).)@Hệ thống",
+    "decision@Hệ thống -[Thẻ không tồn tại trong hệ thống]-> action(Hiển thị "Thẻ không hợp lệ".)@Hệ thống",
+    "action(Hiển thị "Thẻ không hợp lệ".)@Hệ thống --> flowFinal@Hệ thống",
+    "action(Chụp ảnh biển số và nhận dạng (ALPR).)@Hệ thống --> action(Đối chiếu biển số với xe đã đăng ký của sinh viên.)@Hệ thống",
+    "action(Đối chiếu biển số với xe đã đăng ký của sinh viên.)@Hệ thống --> decision@Hệ thống",
+    "decision@Hệ thống -[else]-> merge@Hệ thống",
+    "decision@Hệ thống -[Biển số khác xe đăng ký]-> action(Thông báo bảo vệ kiểm tra.)@Hệ thống",
+    "action(Thông báo bảo vệ kiểm tra.)@Hệ thống --> action(Xác nhận thủ công.)@Bảo vệ",
+    "action(Xác nhận thủ công.)@Bảo vệ --> merge@Hệ thống",
+    "action(Kiểm tra gói tháng hoặc số dư ví.)@Hệ thống --> decision@Hệ thống",
+    "decision@Hệ thống -[else]-> action(Tạo phiên gửi xe và mở barrier.)@Hệ thống",
+    "decision@Hệ thống -[Không có gói tháng và số dư ví không đủ]-> action(Thông báo nạp tiền.)@Hệ thống",
+    "action(Thông báo nạp tiền.)@Hệ thống --> flowFinal@Hệ thống",
+    "action(Tạo phiên gửi xe và mở barrier.)@Hệ thống --> action(Đưa xe vào bãi.)@Sinh viên",
+    "action(Đưa xe vào bãi.)@Sinh viên --> final@Sinh viên",
+  ],
+  "lanes": [
+    "Sinh viên",
+    "Bảo vệ",
+    "Hệ thống",
+  ],
+}
+`;
+
+exports[`Sinh Activity từ đặc tả (generators.md mục 1) > bước có vòng lặp: Merge trước bước, Decision [chưa until] quay lại, [until] đi tiếp 1`] = `
+{
+  "edges": [
+    "merge@Hệ thống --> action(Đọc thẻ)@Hệ thống",
+    "initial@Sinh viên --> action(Quét thẻ)@Sinh viên",
+    "action(Quét thẻ)@Sinh viên --> merge@Hệ thống",
+    "action(Đọc thẻ)@Hệ thống --> decision@Hệ thống",
+    "decision@Hệ thống -[chưa đọc được]-> merge@Hệ thống",
+    "decision@Hệ thống -[đọc được]-> action(Mở cổng)@Hệ thống",
+    "action(Mở cổng)@Hệ thống --> final@Hệ thống",
+  ],
+  "lanes": [
+    "Sinh viên",
+    "Hệ thống",
+  ],
+}
+`;
+
+exports[`Sinh Activity từ đặc tả (generators.md mục 1) > chỉ luồng chính: Initial → các Action tuần tự → Activity Final 1`] = `
+{
+  "edges": [
+    "initial@Sinh viên --> action(Nhập email)@Sinh viên",
+    "action(Nhập email)@Sinh viên --> action(Kiểm tra)@Hệ thống",
+    "action(Kiểm tra)@Hệ thống --> action(Đăng nhập)@Hệ thống",
+    "action(Đăng nhập)@Hệ thống --> final@Hệ thống",
+  ],
+  "lanes": [
+    "Sinh viên",
+    "Hệ thống",
+  ],
+}
+`;

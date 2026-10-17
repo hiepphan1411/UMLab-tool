@@ -1,5 +1,5 @@
 import { expect, test, type ElectronApplication, type Page } from '@playwright/test';
-import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { launch, register, uniqueEmail } from './app';
@@ -157,7 +157,7 @@ test('P05: mọi công cụ nhóm chung đặt được, sửa được trong In
   await page.getByRole('button', { name: 'Xuất ảnh' }).click();
   await page.locator('.modal').getByRole('radio', { name: 'SVG' }).click();
   await page.locator('.modal').getByRole('button', { name: /Tải/ }).click();
-  await expect.poll(() => readFileSync(svg, 'utf8').length).toBeGreaterThan(5000);
+  await expect.poll(() => (existsSync(svg) ? readFileSync(svg, 'utf8').length : 0)).toBeGreaterThan(5000);
   const out = readFileSync(svg, 'utf8');
   expect(out).toContain('Khối');
   expect(out).toContain('«rationale»');

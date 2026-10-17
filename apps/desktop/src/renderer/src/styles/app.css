@@ -1745,3 +1745,43 @@ button.fb-item:hover {
   border-color: var(--accent);
   color: var(--accent);
 }
+
+/* ---------- Banner sơ đồ sinh từ đặc tả ---------- */
+.gen-banner {
+  /* dải ngay trên canvas — không đè lên nội dung sơ đồ (tiêu đề làn…) */
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 10px 0 14px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+  font-size: 13px;
+}
+.gen-banner > span {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+main:has(> .gen-banner) > .canvas-wrap {
+  top: 40px;
+}
+.gen-banner.changed {
+  border-bottom-color: var(--warn);
+  box-shadow: inset 3px 0 0 var(--warn);
+}
+.gen-banner.changed b {
+  color: var(--warn);
+}
+.linklike {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}

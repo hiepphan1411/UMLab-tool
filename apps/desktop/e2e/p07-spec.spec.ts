@@ -46,7 +46,7 @@ test('P07: đặc tả UC03 — nhập fixture, chèn bước cập nhật tham 
   await expect(page.getByLabel('A1 rẽ từ bước')).toHaveValue('4');
   await expect(page.getByLabel('Kết thúc A1')).toHaveValue('r5');
   await expect(page.getByLabel('Tên sơ đồ')).toHaveValue('Đặc tả UC03 Check-in xe vào bãi');
-  await expect(page.getByRole('button', { name: 'Sinh Activity' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Sinh Activity' })).toBeEnabled();
   await page.screenshot({ path: 'test-results/p07-spec.png' });
 
   // chèn bước giữa 3 và 4 → A1 "tại bước 5", "quay lại bước 6"

@@ -2,6 +2,9 @@
 // Không có canvas: dữ liệu ở `data:<id>` (mỗi trường cấp 1 một khoá), logic nằm ở core/spec.
 import { AlertCircle, AlertTriangle, FileDown, FileText, Info, Plus, Trash2, Workflow, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useStore } from 'zustand';
+import type * as Y from 'yjs';
 import {
   addFlow,
   deriveFromDiagrams,
@@ -26,6 +29,7 @@ import {
   updateFlow,
   updateStep,
   validateSpec,
+  viewsMap,
   writeSpec,
   ImportError,
   type Flow,
@@ -37,10 +41,12 @@ import {
 import { umlab } from '@/lib/api';
 import { cn } from '@/lib/cn';
 import { slug } from '@/lib/format';
-import { Button, Segmented, Select, confirmDialog, toast, useTooltip } from '@/ui';
+import { Button, Segmented, Select, confirmDialog, openMenuAt, toast, useTooltip, type MenuEntry } from '@/ui';
 import { ImageAttachments } from '../../media/image-attachments';
 import { LOCAL } from '../../workspace/session';
 import { registerDiagramTemplates, registerEditor, type EditorProps } from '../editor-registry';
+import { ACTIVITY_GENERATOR } from '../activity';
+import { generateNew, generatedFrom, takeFocus, useFocusRequest, type GeneratorDef } from '../generated';
 import { registerThumbnail } from '../thumbnails';
 import { exportSpecMarkdown, exportSpecsDocx } from './exporters';
 import { FlowTable, type Option } from './flow-table';
@@ -339,6 +345,46 @@ function DisabledGen({ label }: { label: string }) {
   );
 }
 
+/** Sinh / mở sơ đồ sinh từ đặc tả (Activity, Sequence). */
+function GenButton({ doc, specId, g, readOnly }: { doc: Y.Doc; specId: string; g: GeneratorDef; readOnly: boolean }) {
+  const nav = useNavigate();
+  const { projectId } = useParams();
+  const open = (id: string) => nav(`/p/${projectId}/d/${id}`);
+  const existing = generatedFrom(doc, specId, g.id);
+  const label = `${existing.length ? 'Mở' : 'Sinh'} ${g.prefix}`;
+  return (
+    <Button
+      size="sm"
+      variant="outline"
+      icon={<Workflow />}
+      disabled={readOnly && !existing.length}
+      title={
+        existing.length
+          ? `Đã sinh: ${existing.map((d) => d.name).join(', ')}`
+          : `Sinh ${g.prefix} Diagram từ đặc tả này`
+      }
+      onClick={(e) => {
+        if (!existing.length) return open(generateNew(doc, specId, g));
+        if (existing.length === 1 && readOnly) return open(existing[0].id);
+        openMenuAt(e.currentTarget, [
+          ...existing.map((d) => ({ label: `Mở “${d.name}”`, onSelect: () => open(d.id) })),
+          ...(readOnly
+            ? []
+            : [
+                { type: 'sep' as const },
+                {
+                  label: `Sinh ${g.prefix} mới (phiên bản khác)`,
+                  onSelect: () => open(generateNew(doc, specId, g, true)),
+                },
+              ]),
+        ]);
+      }}
+    >
+      {label}
+    </Button>
+  );
+}
+
 // ---------------- editor ----------------
 
 export function SpecEditor({ session, diagram, readOnly, setActions }: EditorProps) {
@@ -364,6 +410,28 @@ export function SpecEditor({ session, diagram, readOnly, setActions }: EditorPro
   }, [doc, diagram.id, ver]);
   const issues = useMemo(() => validateSpec(spec, { hasUseCase: !!uc }), [spec, uc]);
   const [focusId, setFocusId] = useState<string | null>(null);
+  const nav = useNavigate();
+  // đi từ sơ đồ sinh ra sang: tô và cuộn tới bước tương ứng
+  const focusReq = useStore(useFocusRequest, (x) => x.req);
+  useEffect(() => {
+    const stepId = takeFocus(diagram.id);
+    if (!stepId) return;
+    setFocusId(stepId);
+    requestAnimationFrame(() =>
+      document.querySelector(`[data-step="${stepId}"]`)?.scrollIntoView({ block: 'center', behavior: 'smooth' }),
+    );
+  }, [focusReq, diagram.id]);
+  /** Menu ⋯ của bước: Xem trên các sơ đồ sinh ra có hình của bước này. */
+  const stepMenu = (st: Step): MenuEntry[] =>
+    generatedFrom(doc, diagram.id)
+      .filter((d) => [...viewsMap(doc, d.id).values()].some((v) => v.props.sourceStepId === st.id))
+      .map((d) => ({
+        label: `Xem trên “${d.name}”`,
+        onSelect: () => {
+          useFocusRequest.getState().set({ diagramId: d.id, stepId: st.id });
+          nav(`/p/${session.projectId}/d/${d.id}`);
+        },
+      }));
   const [showIssues, setShowIssues] = useState(false);
   const center = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState('general');
@@ -451,7 +519,7 @@ export function SpecEditor({ session, diagram, readOnly, setActions }: EditorPro
       issues: issues.filter((i) => i.level !== 'info').length,
       extra: (
         <>
-          <DisabledGen label="Sinh Activity" />
+          <GenButton doc={doc} specId={diagram.id} g={ACTIVITY_GENERATOR} readOnly={readOnly} />
           <DisabledGen label="Sinh Sequence" />
           <Button
             size="sm"
@@ -603,6 +671,7 @@ export function SpecEditor({ session, diagram, readOnly, setActions }: EditorPro
             useCases={ucOptions}
             readOnly={readOnly}
             focusId={focusId}
+            stepMenu={stepMenu}
             {...flowOps(f)}
           />
           <div className={cn('spec-flow-end', invalidReturn && 'text-[var(--danger)]')}>
@@ -904,6 +973,7 @@ export function SpecEditor({ session, diagram, readOnly, setActions }: EditorPro
               useCases={ucOptions}
               readOnly={readOnly}
               focusId={focusId}
+              stepMenu={stepMenu}
               {...mainOps}
             />
             <p className="mt-1.5 text-[11.5px] text-muted">
