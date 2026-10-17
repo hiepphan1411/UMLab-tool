@@ -1,5 +1,5 @@
 // Trang quản trị UMLab: đăng nhập → Tổng quan (số tài khoản, project, sơ đồ, hoạt động) · Tài khoản (tìm, tạo, xem
-// lịch sử, đặt lại mật khẩu, đăng xuất mọi nơi).
+// sửa, xoá mềm / khôi phục, lịch sử, đặt lại mật khẩu, đăng xuất mọi nơi).
 import {
   Activity,
   ArrowLeft,
@@ -9,9 +9,12 @@ import {
   LayoutDashboard,
   LogOut,
   Network,
+  Pencil,
   Plus,
   RefreshCw,
+  RotateCcw,
   Search,
+  Trash2,
   UserPlus,
   Users,
   Wifi,
@@ -221,20 +224,82 @@ function CreateUser({ onDone }: { onDone: (created: UserRow | null) => void }) {
   );
 }
 
+function EditUser({ user, onDone }: { user: UserRow; onDone: (saved: boolean) => void }) {
+  const [name, setName] = useState(user.name);
+  const [email, setEmail] = useState(user.email);
+  const [username, setUsername] = useState(user.username === user.email ? '' : user.username);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const submit = async (e: FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    setError('');
+    try {
+      await api.updateUser(user.id, { name, email, username });
+      onDone(true);
+    } catch (err) {
+      setError((err as Error).message);
+      setBusy(false);
+    }
+  };
+  return (
+    <div className="overlay" role="dialog" aria-modal="true" aria-labelledby="eu-title">
+      <div className="modal">
+        <h2 id="eu-title">Sửa tài khoản</h2>
+        <form className="grid" onSubmit={(e) => void submit(e)}>
+          <label>
+            <span>Họ tên</span>
+            <input className="field" value={name} onChange={(e) => setName(e.target.value)} required autoFocus />
+          </label>
+          <label>
+            <span>Email</span>
+            <input className="field" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          </label>
+          <label>
+            <span>Tên đăng nhập (để trống = dùng email)</span>
+            <input
+              className="field"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder={email.trim().toLowerCase() || undefined}
+              autoComplete="off"
+              autoCapitalize="none"
+              spellCheck={false}
+            />
+          </label>
+          <p className="muted small">Mật khẩu giữ nguyên; người dùng không bị đăng xuất.</p>
+          {error && <p className="error">{error}</p>}
+          <div className="actions">
+            <button type="button" className="btn outline" onClick={() => onDone(false)}>
+              Huỷ
+            </button>
+            <button className="btn primary" disabled={busy}>
+              Lưu
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 function UsersPage() {
   const nav = useNavigate();
   const [q, setQ] = useState('');
   const [query, setQuery] = useState('');
   const [creating, setCreating] = useState(false);
+  const [deleted, setDeleted] = useState(false);
   useEffect(() => {
     const t = setTimeout(() => setQuery(q), 250);
     return () => clearTimeout(t);
   }, [q]);
-  const { data, error, reload } = useLoad<UserRow[]>(() => api.users(query), [query]);
+  const { data, error, reload } = useLoad<UserRow[]>(() => api.users(query, deleted), [query, deleted]);
   return (
     <>
       <header className="page-h">
-        <h1>Tài khoản {data && <span className="muted">({data.length})</span>}</h1>
+        <h1>
+          {deleted ? 'Tài khoản đã xoá' : 'Tài khoản'} {data && <span className="muted">({data.length})</span>}
+        </h1>
         <div className="search">
           <Search size={15} />
           <input
@@ -245,6 +310,10 @@ function UsersPage() {
             onChange={(e) => setQ(e.target.value)}
           />
         </div>
+        <label className="toggle">
+          <input type="checkbox" checked={deleted} onChange={(e) => setDeleted(e.target.checked)} />
+          Đã xoá
+        </label>
         <button className="btn primary" onClick={() => setCreating(true)}>
           <Plus size={15} /> Tạo tài khoản
         </button>
@@ -306,6 +375,27 @@ function UserPage() {
   const { id = '' } = useParams();
   const { data, error, reload } = useLoad<UserDetail>(() => api.user(id), [id]);
   const [notice, setNotice] = useState<ReactNode>(null);
+  const [editing, setEditing] = useState(false);
+  const act = async (run: () => Promise<unknown>, done: ReactNode) => {
+    try {
+      await run();
+      setNotice(done);
+      reload();
+    } catch (e) {
+      setNotice(<span className="error">{(e as Error).message}</span>);
+    }
+  };
+  const remove = () => {
+    if (
+      !confirm(
+        `Xoá tài khoản “${data?.user.name ?? ''}”?\n\nTài khoản bị đăng xuất ở mọi máy và không đăng nhập được nữa. ` +
+          'Project và dữ liệu vẫn giữ nguyên; khôi phục được trong mục “Đã xoá” ở danh sách tài khoản.',
+      )
+    )
+      return;
+    void act(() => api.deleteUser(id), 'Đã xoá tài khoản.');
+  };
+  const restore = () => void act(() => api.restoreUser(id), 'Đã khôi phục tài khoản, người dùng đăng nhập lại được.');
   const reset = async () => {
     if (!confirm('Đặt lại mật khẩu? Mật khẩu cũ không dùng được nữa và mọi máy đang đăng nhập sẽ bị đăng xuất.'))
       return;
@@ -349,6 +439,13 @@ function UserPage() {
       {error && <p className="error">{error}</p>}
       {data && (
         <>
+          {data.user.deleted && (
+            <p className="notice warn">
+              Tài khoản đã xoá lúc {fmtDate(data.user.deletedAt)}
+              {data.user.deletedBy && ` (bởi ${data.user.deletedBy})`}. Không đăng nhập được; project và dữ liệu vẫn giữ
+              nguyên.
+            </p>
+          )}
           <section className="stats">
             <Stat icon={<FolderKanban size={15} />} label="Project" value={data.projects.length} />
             <Stat
@@ -362,12 +459,26 @@ function UserPage() {
               <div className="muted small">Hoạt động gần nhất: {timeAgo(data.user.lastActive)}</div>
             </div>
             <div className="card stat actions-card">
-              <button className="btn outline" onClick={() => void reset()}>
-                <KeyRound size={15} /> Đặt lại mật khẩu
+              <button className="btn outline" onClick={() => setEditing(true)}>
+                <Pencil size={15} /> Sửa thông tin
               </button>
-              <button className="btn outline" onClick={() => void logoutAll()}>
-                <LogOut size={15} /> Đăng xuất mọi nơi
-              </button>
+              {data.user.deleted ? (
+                <button className="btn primary" onClick={restore}>
+                  <RotateCcw size={15} /> Khôi phục tài khoản
+                </button>
+              ) : (
+                <>
+                  <button className="btn outline" onClick={() => void reset()}>
+                    <KeyRound size={15} /> Đặt lại mật khẩu
+                  </button>
+                  <button className="btn outline" onClick={() => void logoutAll()}>
+                    <LogOut size={15} /> Đăng xuất mọi nơi
+                  </button>
+                  <button className="btn danger" onClick={remove}>
+                    <Trash2 size={15} /> Xoá tài khoản
+                  </button>
+                </>
+              )}
             </div>
           </section>
           {notice && <p className="notice">{notice}</p>}
@@ -414,6 +525,18 @@ function UserPage() {
               </table>
             </div>
           </section>
+          {editing && (
+            <EditUser
+              user={data.user}
+              onDone={(saved) => {
+                setEditing(false);
+                if (saved) {
+                  setNotice('Đã lưu thông tin tài khoản.');
+                  reload();
+                }
+              }}
+            />
+          )}
         </>
       )}
     </>

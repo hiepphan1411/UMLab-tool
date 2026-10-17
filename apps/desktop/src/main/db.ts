@@ -13,6 +13,9 @@ export interface UserDoc {
   tokenVersion: number;
   color: string;
   createdAt: Date;
+  /** Xoá mềm từ trang quản trị: không đăng nhập được, không mời vào project được; dữ liệu giữ nguyên. */
+  isDeleted?: boolean;
+  deletedAt?: Date;
 }
 
 export interface LoginAttemptDoc {

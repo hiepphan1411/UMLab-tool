@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { Logo } from '@/ui';
 import { ConnectionBadge } from '../shell/connection-badge';
 import { ThemeButton } from '../shell/theme-button';
 import { Spacer, TopBar } from '../shell/top-bar';
@@ -103,13 +104,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
           style={{ background: 'var(--accent-soft)' }}
         >
           <Illustration />
-          <div className="max-w-[420px] text-center">
-            <p className="text-[17px] font-semibold text-ink">Mô hình hoá cùng nhau, ngay trên máy của bạn</p>
-            <p className="mt-2 text-muted" style={{ lineHeight: 1.6 }}>
-              Use Case, đặc tả, Activity, Sequence, Class, ERD, kiến trúc và Gantt trong một project. Mọi thay đổi đồng
-              bộ tức thì tới cả nhóm.
-            </p>
-          </div>
+          <Logo height={52} />
         </aside>
       </div>
     </div>

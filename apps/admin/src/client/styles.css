@@ -52,6 +52,22 @@ h2 {
   border-radius: 8px;
   background: var(--accent-soft);
 }
+.notice.warn {
+  background: var(--panel-2);
+  border-left: 3px solid var(--danger);
+}
+.btn.danger {
+  background: var(--panel);
+  border-color: var(--line);
+  color: var(--danger);
+}
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  cursor: pointer;
+}
 .sr-only {
   position: absolute;
   width: 1px;

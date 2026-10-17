@@ -25,6 +25,7 @@ export class AdminError extends Error {
 }
 
 const DAY = 86_400_000;
+const ALIVE = { isDeleted: { $ne: true } };
 const COLORS = ['#2E62E6', '#D9463E', '#1F9D66', '#7C5CC4', '#D98A1C', '#0E8A9B', '#C2417E', '#4A6FA5'];
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const USERNAME = /^\S{3,200}$/;
@@ -65,11 +66,11 @@ export async function overview(db: Db, now = new Date()): Promise<Overview> {
   const since14 = new Date(now.getTime() - 13 * DAY);
   since14.setUTCHours(0, 0, 0, 0);
   const [users, projects, active, online, newUsers, perDay] = await Promise.all([
-    c.users.countDocuments(),
+    c.users.countDocuments(ALIVE),
     c.projects.find({}, { projection: { stats: 1 } }).toArray(),
     c.updates.distinct('userId', { kind: 'u', createdAt: { $gte: new Date(now.getTime() - 7 * DAY) } }),
     c.presence.distinct('userId', { updatedAt: { $gte: new Date(now.getTime() - 60_000) } }),
-    c.users.countDocuments({ createdAt: { $gte: new Date(now.getTime() - 30 * DAY) } }),
+    c.users.countDocuments({ ...ALIVE, createdAt: { $gte: new Date(now.getTime() - 30 * DAY) } }),
     c.updates
       .aggregate<{ _id: string; edits: number; users: string[] }>([
         { $match: { kind: 'u', createdAt: { $gte: since14 } } },
@@ -127,20 +128,25 @@ const row = (u: UserDoc, projects: Map<string, number>, last: Map<string, Date>)
   createdAt: u.createdAt.toISOString(),
   projects: projects.get(u._id) ?? 0,
   lastActive: last.get(u._id)?.toISOString() ?? null,
+  deleted: !!u.isDeleted,
+  deletedAt: u.deletedAt?.toISOString() ?? null,
+  deletedBy: u.deletedBy ?? null,
 });
 
-export async function listUsers(db: Db, q = ''): Promise<UserRow[]> {
+/** `deleted`: true → chỉ tài khoản đã xoá (mềm), false → chỉ tài khoản còn dùng. */
+export async function listUsers(db: Db, q = '', deleted = false): Promise<UserRow[]> {
   const k = q.trim();
   const esc = k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const filter = k
-    ? {
-        $or: [
-          { email: { $regex: esc, $options: 'i' } },
-          { username: { $regex: esc, $options: 'i' } },
-          { name: { $regex: esc, $options: 'i' } },
-        ],
-      }
-    : {};
+  const filter = {
+    isDeleted: deleted ? true : { $ne: true },
+    ...(k && {
+      $or: [
+        { email: { $regex: esc, $options: 'i' } },
+        { username: { $regex: esc, $options: 'i' } },
+        { name: { $regex: esc, $options: 'i' } },
+      ],
+    }),
+  };
   const users = await col(db).users.find(filter).sort({ createdAt: -1 }).limit(500).toArray();
   const ids = users.map((u) => u._id);
   const [projects, last] = await Promise.all([projectCounts(db, ids), lastActive(db, ids)]);
@@ -150,6 +156,9 @@ export async function listUsers(db: Db, q = ''): Promise<UserRow[]> {
 const AUDIT_TEXT: Record<string, (m: Record<string, string>) => string> = {
   register: () => 'Đăng ký tài khoản',
   adminCreated: (m) => `Được tạo bởi quản trị${m.by ? ` (${m.by})` : ''}`,
+  adminUpdated: (m) => `Sửa thông tin${m.changes ? `: ${m.changes}` : ''}${m.by ? ` (bởi ${m.by})` : ''}`,
+  adminDeleted: (m) => `Tài khoản bị xoá${m.by ? ` (bởi ${m.by})` : ''}`,
+  adminRestored: (m) => `Tài khoản được khôi phục${m.by ? ` (bởi ${m.by})` : ''}`,
   login: () => 'Đăng nhập',
   logout: () => 'Đăng xuất',
   logoutAll: (m) => `Đăng xuất mọi thiết bị${m.by ? ` (bởi ${m.by})` : ''}`,
@@ -230,6 +239,50 @@ export async function userDetail(db: Db, id: string, limit = 200): Promise<UserD
   };
 }
 
+interface Identity {
+  name: string;
+  email: string;
+  username: string;
+}
+
+/** Họ tên / email / tên đăng nhập (trống = email) đã chuẩn hoá; ném 400 nếu sai, 409 nếu trùng tài khoản khác. */
+async function checkIdentity(
+  db: Db,
+  input: { name?: unknown; email?: unknown; username?: unknown },
+  selfId?: string,
+): Promise<Identity> {
+  const name = String(input.name ?? '').trim();
+  const email = String(input.email ?? '')
+    .trim()
+    .toLowerCase();
+  if (name.length < 2 || name.length > 60) throw new AdminError(400, 'Họ tên cần 2–60 ký tự.');
+  if (!EMAIL.test(email)) throw new AdminError(400, 'Email không hợp lệ.');
+  const username =
+    String(input.username ?? '')
+      .trim()
+      .toLowerCase() || email;
+  if (!USERNAME.test(username)) throw new AdminError(400, 'Tên đăng nhập cần ít nhất 3 ký tự, không có khoảng trắng.');
+  // App đăng nhập bằng email hoặc tên đăng nhập → hai giá trị không được trùng giá trị nào của tài khoản khác,
+  // kể cả tài khoản đã xoá mềm (khôi phục lại sẽ đụng nhau)
+  const taken = await col(db).users.findOne(
+    {
+      ...(selfId && { _id: { $ne: selfId } }),
+      $or: [{ email }, { username: email }, { email: username }, { username }],
+    },
+    { projection: { email: 1, username: 1, isDeleted: 1 } },
+  );
+  if (taken) {
+    const what = taken.email === email || taken.username === email ? 'Email' : 'Tên đăng nhập';
+    throw new AdminError(
+      409,
+      taken.isDeleted
+        ? `${what} này thuộc một tài khoản đã xoá — khôi phục tài khoản đó trong mục “Đã xoá”.`
+        : `${what} này đã được dùng.`,
+    );
+  }
+  return { name, email, username };
+}
+
 /**
  * Tạo tài khoản (cùng luật & cách băm mật khẩu với app). Không nhập mật khẩu → sinh mật khẩu tạm; không nhập tên đăng
  * nhập → dùng email.
@@ -239,34 +292,12 @@ export async function createUser(
   input: { name?: unknown; email?: unknown; username?: unknown; password?: unknown },
   by: string,
 ): Promise<{ user: UserRow; tempPassword?: string }> {
-  const name = String(input.name ?? '').trim();
-  const email = String(input.email ?? '')
-    .trim()
-    .toLowerCase();
   const given = typeof input.password === 'string' && input.password ? input.password : '';
-  if (name.length < 2 || name.length > 60) throw new AdminError(400, 'Họ tên cần 2–60 ký tự.');
-  if (!EMAIL.test(email)) throw new AdminError(400, 'Email không hợp lệ.');
-  const username =
-    String(input.username ?? '')
-      .trim()
-      .toLowerCase() || email;
-  if (!USERNAME.test(username)) throw new AdminError(400, 'Tên đăng nhập cần ít nhất 3 ký tự, không có khoảng trắng.');
   const password = given || tempPassword();
   const problem = passwordProblem(password);
   if (problem) throw new AdminError(400, problem);
+  const { name, email, username } = await checkIdentity(db, input);
   const c = col(db);
-  // App đăng nhập bằng email hoặc tên đăng nhập → hai giá trị mới không được trùng giá trị nào của tài khoản khác
-  const taken = await c.users.findOne(
-    { $or: [{ email }, { username: email }, { email: username }, { username }] },
-    { projection: { email: 1, username: 1 } },
-  );
-  if (taken)
-    throw new AdminError(
-      409,
-      taken.email === email || taken.username === email
-        ? 'Email này đã có tài khoản.'
-        : 'Tên đăng nhập này đã được dùng.',
-    );
   let h = 0;
   for (const ch of email) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
   const doc: UserDoc = {
@@ -294,6 +325,71 @@ export async function createUser(
     at: new Date(),
   });
   return { user: row(doc, new Map(), new Map()), ...(given ? {} : { tempPassword: password }) };
+}
+
+const auditOf = (userId: string, kind: string, meta: Record<string, string>): AuditDoc => ({
+  _id: `al_${randomBytes(8).toString('hex')}`,
+  userId,
+  kind,
+  meta,
+  at: new Date(),
+});
+
+/** Sửa họ tên / email / tên đăng nhập. Không đổi mật khẩu, không đăng xuất (app nhận hồ sơ mới qua change stream). */
+export async function updateUser(
+  db: Db,
+  id: string,
+  input: { name?: unknown; email?: unknown; username?: unknown },
+  by: string,
+): Promise<UserRow> {
+  const c = col(db);
+  const u = await c.users.findOne({ _id: id });
+  if (!u) throw new AdminError(404, 'Tài khoản không tồn tại.');
+  const next = await checkIdentity(db, input, id);
+  const before: Identity = { name: u.name, email: u.email, username: u.username ?? u.email };
+  const LABEL: Record<keyof Identity, string> = { name: 'họ tên', email: 'email', username: 'tên đăng nhập' };
+  const changed = (Object.keys(LABEL) as (keyof Identity)[]).filter((k) => before[k] !== next[k]);
+  if (changed.length) {
+    try {
+      await c.users.updateOne({ _id: id }, { $set: next });
+    } catch (e) {
+      if ((e as { code?: number }).code === 11000)
+        throw new AdminError(409, 'Email hoặc tên đăng nhập này đã có tài khoản.');
+      throw e;
+    }
+    await c.audit.insertOne(auditOf(id, 'adminUpdated', { by, changes: changed.map((k) => LABEL[k]).join(', ') }));
+  }
+  const [projects, last] = await Promise.all([projectCounts(db, [id]), lastActive(db, [id])]);
+  return row({ ...u, ...next }, projects, last);
+}
+
+/**
+ * Xoá mềm: đánh dấu isDeleted + tăng tokenVersion (máy đang mở app bị đăng xuất ngay). Không đụng project / dữ liệu,
+ * khôi phục là dùng lại như cũ. Không cho xoá tài khoản đang dùng để đăng nhập trang quản trị.
+ */
+export async function deleteUser(db: Db, id: string, by: string): Promise<void> {
+  const c = col(db);
+  const u = await c.users.findOne({ _id: id }, { projection: { email: 1, isDeleted: 1 } });
+  if (!u) throw new AdminError(404, 'Tài khoản không tồn tại.');
+  if (u.email === by) throw new AdminError(400, 'Không xoá được tài khoản bạn đang dùng để quản trị.');
+  if (u.isDeleted) return;
+  await c.users.updateOne(
+    { _id: id },
+    { $set: { isDeleted: true, deletedAt: new Date(), deletedBy: by }, $inc: { tokenVersion: 1 } },
+  );
+  await c.presence.deleteMany({ userId: id });
+  await c.audit.insertOne(auditOf(id, 'adminDeleted', { by }));
+}
+
+export async function restoreUser(db: Db, id: string, by: string): Promise<void> {
+  const c = col(db);
+  const r = await c.users.updateOne(
+    { _id: id, isDeleted: true },
+    { $unset: { isDeleted: '', deletedAt: '', deletedBy: '' } },
+  );
+  if (r.matchedCount) await c.audit.insertOne(auditOf(id, 'adminRestored', { by }));
+  else if (!(await c.users.findOne({ _id: id }, { projection: { _id: 1 } })))
+    throw new AdminError(404, 'Tài khoản không tồn tại.');
 }
 
 /** Đặt lại mật khẩu → mật khẩu tạm; thu hồi mọi phiên của tài khoản. */

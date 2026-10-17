@@ -64,7 +64,7 @@ export async function login(db: Db, cfg: AdminConfig, emailRaw: unknown, passwor
     throw fail();
   }
   if (!cfg.adminEmails.includes(email)) throw fail();
-  const u = await db.collection<UserDoc>('users').findOne({ email });
+  const u = await db.collection<UserDoc>('users').findOne({ email, isDeleted: { $ne: true } });
   const ok = !!u && (await argon2Verify({ password: pw, hash: u.passwordHash }).catch(() => false));
   if (!ok) throw fail();
   tries.delete(email);

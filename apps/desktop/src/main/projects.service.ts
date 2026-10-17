@@ -353,7 +353,9 @@ class ProjectsService {
   async addMember(id: string, email: string, role: Role): Promise<ProjectSummary> {
     const { project, user } = await this.access(id, 'owner');
     if (role === 'owner') fail('VALIDATION', 'Chỉ có một chủ project.');
-    const target = await database.users().findOne({ email: String(email).trim().toLowerCase() });
+    const target = await database
+      .users()
+      .findOne({ email: String(email).trim().toLowerCase(), isDeleted: { $ne: true } });
     if (!target) fail('NOT_FOUND', 'Chưa có tài khoản UMLab nào dùng email này. Người đó cần đăng ký trước.');
     if (project.memberIds.includes(target!._id)) fail('CONFLICT', `${target!.name} đã là thành viên.`);
     await database.projects().updateOne(

@@ -142,7 +142,7 @@ class AuthService {
 
   private applyUserDoc(u: UserDoc | null): void {
     if (!this.session) return;
-    if (!u) return this.clear('Tài khoản không còn tồn tại.');
+    if (!u || u.isDeleted) return this.clear('Tài khoản không còn tồn tại hoặc đã bị quản trị xoá.');
     if (u.tokenVersion !== this.session.tv)
       return this.clear('Phiên đăng nhập đã hết hiệu lực (mật khẩu vừa đổi hoặc đã đăng xuất mọi thiết bị).');
     this.user = u;
@@ -159,7 +159,7 @@ class AuthService {
       fail('OFFLINE', 'Chưa kết nối được cơ sở dữ liệu.');
     }
     const u = await database.users().findOne({ _id: s!.userId });
-    if (!u || u.tokenVersion !== s!.tv) {
+    if (!u || u.isDeleted || u.tokenVersion !== s!.tv) {
       this.clear('Phiên đăng nhập đã hết hiệu lực.');
       fail('UNAUTHORIZED', 'Phiên đăng nhập đã hết hiệu lực, hãy đăng nhập lại.');
     }
@@ -243,7 +243,9 @@ class AuthService {
     const login = parse(loginSchema, input.login);
     if (typeof input.password !== 'string' || !input.password) fail('VALIDATION', 'Hãy nhập mật khẩu');
     await this.checkRate(login);
-    const u = await database.users().findOne({ $or: [{ username: login }, { email: login }] });
+    const u = await database
+      .users()
+      .findOne({ $or: [{ username: login }, { email: login }], isDeleted: { $ne: true } });
     const ok = !!u && (await verifyPassword(input.password, u.passwordHash));
     if (!ok || !u) {
       await this.recordFailure(login);

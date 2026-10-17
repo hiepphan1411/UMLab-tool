@@ -1,7 +1,7 @@
 {
   "name": "@umlab/desktop",
   "productName": "UMLab",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "UMLab — vẽ sơ đồ UML, kiến trúc, ERD, Gantt; cộng tác thời gian thực",
   "author": "Phan Phuoc Hiep",

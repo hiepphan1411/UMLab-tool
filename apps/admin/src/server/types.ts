@@ -11,6 +11,10 @@ export interface UserDoc {
   tokenVersion: number;
   color: string;
   createdAt: Date;
+  /** Xoá mềm: không đăng nhập được, ẩn khỏi danh sách; dữ liệu & project giữ nguyên để khôi phục. */
+  isDeleted?: boolean;
+  deletedAt?: Date;
+  deletedBy?: string;
 }
 
 export interface ProjectDoc {
@@ -82,6 +86,9 @@ export interface UserRow {
   createdAt: string;
   projects: number;
   lastActive: string | null;
+  deleted: boolean;
+  deletedAt: string | null;
+  deletedBy: string | null;
 }
 
 export interface HistoryItem {

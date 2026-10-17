@@ -20,13 +20,18 @@ export const api = {
   login: (email: string, password: string) => req<{ user: string }>('POST', '/api/login', { email, password }),
   logout: () => req<{ ok: true }>('POST', '/api/logout'),
   overview: () => req<Overview>('GET', '/api/overview'),
-  users: (q = '') => req<UserRow[]>('GET', `/api/users?q=${encodeURIComponent(q)}`),
+  users: (q = '', deleted = false) =>
+    req<UserRow[]>('GET', `/api/users?q=${encodeURIComponent(q)}${deleted ? '&deleted=1' : ''}`),
   createUser: (input: { name: string; email: string; username: string; password: string }) =>
     req<{ user: UserRow; tempPassword?: string }>('POST', '/api/users', input),
   user: (id: string) => req<UserDetail>('GET', `/api/users/${encodeURIComponent(id)}`),
   resetPassword: (id: string) =>
     req<{ tempPassword: string }>('POST', `/api/users/${encodeURIComponent(id)}/reset-password`),
   logoutAll: (id: string) => req<{ ok: true }>('POST', `/api/users/${encodeURIComponent(id)}/logout-all`),
+  updateUser: (id: string, input: { name: string; email: string; username: string }) =>
+    req<UserRow>('POST', `/api/users/${encodeURIComponent(id)}/update`, input),
+  deleteUser: (id: string) => req<{ ok: true }>('POST', `/api/users/${encodeURIComponent(id)}/delete`),
+  restoreUser: (id: string) => req<{ ok: true }>('POST', `/api/users/${encodeURIComponent(id)}/restore`),
 };
 
 export const fmtDate = (iso: string | null) => (iso ? new Date(iso).toLocaleString('vi-VN') : '—');

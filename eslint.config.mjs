@@ -10,6 +10,7 @@ export default tseslint.config(
       '**/out/**',
       '**/dist/**',
       '**/release/**',
+      '.vercel/**',
       'docs/**',
       'packages/uml-icons/src/index.ts',
       '**/*.d.ts',

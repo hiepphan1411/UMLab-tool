@@ -5,7 +5,18 @@ import type { IncomingMessage, ServerResponse } from 'node:http';
 import type { Db } from 'mongodb';
 import { COOKIE, configured, issue, login, parseCookies, verify } from './auth';
 import type { AdminConfig } from './config';
-import { AdminError, createUser, listUsers, logoutEverywhere, overview, resetUserPassword, userDetail } from './data';
+import {
+  AdminError,
+  createUser,
+  deleteUser,
+  listUsers,
+  logoutEverywhere,
+  overview,
+  resetUserPassword,
+  restoreUser,
+  updateUser,
+  userDetail,
+} from './data';
 
 const MAX_BODY = 64 * 1024;
 
@@ -79,14 +90,14 @@ export function createApi(db: Db, cfg: AdminConfig) {
         return true;
       }
       if (path === '/api/users' && method === 'GET') {
-        send(res, 200, await listUsers(db, url.searchParams.get('q') ?? ''));
+        send(res, 200, await listUsers(db, url.searchParams.get('q') ?? '', url.searchParams.get('deleted') === '1'));
         return true;
       }
       if (path === '/api/users' && method === 'POST') {
         send(res, 201, await createUser(db, await readJson(req), who));
         return true;
       }
-      const m = /^\/api\/users\/([\w-]+)(?:\/(reset-password|logout-all))?$/.exec(path);
+      const m = /^\/api\/users\/([\w-]+)(?:\/(reset-password|logout-all|update|delete|restore))?$/.exec(path);
       if (m && !m[2] && method === 'GET') {
         send(res, 200, await userDetail(db, m[1]));
         return true;
@@ -97,6 +108,20 @@ export function createApi(db: Db, cfg: AdminConfig) {
       }
       if (m && m[2] === 'logout-all' && method === 'POST') {
         await logoutEverywhere(db, m[1], who);
+        send(res, 200, { ok: true });
+        return true;
+      }
+      if (m && m[2] === 'update' && method === 'POST') {
+        send(res, 200, await updateUser(db, m[1], await readJson(req), who));
+        return true;
+      }
+      if (m && m[2] === 'delete' && method === 'POST') {
+        await deleteUser(db, m[1], who);
+        send(res, 200, { ok: true });
+        return true;
+      }
+      if (m && m[2] === 'restore' && method === 'POST') {
+        await restoreUser(db, m[1], who);
         send(res, 200, { ok: true });
         return true;
       }

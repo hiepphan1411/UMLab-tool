@@ -2,6 +2,17 @@
 
 Mỗi phase hoàn thành thêm một mục: `## P0x — tên phase (ngày)` + danh sách thay đổi chính.
 
+## 0.2.0 — Sửa / xoá mềm tài khoản, màn đăng nhập (2026-10-17)
+
+- **Trang quản trị → chi tiết tài khoản:** **Sửa thông tin** (họ tên, email, tên đăng nhập; kiểm trùng như khi tạo,
+  không đổi mật khẩu, không đăng xuất), **Xoá tài khoản** (xoá mềm: `isDeleted`, `deletedAt`, `deletedBy` + tăng
+  `tokenVersion`) và **Khôi phục**. Danh sách có bộ lọc **Đã xoá**; tổng quan không đếm tài khoản đã xoá. Lịch sử ghi
+  “Sửa thông tin…”, “Tài khoản bị xoá”, “Tài khoản được khôi phục”.
+- **App:** tài khoản đã xoá không đăng nhập được, máy đang mở bị đăng xuất ngay (change stream), không mời vào project
+  được. Project và dữ liệu giữ nguyên. Email / tên đăng nhập của tài khoản đã xoá vẫn bị giữ chỗ (khôi phục không đụng
+  nhau).
+- **Màn đăng nhập / đăng ký:** panel bên phải bỏ dòng giới thiệu, thay bằng logo dưới hình minh hoạ.
+
 ## Triển khai trang quản trị lên Vercel, sửa đóng gói .exe (2026-10-17)
 
 - **Vercel:** `npm run admin:vercel` build theo Build Output API → `.vercel/output` (giao diện tĩnh + một function

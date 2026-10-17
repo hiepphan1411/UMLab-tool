@@ -203,6 +203,25 @@ describe('trang quản trị — số liệu & tài khoản', () => {
     expect((await dup('', 'lan.le')).status).toBe(400);
     expect((await dup('co khoang')).status).toBe(400);
 
+    // sửa; xoá mềm (ẩn khỏi danh sách, tăng tokenVersion, giữ email); khôi phục
+    const lid = lan.data.user.id;
+    const edit = (body: Record<string, string>) => call<UserRow>('POST', `/api/users/${lid}/update`, body);
+    expect((await edit({ name: 'Lê Thị Lan', email: 'lan@umlab.vn', username: 'an@umlab.vn' })).status).toBe(409);
+    expect((await edit({ name: 'Lê Thị Lan', email: 'lan@umlab.vn', username: 'lanle' })).data).toMatchObject({
+      name: 'Lê Thị Lan',
+      username: 'lanle',
+    });
+    expect((await call('POST', `/api/users/${lid}/delete`)).status).toBe(200);
+    expect((await call<UserRow[]>('GET', '/api/users?q=lan')).data).toEqual([]);
+    expect((await call<UserRow[]>('GET', '/api/users?q=lan&deleted=1')).data[0]).toMatchObject({ deleted: true });
+    expect(await db.collection<{ _id: string }>('users').findOne({ _id: lid })).toMatchObject({
+      isDeleted: true,
+      tokenVersion: 1,
+    });
+    expect((await dup('lanle')).status).toBe(409);
+    await call('POST', `/api/users/${lid}/restore`);
+    expect((await call<UserRow[]>('GET', '/api/users?q=lanle')).data.map((u) => u.deleted)).toEqual([false]);
+
     const an = await call<UserDetail>('GET', '/api/users/u_an');
     expect(an.data.projects.map((p) => [p.name, p.role])).toEqual([
       ['UniPark+', 'owner'],
