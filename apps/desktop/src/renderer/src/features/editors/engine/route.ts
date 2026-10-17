@@ -5,7 +5,6 @@ import {
   autoOrtho,
   center,
   cleanPts,
-  curvedPts,
   diamondBoundary,
   ellipseBoundary,
   selfLoopPts,
@@ -166,7 +165,7 @@ export function routeConnector(c: Connector, env: RouteEnv): Routed | null {
     return { pts: cleanPts(orthoJoin(src, inner, tgt)), src, tgt, curved: false };
   }
   if (c.routing === 'straight') return { pts: [src.pt, tgt.pt], src, tgt, curved: false };
-  if (c.routing === 'curved') return { pts: curvedPts(src.pt, src.side, tgt.pt, tgt.side), src, tgt, curved: true };
+  // kiểu nối cong đã bỏ — tệp cũ có routing 'curved' được vẽ như vuông góc
   const s1 = src.side ?? 'right';
   const s2 = tgt.side ?? 'left';
   const exclude = [c.source.viewId, c.target.viewId].filter(Boolean) as string[];

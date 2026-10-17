@@ -68,3 +68,24 @@ npm run dist                # → apps/desktop/release/<version>/UMLab-Setup-<ve
     mạng lại (thẻ project hiện “chưa đồng bộ” với project tạo khi offline).
   - Icon vàng: độ trễ tới MongoDB ≥ 600 ms hoặc đang gửi các thay đổi chờ.
   - “Bạn thử quá nhiều lần”: sai mật khẩu 6 lần → chờ 1 phút (hoặc dùng `reset-password`).
+
+## 4. Trang quản trị (web, cổng 5176)
+
+`apps/admin` — trang web xem **tổng quan** (số tài khoản, project, sơ đồ theo loại, số thay đổi 14 ngày, tài khoản hoạt
+động, đang online), **danh sách tài khoản** (tìm, tạo tài khoản), **lịch sử từng tài khoản** (tạo tài khoản, đăng nhập /
+đăng xuất, đổi / đặt lại mật khẩu, tạo / xoá project, chỉnh sửa theo project × ngày, lưu phiên bản), đặt lại mật khẩu và
+đăng xuất mọi nơi. Đọc thẳng cùng database MongoDB với app desktop.
+
+```bash
+# .env ở gốc repo: UMLAB_MONGO_URI, UMLAB_DB và UMLAB_ADMIN_EMAILS (hoặc UMLAB_ADMIN_PASSWORD) — xem .env.example
+npm run admin                 # chế độ phát triển → http://127.0.0.1:5176 (giao diện tự nạp lại khi sửa code)
+npm run admin:build && npm run admin:start   # bản build
+```
+
+- **Ai vào được:** tài khoản UMLab có email trong `UMLAB_ADMIN_EMAILS` (mật khẩu của chính tài khoản), hoặc tên `admin`
+  với `UMLAB_ADMIN_PASSWORD`. Sai 5 lần → chờ 1 phút. Phiên là cookie HttpOnly, SameSite=Strict, hết hạn sau 8 giờ;
+  request ghi cần header `X-UMLab-Admin` (chống CSRF).
+- **Chỉ nghe trên máy này** (`127.0.0.1`) theo mặc định. Muốn mở trong mạng LAN: `UMLAB_ADMIN_HOST=0.0.0.0` — khi đó
+  đặt `UMLAB_ADMIN_SECRET` cố định và chỉ mở sau tường lửa / VPN (trang không có HTTPS riêng).
+- Lịch sử đăng nhập / đổi mật khẩu / tạo-xoá project được app desktop ghi vào collection `audit_log` từ bản này trở đi;
+  hoạt động chỉnh sửa trước đó vẫn xem được (lấy từ `project_updates`).

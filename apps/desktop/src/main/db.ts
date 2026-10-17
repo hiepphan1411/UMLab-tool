@@ -69,6 +69,26 @@ export interface VersionDoc {
   createdAt: Date;
 }
 
+/** Sự kiện trong lịch sử tài khoản (collection audit_log). */
+export type AuditKind =
+  | 'register'
+  | 'login'
+  | 'logout'
+  | 'logoutAll'
+  | 'passwordChanged'
+  | 'passwordReset'
+  | 'adminCreated'
+  | 'projectCreated'
+  | 'projectDeleted';
+
+export interface AuditDoc {
+  _id: string;
+  userId: string;
+  kind: AuditKind;
+  meta: Record<string, string>;
+  at: Date;
+}
+
 export interface AssetDoc {
   _id: string;
   projectId: string;
@@ -216,6 +236,7 @@ class Database {
       db.collection('presence').createIndex({ updatedAt: 1 }, { expireAfterSeconds: 60 }),
       db.collection('diagram_versions').createIndex({ projectId: 1, diagramId: 1, createdAt: -1 }),
       db.collection('assets').createIndex({ projectId: 1 }),
+      db.collection('audit_log').createIndex({ userId: 1, at: -1 }),
     ]).catch((e) => console.warn('[umlab] createIndex', e));
   }
 
@@ -253,6 +274,7 @@ class Database {
   presence = () => this.col<PresenceDoc>('presence');
   versions = () => this.col<VersionDoc>('diagram_versions');
   assets = () => this.col<AssetDoc>('assets');
+  audit = () => this.col<AuditDoc>('audit_log');
 }
 
 export function friendlyError(msg: string): string {

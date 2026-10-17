@@ -119,7 +119,10 @@ export function CanvasEditor(props: EditorProps & { options?: CanvasEditorOption
     () => new Engine(session, diagram.id, diagram.type, readOnly, user?.id ?? ''),
     [session, diagram.id, diagram.type, readOnly, user?.id],
   );
-  useEffect(() => () => engine.destroy(), [engine]);
+  useEffect(() => {
+    engine.attach();
+    return () => engine.destroy();
+  }, [engine]);
   const stopUndo = props.undo.stop;
   useEffect(() => {
     engine.undoBoundary = stopUndo;

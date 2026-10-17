@@ -3,6 +3,7 @@
 // (kèm bản tóm tắt project + vai trò để mở được khi mất mạng).
 import { app } from 'electron';
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
+import { mkdir, rename, writeFile } from 'node:fs/promises';
 import { basename, dirname, join } from 'node:path';
 import * as Y from 'yjs';
 import type { ProjectSummary } from '@shared/api';
@@ -187,7 +188,7 @@ class LocalStore {
       projectId,
       setTimeout(() => {
         this.timers.delete(projectId);
-        this.saveNow(projectId);
+        void this.saveAsync(projectId);
       }, SAVE_MS),
     );
   }
@@ -204,6 +205,40 @@ class LocalStore {
     for (const id of [...this.timers.keys()]) this.flush(id);
   }
 
+  private body(projectId: string, e: LocalEntry): LocalFile {
+    return {
+      format: LOCAL_FORMAT,
+      version: 1,
+      projectId,
+      name: e.project.name,
+      savedAt: new Date().toISOString(),
+      state: Buffer.from(this.state(projectId)).toString('base64'),
+    };
+  }
+
+  private writing = new Map<string, Promise<void>>();
+
+  /** Ghi định kỳ: bất đồng bộ để không chặn main process (main bị chặn = cả cửa sổ Electron đứng). */
+  private async saveAsync(projectId: string): Promise<void> {
+    await this.writing.get(projectId); // ghi lần lượt, không chồng tệp tạm
+    const e = this.get(projectId);
+    if (!e) return;
+    const job = (async () => {
+      try {
+        await mkdir(dirname(e.file), { recursive: true });
+        const tmp = e.file + '.saving'; // khác tệp tạm của saveNow → không đụng nhau
+        await writeFile(tmp, JSON.stringify(this.body(projectId, e)));
+        await rename(tmp, e.file);
+      } catch (err) {
+        console.warn('[local] save', err);
+      }
+    })();
+    this.writing.set(projectId, job);
+    await job;
+    if (this.writing.get(projectId) === job) this.writing.delete(projectId);
+  }
+
+  /** Ghi ngay, đồng bộ (đóng project, thoát app, chuyển thư mục). */
   private saveNow(projectId: string): void {
     const e = this.get(projectId);
     if (!e) return;

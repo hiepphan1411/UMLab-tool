@@ -2,6 +2,29 @@
 
 Mỗi phase hoàn thành thêm một mục: `## P0x — tên phase (ngày)` + danh sách thay đổi chính.
 
+## Sửa lỗi vẽ bị treo, bỏ nối cong, icon một màu, trang quản trị (2026-10-17)
+
+- **Sửa lỗi “vẽ không thấy thay đổi, phải thoát ra vào lại”** (chế độ `npm run dev`): `React.StrictMode` chạy effect
+  mount → cleanup → mount; cleanup gọi `engine.destroy()` gỡ hết bộ theo dõi Y.Doc mà không gắn lại → thao tác vẫn ghi
+  vào tài liệu và tệp `.umlab` nhưng canvas không bao giờ cập nhật (không phải do MongoDB chậm). Engine tách `attach()`
+  (gọi lại được) / `destroy()`; cùng loại lỗi ở **Undo** (UndoManager bị huỷ → Ctrl+Z không chạy) và **ô sửa chữ** (đóng
+  ngay khi vừa mở) cũng đã sửa. Thêm `npm run e2e:dev -w @umlab/desktop`: chạy bộ E2E trên bản React development
+  (StrictMode thật) để bắt loại lỗi này — đã tái hiện lỗi trên code cũ và xác nhận bản sửa (24/24 test chức năng xanh).
+- **Bớt giật:** tệp `.umlab` ghi định kỳ bằng I/O bất đồng bộ (trước là `writeFileSync` mỗi 400 ms trên main process —
+  main bị chặn thì cả cửa sổ Electron đứng, rõ với project nhiều ảnh); vẫn ghi đồng bộ khi đóng project / thoát app.
+- **Bỏ kiểu nối cong:** Inspector còn Vuông / Thông minh / Thẳng; tệp cũ có đường cong được vẽ thành vuông góc.
+- **Icon loại sơ đồ một màu** (accent của theme) ở “Tạo sơ đồ mới”, thống kê, ảnh thu nhỏ.
+- **Trang quản trị web** `apps/admin` — `npm run admin` → `http://127.0.0.1:5176`: Tổng quan (tài khoản, project, sơ đồ,
+  sơ đồ theo loại, số thay đổi 14 ngày, tài khoản hoạt động 7 ngày, đang online), Tài khoản (tìm, **tạo tài khoản** —
+  mật khẩu tự đặt hoặc mật khẩu tạm), **lịch sử tài khoản**, đặt lại mật khẩu, đăng xuất mọi nơi. Đăng nhập bằng tài khoản
+  UMLab trong `UMLAB_ADMIN_EMAILS` hoặc `admin` + `UMLAB_ADMIN_PASSWORD`; cookie HttpOnly / SameSite=Strict, chống CSRF
+  bằng header, chặn đoán mật khẩu, mặc định chỉ nghe `127.0.0.1` (docs/DEPLOY.md mục 4).
+- App desktop ghi **nhật ký tài khoản** (`audit_log`): đăng ký, đăng nhập, đăng xuất, đăng xuất mọi nơi, đổi mật khẩu,
+  tạo / xoá project; `npm run reset-password` ghi “mật khẩu được đặt lại”.
+- Test: admin `admin.test.ts` (3 test: đăng nhập / CSRF / quyền, tổng quan, tạo tài khoản + lịch sử + đặt lại mật khẩu +
+  đăng xuất mọi nơi), Playwright `apps/admin/e2e/admin.spec.ts` (đăng nhập → tổng quan → tạo tài khoản → lịch sử → đặt lại
+  mật khẩu).
+
 ## P13 — Hoàn thiện & đóng gói (2026-10-17)
 
 - **Hiệu năng (đo bằng CPU profile):** (1) mảng “cầu nhảy” của từng đường nối được ghi nhớ — trước đó mỗi lần canvas render (kể cả rê chuột) tạo mảng mới cho mọi `ConnectorView`, phá memo và chạy lại `jumpPath` cho toàn bộ đường; cầu nhảy tắt tạm trong lúc kéo; (2) khi kéo chỉ định tuyến lại đường nối gắn với hình đang dời; khi dữ liệu đổi chỉ tính lại đường có đầu mút đổi hoặc nằm gần hình vừa đổi; (3) A* né hình chỉ xét vật cản trong hành lang quanh hai đầu mút, danh sách vật cản tính một lần mỗi lượt. Kết quả: 300 hình / 400 nối kéo **~57 → ~19 ms/bước** (mức nền của Playwright ~17 ms), **1.000 hình / 1.200 nối mở ~3 s, kéo ~48 ms/bước** (trước 127). **Tách mã theo loại sơ đồ:** mỗi editor là một chunk riêng, nạp khi mở sơ đồ / chọn loại khi tạo / dựng ảnh thu nhỏ (`ensureEditor`, `useEditorReady`, `useEditorsLoaded`) — bundle chính 4,0 → 2,6 MB. **Cây thư mục lớn:** cuộn ảo từ 300 hàng (chỉ render hàng trong khung nhìn, phím ↑↓ vẫn cuộn tới).

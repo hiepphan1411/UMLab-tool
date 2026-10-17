@@ -274,7 +274,7 @@ function ConnInspector({ engine, conn }: { engine: Engine; conn: Connector }) {
   const model = conn.modelId ? engine.lookup.model(conn.modelId) : null;
   const ro = engine.readOnly;
   const Custom = def?.inspector;
-  const routing = conn.waypoints.length ? 'manual' : conn.routing;
+  const routing = conn.waypoints.length ? 'manual' : conn.routing === 'curved' ? 'orthogonal' : conn.routing;
   return (
     <>
       <Group2 title={def?.label ?? conn.kind}>
@@ -303,7 +303,6 @@ function ConnInspector({ engine, conn }: { engine: Engine; conn: Connector }) {
                 { value: 'orthogonal', label: 'Vuông', title: 'Vuông góc' },
                 { value: 'smart', label: 'Thông minh', title: 'Vuông góc, né các khối' },
                 { value: 'straight', label: 'Thẳng' },
-                { value: 'curved', label: 'Cong' },
               ]}
             />
             {routing === 'manual' && (

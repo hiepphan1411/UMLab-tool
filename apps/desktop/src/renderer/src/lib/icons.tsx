@@ -90,19 +90,11 @@ export const DIAGRAM_ICONS: Record<DiagramType, LucideIcon> = {
 };
 
 /** Màu nhấn cho từng loại sơ đồ (thẻ, chip số lượng). */
-export const DIAGRAM_COLORS: Record<DiagramType, string> = {
-  usecase: '#2E62E6',
-  'usecase-spec': '#0E8A9B',
-  activity: '#1F9D66',
-  sequence: '#7C5CC4',
-  class: '#D98A1C',
-  erd: '#C2417E',
-  architecture: '#4A6FA5',
-  gantt: '#D9463E',
-};
+/** Màu icon loại sơ đồ — một màu chung (accent của theme) cho mọi loại. */
+export const DIAGRAM_COLOR = 'var(--accent)';
 
 /** Icon loại sơ đồ: hình thu nhỏ đúng ký hiệu của sơ đồ đó (lib/diagram-icons.tsx). */
 export function DiagramIcon({ type, size = 16, colored }: { type: DiagramType; size?: number; colored?: boolean }) {
   if (!DIAGRAM_ICONS[type]) return <FileText size={size} />;
-  return <DiagramGlyph type={type} size={size} color={colored ? DIAGRAM_COLORS[type] : 'currentColor'} />;
+  return <DiagramGlyph type={type} size={size} color={colored ? DIAGRAM_COLOR : 'currentColor'} />;
 }

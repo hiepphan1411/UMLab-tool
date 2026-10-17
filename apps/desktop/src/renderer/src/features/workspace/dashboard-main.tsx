@@ -28,7 +28,7 @@ import type { Peer } from '@shared/api';
 import { useAppInfo } from '@/lib/app-info';
 import { cn } from '@/lib/cn';
 import { dateTime, timeAgo } from '@/lib/format';
-import { DIAGRAM_COLORS, DiagramIcon } from '@/lib/icons';
+import { DIAGRAM_COLOR, DiagramIcon } from '@/lib/icons';
 import { Avatar, Button, IconButton, Segmented, openContextMenu, openMenuAt, type MenuEntry } from '@/ui';
 import { exportSpecsDocx } from '../editors/usecase-spec/exporters';
 import { confirmDeleteDiagrams, exportDiagrams } from './diagram-actions';
@@ -110,10 +110,7 @@ export function DashboardMain(p: Props) {
                 >
                   <span
                     className="grid h-11 w-11 flex-none place-items-center rounded-[10px]"
-                    style={{
-                      background: DIAGRAM_COLORS[t.type] + '14',
-                      border: `1px solid ${DIAGRAM_COLORS[t.type]}33`,
-                    }}
+                    style={{ background: 'var(--accent-soft)' }}
                   >
                     <DiagramIcon type={t.type} size={28} colored />
                   </span>
@@ -373,7 +370,7 @@ export function DashboardMain(p: Props) {
           <div className="flex flex-wrap gap-2">
             {DIAGRAM_TYPE_INFO.map((t) => (
               <div key={t.type} className="card flex items-center gap-2.5 px-3 py-2" data-stat={t.type}>
-                <span className="h-7 w-1.5 rounded" style={{ background: DIAGRAM_COLORS[t.type] }} />
+                <span className="h-7 w-1.5 rounded" style={{ background: DIAGRAM_COLOR }} />
                 <div>
                   <div className="text-[17px] leading-tight font-semibold tabular-nums">{counts[t.type] ?? 0}</div>
                   <div className="text-[11px] text-muted">{t.short}</div>

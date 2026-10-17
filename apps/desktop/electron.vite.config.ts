@@ -44,7 +44,12 @@ export default defineConfig(({ mode }) => {
         },
       },
       plugins: [react(), tailwindcss()],
-      build: { chunkSizeWarningLimit: 4000 },
+      // UMLAB_REACT_DEV=1: bản build dùng React development (StrictMode chạy effect 2 lần như `npm run dev`) — chạy E2E
+      // trên bản này để bắt lỗi chỉ xuất hiện ở chế độ dev (npm run e2e:dev)
+      ...(process.env.UMLAB_REACT_DEV
+        ? { define: { 'process.env.NODE_ENV': JSON.stringify('development') }, mode: 'development' }
+        : {}),
+      build: { chunkSizeWarningLimit: 4000, ...(process.env.UMLAB_REACT_DEV ? { minify: false } : {}) },
     },
   };
 });

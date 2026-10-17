@@ -786,7 +786,7 @@ export function Canvas({
         // kéo trên chính hình đang nối → trượt dọc cạnh (luôn khoá cạnh + vị trí); hình khác: khoá khi thả sát mép
         const same = t.id === (d.end === 'source' ? c.source.viewId : c.target.viewId);
         end =
-          same || (c.routing !== 'straight' && c.routing !== 'curved' && nearEdge(tb, wx, wy, 12 / st.zoom))
+          same || (c.routing !== 'straight' && nearEdge(tb, wx, wy, 12 / st.zoom))
             ? { viewId: t.id, side: ns.side, t: Math.round(ns.t * 1000) / 1000 }
             : { viewId: t.id };
       } else if (getConnector(c.kind)?.freeEnds) end = { viewId: null, x: wx, y: wy };
@@ -920,7 +920,7 @@ export function Canvas({
       if (c.invalid) return;
       const def = getConnector(c.kind);
       // đường thẳng / cong: đầu mút tự bám viền hướng về đầu kia (không khoá cạnh) để không cắt qua hình
-      const auto = def?.defaultRouting === 'straight' || def?.defaultRouting === 'curved';
+      const auto = def?.defaultRouting === 'straight';
       const src: Connector['source'] = c.sourceId
         ? def?.timeline
           ? { viewId: c.sourceId, y: r1(c.sourcePt[1]) }

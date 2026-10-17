@@ -3,6 +3,7 @@ import { argon2Verify, argon2id } from 'hash-wasm';
 import { z } from 'zod';
 import type { PublicUser } from '@shared/api';
 import { paths, readSecure, removeFile, writeSecure } from './config';
+import { audit } from './audit';
 import { database, type UserDoc } from './db';
 import { broadcast } from './events';
 import { ChangeFeed } from './feed';
@@ -204,6 +205,7 @@ class AuthService {
       throw e;
     }
     this.setSession(doc, true);
+    audit(doc._id, 'register');
     return toPublic(doc);
   }
 
@@ -235,16 +237,19 @@ class AuthService {
     }
     await database.attempts().deleteOne({ _id: email });
     this.setSession(u!, !!input.remember);
+    audit(u!._id, 'login');
     return toPublic(u!);
   }
 
   logout(): void {
+    if (this.session) audit(this.session.userId, 'logout');
     this.clear();
   }
 
   async logoutAll(): Promise<void> {
     const u = await this.require();
     await database.users().updateOne({ _id: u._id }, { $inc: { tokenVersion: 1 } });
+    audit(u._id, 'logoutAll');
     this.clear();
   }
 
@@ -265,6 +270,7 @@ class AuthService {
     const passwordHash = await hashPassword(pw);
     const tv = u.tokenVersion + 1;
     await database.users().updateOne({ _id: u._id }, { $set: { passwordHash, tokenVersion: tv } });
+    audit(u._id, 'passwordChanged');
     // Máy này giữ phiên với tokenVersion mới; mọi máy khác bị đăng xuất.
     this.setSession({ ...u, passwordHash, tokenVersion: tv }, this.session?.remember ?? true);
   }

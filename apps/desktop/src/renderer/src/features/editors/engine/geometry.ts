@@ -118,35 +118,6 @@ export function roundedPath(pts: Pt[], r: number): string {
   return d + ` L${r1(l[0])},${r1(l[1])}`;
 }
 
-/** Đường cong bezier qua 2 đầu, tiếp tuyến theo hướng cạnh. */
-export function curvedPath(p1: Pt, s1: Side | undefined, p2: Pt, s2: Side | undefined): string {
-  const dist = Math.max(40, Math.hypot(p2[0] - p1[0], p2[1] - p1[1]) * 0.4);
-  const d1 = s1 ? DIRS[s1] : norm([p2[0] - p1[0], p2[1] - p1[1]]);
-  const d2 = s2 ? DIRS[s2] : norm([p1[0] - p2[0], p1[1] - p2[1]]);
-  const c1: Pt = [p1[0] + d1[0] * dist, p1[1] + d1[1] * dist];
-  const c2: Pt = [p2[0] + d2[0] * dist, p2[1] + d2[1] * dist];
-  return `M${r1(p1[0])},${r1(p1[1])} C${r1(c1[0])},${r1(c1[1])} ${r1(c2[0])},${r1(c2[1])} ${r1(p2[0])},${r1(p2[1])}`;
-}
-
-/** Lấy mẫu đường cong bezier thành polyline (để hit-test, đặt nhãn, mũi tên). */
-export function curvedPts(p1: Pt, s1: Side | undefined, p2: Pt, s2: Side | undefined, n = 24): Pt[] {
-  const dist = Math.max(40, Math.hypot(p2[0] - p1[0], p2[1] - p1[1]) * 0.4);
-  const d1 = s1 ? DIRS[s1] : norm([p2[0] - p1[0], p2[1] - p1[1]]);
-  const d2 = s2 ? DIRS[s2] : norm([p1[0] - p2[0], p1[1] - p2[1]]);
-  const c1: Pt = [p1[0] + d1[0] * dist, p1[1] + d1[1] * dist];
-  const c2: Pt = [p2[0] + d2[0] * dist, p2[1] + d2[1] * dist];
-  const out: Pt[] = [];
-  for (let i = 0; i <= n; i++) {
-    const t = i / n;
-    const u = 1 - t;
-    out.push([
-      u * u * u * p1[0] + 3 * u * u * t * c1[0] + 3 * u * t * t * c2[0] + t * t * t * p2[0],
-      u * u * u * p1[1] + 3 * u * u * t * c1[1] + 3 * u * t * t * c2[1] + t * t * t * p2[1],
-    ]);
-  }
-  return out;
-}
-
 export function norm(v: Pt): Pt {
   const L = Math.hypot(v[0], v[1]) || 1;
   return [v[0] / L, v[1] / L];

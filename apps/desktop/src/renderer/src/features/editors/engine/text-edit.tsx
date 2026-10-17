@@ -64,7 +64,19 @@ export function TextEditor({
     onDone();
   };
 
-  useEffect(() => () => void commit(), []); // eslint-disable-line react-hooks/exhaustive-deps
+  // commit khi ô sửa đóng (unmount). StrictMode chạy mount → cleanup → mount: chỉ commit nếu sau cleanup không được
+  // gắn lại (kiểm ở microtask), nếu không ô sửa sẽ đóng ngay khi vừa mở.
+  const mounts = useRef(0);
+  useEffect(() => {
+    const me = ++mounts.current;
+    return () => {
+      queueMicrotask(() => {
+        // cố ý đọc giá trị mới nhất: đã gắn lại (StrictMode) thì không commit
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        if (mounts.current === me) commit();
+      });
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ---------- gợi ý (kiểu dữ liệu sau dấu :) ----------
   const [sug, setSug] = useState<{ items: string[]; idx: number; from: number; to: number; line: number } | null>(null);

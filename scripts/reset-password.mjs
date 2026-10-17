@@ -51,13 +51,25 @@ export const hashPassword = (password) =>
   });
 
 /** Đặt lại mật khẩu trên database `db` (đã kết nối). Trả về false nếu không có tài khoản. */
-export async function resetPassword(db, email, password) {
+export async function resetPassword(db, email, password, by = 'script') {
   const e = String(email).trim().toLowerCase();
-  const res = await db
+  const user = await db
     .collection('users')
-    .updateOne({ email: e }, { $set: { passwordHash: await hashPassword(password) }, $inc: { tokenVersion: 1 } });
-  if (!res.matchedCount) return false;
+    .findOneAndUpdate(
+      { email: e },
+      { $set: { passwordHash: await hashPassword(password) }, $inc: { tokenVersion: 1 } },
+      { projection: { _id: 1 } },
+    );
+  if (!user) return false;
   await db.collection('login_attempts').deleteOne({ _id: e });
+  // lịch sử tài khoản (trang quản trị)
+  await db.collection('audit_log').insertOne({
+    _id: `al_${randomBytes(8).toString('hex')}`,
+    userId: user._id,
+    kind: 'passwordReset',
+    meta: { by },
+    at: new Date(),
+  });
   return true;
 }
 

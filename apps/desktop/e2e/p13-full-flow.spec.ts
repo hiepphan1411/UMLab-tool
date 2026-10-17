@@ -150,6 +150,8 @@ test('P13: trang Trợ giúp (F1) có phím tắt + ký hiệu sinh từ registr
 });
 
 test('P13: sơ đồ 1.000 hình + 1.200 đường nối — mở được, kéo vẫn mượt', async () => {
+  // ngưỡng hiệu năng chỉ áp dụng cho bản build thật (React development chậm hơn nhiều)
+  test.skip(!!process.env.UMLAB_REACT_DEV, 'bỏ qua đo hiệu năng ở chế độ React development');
   test.setTimeout(120_000);
   const { app, page } = await launch();
   await register(page, 'Hiệu năng', uniqueEmail('p13p'));

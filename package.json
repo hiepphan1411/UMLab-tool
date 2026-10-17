@@ -18,7 +18,10 @@
     "check": "npm run lint && npm run typecheck && npm run test",
     "format": "prettier --write .",
     "prepare": "husky || true",
-    "reset-password": "node scripts/reset-password.mjs"
+    "reset-password": "node scripts/reset-password.mjs",
+    "admin": "npm run dev -w @umlab/admin",
+    "admin:build": "npm run build -w @umlab/admin",
+    "admin:start": "npm run start -w @umlab/admin"
   },
   "engines": {
     "node": ">=20.19.0"

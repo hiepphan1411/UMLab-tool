@@ -138,9 +138,6 @@ export class Engine {
       pen: null,
       leftTab: null,
     }));
-    const vm = viewsMap(this.doc, diagramId);
-    const cm = connsMap(this.doc, diagramId);
-    const mm = modelMap(this.doc);
     const getState = () => this.store.getState();
     const children = (pid: string) => this.children(pid);
     const doc = this.doc;
@@ -167,18 +164,30 @@ export class Engine {
           : null;
       },
     };
+    this.attach();
+  }
+
+  /**
+   * Theo dõi Y.Doc → store. Gọi lại được sau destroy() (React StrictMode chạy effect mount → cleanup → mount: nếu
+   * không gắn lại, thao tác vẫn ghi vào tài liệu nhưng canvas không bao giờ cập nhật).
+   */
+  attach(): void {
+    if (this.unobs.length) return;
     this.syncAll();
+    const vm = viewsMap(this.doc, this.diagramId);
+    const cm = connsMap(this.doc, this.diagramId);
+    const mm = modelMap(this.doc);
     const onV = (ev: Y.YMapEvent<View>) => this.syncKeys('views', ev.keysChanged);
     const onC = (ev: Y.YMapEvent<Connector>) => this.syncKeys('conns', ev.keysChanged);
     const onM = (ev: Y.YMapEvent<ModelElement>) => this.syncKeys('model', ev.keysChanged);
     const dmap = diagramsMap(this.doc);
     const onD = () => this.store.setState({ metaVersion: this.store.getState().metaVersion + 1 });
     dmap.observe(onD);
-    this.unobs.push(() => dmap.unobserve(onD));
     vm.observe(onV);
     cm.observe(onC);
     mm.observe(onM);
     this.unobs.push(
+      () => dmap.unobserve(onD),
       () => vm.unobserve(onV),
       () => cm.unobserve(onC),
       () => mm.unobserve(onM),
@@ -187,6 +196,7 @@ export class Engine {
 
   destroy(): void {
     this.unobs.forEach((f) => f());
+    this.unobs = [];
     this.saveViewport();
   }
 

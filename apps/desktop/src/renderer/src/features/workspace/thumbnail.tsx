@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import type { DiagramMeta } from '@umlab/core';
-import { DIAGRAM_COLORS, DiagramIcon } from '@/lib/icons';
+import { DIAGRAM_COLOR, DiagramIcon } from '@/lib/icons';
 import { renderThumbnail } from '../editors/thumbnails';
 import type { ProjectSession } from './session';
 
@@ -22,11 +22,8 @@ export const DiagramThumbnail = memo(function DiagramThumbnail({
       />
     );
   return (
-    <div className="absolute inset-0 grid place-items-center" style={{ color: DIAGRAM_COLORS[diagram.type] }}>
-      <span
-        className="grid h-14 w-14 place-items-center rounded-2xl"
-        style={{ background: DIAGRAM_COLORS[diagram.type] + '1A' }}
-      >
+    <div className="absolute inset-0 grid place-items-center" style={{ color: DIAGRAM_COLOR }}>
+      <span className="grid h-14 w-14 place-items-center rounded-2xl" style={{ background: 'var(--accent-soft)' }}>
         <DiagramIcon type={diagram.type} size={28} colored />
       </span>
     </div>

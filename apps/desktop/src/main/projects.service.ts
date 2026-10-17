@@ -9,6 +9,7 @@ import {
   type ProjectSummary,
   type Role,
 } from '@shared/api';
+import { audit } from './audit';
 import { auth } from './auth.service';
 import { database, type ProjectDoc, type UserDoc } from './db';
 import { broadcast } from './events';
@@ -268,6 +269,7 @@ class ProjectsService {
       updatedAt: now,
     };
     await database.projects().insertOne(doc);
+    audit(user._id, 'projectCreated', { projectId: doc._id, name: doc.name });
     const first = (await this.summaries([doc], user._id))[0];
     local.register(first, user._id, localDir);
     if (input.initialUpdate && input.initialUpdate.byteLength) {
@@ -317,7 +319,8 @@ class ProjectsService {
       local.unregister(id);
       return;
     }
-    await this.access(id, 'owner');
+    const { project: p, user: owner } = await this.access(id, 'owner');
+    audit(owner._id, 'projectDeleted', { projectId: id, name: p.name });
     local.unregister(id);
     await Promise.all([
       database.updates().deleteMany({ projectId: id }),

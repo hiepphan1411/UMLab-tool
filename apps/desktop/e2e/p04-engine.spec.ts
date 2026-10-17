@@ -179,6 +179,8 @@ test('P04: container lồng 3 cấp, xuất PNG 2x và SVG', async () => {
 });
 
 test('P04: 300 hình + 400 nối vẫn kéo mượt', async () => {
+  // ngưỡng hiệu năng chỉ áp dụng cho bản build thật (React development chậm hơn nhiều)
+  test.skip(!!process.env.UMLAB_REACT_DEV, 'bỏ qua đo hiệu năng ở chế độ React development');
   const { app, page } = await launch();
   await register(page, 'Engine3', uniqueEmail('p04c'));
   await openPlayground(page);
