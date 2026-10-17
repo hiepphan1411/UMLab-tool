@@ -1,0 +1,297 @@
+{
+  "format": "umlab",
+  "schemaVersion": 1,
+  "kind": "diagram",
+  "exportedAt": "2026-10-17T00:00:00.000Z",
+  "diagram": {
+    "id": "dg_uc03spec",
+    "type": "usecase-spec",
+    "name": "Đặc tả UC03 Check-in xe vào bãi",
+    "canvas": {
+      "background": "#FFFFFF",
+      "grid": false
+    },
+    "views": [],
+    "connectors": [],
+    "data": {
+      "useCaseId": "m_uc03",
+      "version": 1,
+      "primaryActors": [
+        "m_sv"
+      ],
+      "secondaryActors": [
+        "m_bv",
+        "m_gate"
+      ],
+      "description": "Sinh viên đưa xe vào bãi bằng thẻ RFID; hệ thống nhận dạng biển số, kiểm tra quyền gửi xe và mở barrier.",
+      "priority": "Cao",
+      "trigger": "Sinh viên quét thẻ RFID tại cổng vào.",
+      "preconditions": [
+        "Sinh viên đã đăng ký xe và thẻ RFID",
+        "Thiết bị cổng đang hoạt động"
+      ],
+      "postconditions": {
+        "success": [
+          "Phiên gửi xe được tạo, barrier mở"
+        ],
+        "failure": [
+          "Không tạo phiên gửi xe, barrier đóng"
+        ]
+      },
+      "mainFlow": [
+        {
+          "id": "s1",
+          "no": 1,
+          "performer": {
+            "kind": "actor",
+            "actorId": "m_sv"
+          },
+          "text": "Quét thẻ RFID tại cổng vào.",
+          "interaction": {
+            "target": "ui",
+            "targetName": "Màn hình cổng vào",
+            "message": "quetThe(maThe)"
+          }
+        },
+        {
+          "id": "s2",
+          "no": 2,
+          "performer": {
+            "kind": "system"
+          },
+          "text": "Đọc mã thẻ và kiểm tra thẻ hợp lệ.",
+          "interaction": {
+            "target": "entity",
+            "targetName": "TheRFID",
+            "message": "kiemTra(maThe)",
+            "returns": "the"
+          }
+        },
+        {
+          "id": "s3",
+          "no": 3,
+          "performer": {
+            "kind": "system"
+          },
+          "text": "Chụp ảnh biển số và nhận dạng (ALPR).",
+          "interaction": {
+            "target": "external",
+            "targetName": "AI Service",
+            "message": "nhanDang(anh)",
+            "returns": "bienSo"
+          }
+        },
+        {
+          "id": "s4",
+          "no": 4,
+          "performer": {
+            "kind": "system"
+          },
+          "text": "Đối chiếu biển số với xe đã đăng ký của sinh viên.",
+          "interaction": {
+            "target": "entity",
+            "targetName": "Xe",
+            "message": "timTheoBienSo(bienSo)"
+          }
+        },
+        {
+          "id": "s5",
+          "no": 5,
+          "performer": {
+            "kind": "system"
+          },
+          "text": "Kiểm tra gói tháng hoặc số dư ví.",
+          "interaction": {
+            "target": "entity",
+            "targetName": "GoiThang"
+          }
+        },
+        {
+          "id": "s6",
+          "no": 6,
+          "performer": {
+            "kind": "system"
+          },
+          "text": "Tạo phiên gửi xe và mở barrier.",
+          "interaction": {
+            "target": "entity",
+            "targetName": "PhienGuiXe",
+            "message": "tao()",
+            "kind": "create"
+          }
+        },
+        {
+          "id": "s7",
+          "no": 7,
+          "performer": {
+            "kind": "actor",
+            "actorId": "m_sv"
+          },
+          "text": "Đưa xe vào bãi."
+        }
+      ],
+      "alternativeFlows": [
+        {
+          "id": "a1",
+          "code": "A1",
+          "name": "Biển số không khớp",
+          "branchAt": 4,
+          "condition": "Biển số khác xe đăng ký",
+          "steps": [
+            {
+              "id": "a1s1",
+              "no": 1,
+              "performer": {
+                "kind": "system"
+              },
+              "text": "Thông báo bảo vệ kiểm tra."
+            },
+            {
+              "id": "a1s2",
+              "no": 2,
+              "performer": {
+                "kind": "actor",
+                "actorId": "m_bv"
+              },
+              "text": "Xác nhận thủ công."
+            }
+          ],
+          "end": {
+            "kind": "returnTo",
+            "stepNo": 5
+          }
+        }
+      ],
+      "exceptionFlows": [
+        {
+          "id": "e1",
+          "code": "E1",
+          "name": "Thẻ không hợp lệ",
+          "branchAt": 2,
+          "condition": "Thẻ không tồn tại trong hệ thống",
+          "steps": [
+            {
+              "id": "e1s1",
+              "no": 1,
+              "performer": {
+                "kind": "system"
+              },
+              "text": "Hiển thị \"Thẻ không hợp lệ\"."
+            }
+          ],
+          "end": {
+            "kind": "endFailure"
+          }
+        },
+        {
+          "id": "e2",
+          "code": "E2",
+          "name": "Không đủ số dư",
+          "branchAt": 5,
+          "condition": "Không có gói tháng và số dư ví không đủ",
+          "steps": [
+            {
+              "id": "e2s1",
+              "no": 1,
+              "performer": {
+                "kind": "system"
+              },
+              "text": "Thông báo nạp tiền."
+            }
+          ],
+          "end": {
+            "kind": "endFailure"
+          }
+        }
+      ],
+      "businessRules": [
+        {
+          "code": "BR01",
+          "text": "Mỗi thẻ RFID chỉ có một phiên gửi xe đang mở."
+        }
+      ],
+      "nonFunctional": [
+        {
+          "code": "NFR01",
+          "text": "Thời gian từ quét thẻ tới mở barrier ≤ 3 giây."
+        }
+      ],
+      "includes": [],
+      "extends": [],
+      "screens": [
+        {
+          "id": "sc1",
+          "name": "Màn hình cổng vào"
+        }
+      ],
+      "entities": [
+        {
+          "id": "en0",
+          "name": "TheRFID"
+        },
+        {
+          "id": "en1",
+          "name": "Xe"
+        },
+        {
+          "id": "en2",
+          "name": "GoiThang"
+        },
+        {
+          "id": "en3",
+          "name": "ViDienTu"
+        },
+        {
+          "id": "en4",
+          "name": "PhienGuiXe"
+        }
+      ]
+    }
+  },
+  "model": [
+    {
+      "id": "m_uc03",
+      "kind": "uml.usecase",
+      "name": "Check-in xe vào bãi",
+      "data": {
+        "code": "UC03",
+        "description": "",
+        "rank": "high",
+        "status": "approved",
+        "isBusiness": false,
+        "extensionPoints": [],
+        "specDiagramId": null
+      }
+    },
+    {
+      "id": "m_sv",
+      "kind": "uml.actor",
+      "name": "Sinh viên",
+      "data": {
+        "type": "user",
+        "description": "",
+        "isBusiness": false
+      }
+    },
+    {
+      "id": "m_bv",
+      "kind": "uml.actor",
+      "name": "Bảo vệ",
+      "data": {
+        "type": "user",
+        "description": "",
+        "isBusiness": false
+      }
+    },
+    {
+      "id": "m_gate",
+      "kind": "uml.actor",
+      "name": "Thiết bị cổng",
+      "data": {
+        "type": "device",
+        "description": "",
+        "isBusiness": false
+      }
+    }
+  ]
+}

@@ -1,4 +1,15 @@
-import { ChevronRight, FileJson, Folder, FolderInput, LayoutGrid, List, MoreHorizontal, Trash2, X } from 'lucide-react';
+import {
+  ChevronRight,
+  FileDown,
+  FileJson,
+  Folder,
+  FolderInput,
+  LayoutGrid,
+  List,
+  MoreHorizontal,
+  Trash2,
+  X,
+} from 'lucide-react';
 import { useMemo, useRef, useState, type MouseEvent } from 'react';
 import {
   DIAGRAM_TYPE_BY_ID,
@@ -19,6 +30,7 @@ import { cn } from '@/lib/cn';
 import { dateTime, timeAgo } from '@/lib/format';
 import { DIAGRAM_COLORS, DiagramIcon } from '@/lib/icons';
 import { Avatar, Button, IconButton, Segmented, openContextMenu, openMenuAt, type MenuEntry } from '@/ui';
+import { exportSpecsDocx } from '../editors/usecase-spec/exporters';
 import { confirmDeleteDiagrams, exportDiagrams } from './diagram-actions';
 import { MoveDialog } from './dialogs';
 import { uniquePeers } from './presence';
@@ -164,6 +176,11 @@ export function DashboardMain(p: Props) {
               <Button size="sm" icon={<FileJson />} onClick={() => void exportDiagrams(s, selectedDiagrams)}>
                 Xuất JSON
               </Button>
+              {selectedDiagrams.some((id) => diagramsMap(s.doc).get(id)?.type === 'usecase-spec') && (
+                <Button size="sm" icon={<FileDown />} onClick={() => void exportSpecsDocx(s.doc, selectedDiagrams)}>
+                  Xuất DOCX
+                </Button>
+              )}
               {s.canEdit && (
                 <Button
                   size="sm"

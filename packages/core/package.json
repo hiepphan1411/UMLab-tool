@@ -15,10 +15,12 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
+    "docx": "^9.11.0",
     "yjs": "^13.6.33",
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "jszip": "^3.10.1",
     "vitest": "^3.2.7"
   }
 }

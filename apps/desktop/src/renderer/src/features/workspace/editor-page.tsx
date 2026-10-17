@@ -81,6 +81,7 @@ function NameInput({
       className="field"
       style={{
         width: Math.min(360, Math.max(140, v.length * 8 + 30)),
+        flex: 'none',
         background: 'transparent',
         borderColor: 'transparent',
         fontWeight: 600,

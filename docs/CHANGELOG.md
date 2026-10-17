@@ -2,6 +2,20 @@
 
 Mỗi phase hoàn thành thêm một mục: `## P0x — tên phase (ngày)` + danh sách thay đổi chính.
 
+## P07 — Đặc tả Use Case (2026-10-17)
+
+- **Lõi** `packages/core/src/spec/`: schema zod `UseCaseSpec` / `Step` / `Flow` + chuẩn hoá; thao tác luồng (`insertStep`, `removeStep`, `moveStep`, `updateStep`, `addFlow`, `updateFlow`, `removeFlow`, `editFlowSteps`) đánh số lại 1..n và **cập nhật tham chiếu** `branchAt` / `returnTo` theo bước (không theo số); performer xen kẽ (actor → Hệ thống → actor gần nhất); kiểm tra (bước rỗng, rẽ / quay lại bước không tồn tại, thiếu tác nhân chính, chưa gắn use case); `specToMarkdown`; `specsDocx` (thư viện `docx`: bảng 2 cột viền đen, cột trái xám nhạt, Times New Roman 13, luồng là bảng con `STT · Thực hiện bởi · Hành động`, nhiều đặc tả → mỗi bảng tiêu đề “Bảng x: Đặc tả use case UCxx”); đọc/ghi Y.Doc theo trường (`readSpec` / `writeSpec`, `version` tăng khi nội dung đổi); `deriveFromDiagrams` rút actor chính/phụ, include, extend từ các Use Case Diagram.
+- **Editor** `usecase-spec`: mục lục trái (đánh dấu mục có cảnh báo, số bước/luồng), nội dung giữa, Inspector use case gốc bên phải (sửa mã/tên/trạng thái — đổi ở đây cập nhật mọi Use Case Diagram và ngược lại; tên sơ đồ tự theo “Đặc tả UCxx Tên”).
+  - Thông tin chung, Tác nhân (chip chọn actor; tự điền từ sơ đồ khi trống, nút “Lấy theo sơ đồ”; Include/Extend chỉ đọc, tự đồng bộ), Điều kiện, Quy tắc nghiệp vụ (BR01…), Phi chức năng (NFR01…), Màn hình & dữ liệu (gắn class của project nếu có), Ghi chú.
+  - **Bảng luồng 3 cột**: Enter cuối dòng thêm bước (người thực hiện xen kẽ), Shift+Enter xuống dòng, Backspace dòng rỗng xoá bước, kéo ⠿ đổi thứ tự; menu ⋯: Chi tiết tương tác (đối tượng nhận, tên, message, kiểu, trả về — thu gọn thành nhãn `→ TheRFID.kiemTra(maThe)`), Đánh dấu lặp, Gọi use case khác, Tạo luồng thay thế / ngoại lệ từ bước này, Chèn trên/dưới, Xoá.
+  - Thẻ luồng thay thế / ngoại lệ: mã tự đánh A1… / E1…, tên, “Rẽ từ bước”, điều kiện, bảng bước A1.1…, “Kết thúc: Quay lại bước n / thành công / thất bại”; tham chiếu sai được tô đỏ.
+  - Đặc tả chưa gắn use case: chọn use case có sẵn hoặc tạo use case mới (mã tự tăng).
+  - Thanh trên: **Sinh Activity** / **Sinh Sequence** (tạm khoá, tooltip “Có ở bản cập nhật sau”), **Xuất DOCX**, **Xuất Markdown**, Nhập/Xuất JSON, Kiểm tra.
+- Dashboard: chọn nhiều → **Xuất DOCX** gộp các đặc tả (sắp theo mã UC); ảnh thu nhỏ đặc tả (mã + tên + các bước).
+- Fixture `docs/reference/uc03-spec.umlab.json` (UC03 Check-in xe vào bãi: 7 bước, A1, E1, E2).
+- Thanh trên editor: ô tên sơ đồ không còn bị co mất khi có nhiều nút.
+- Test: core `spec.test.ts` (10 test: fixture UC03; chèn giữa bước 3–4 → A1 tại 5, quay lại 6; kéo bước → tham chiếu bám theo; xoá bước được tham chiếu → báo lỗi; mã E3 + E3.1; ghi/đọc Y.Doc + version; Markdown; DOCX mở zip kiểm nội dung, font, màu nền; nhập tệp fixture); Playwright `p07-spec.spec.ts` (nhập fixture → 7 bước, A1/E1/E2; chèn bước → A1 “tại bước 5”, “quay lại bước 6”; Enter thêm bước Hệ thống; kéo đổi thứ tự; xuất DOCX + Markdown; dashboard chọn → Xuất DOCX). DOCX đã kiểm bằng Microsoft Word (chuyển PDF).
+
 ## P06 — Use Case Diagram (2026-10-17)
 
 - Palette đúng thứ tự spec: Cursor ◢ · Use Case · Association · Actor · System · Include · Extend · Dependency · Generalization ◢ (Generalization / Realization) · Collaboration · nhóm chung.

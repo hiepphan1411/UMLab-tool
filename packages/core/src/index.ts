@@ -15,3 +15,8 @@ export * from './util/ids';
 export * from './util/json';
 
 export const UMLAB_FORMAT = 'umlab' as const;
+export * from './spec/model';
+export * from './spec/flow';
+export * from './spec/render';
+export * from './spec/docx';
+export * from './spec/doc';
