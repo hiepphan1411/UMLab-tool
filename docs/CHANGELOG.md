@@ -2,6 +2,22 @@
 
 Mỗi phase hoàn thành thêm một mục: `## P0x — tên phase (ngày)` + danh sách thay đổi chính.
 
+## P04 — Diagram engine dùng chung (2026-10-17)
+
+- **Store & lịch sử:** `Engine` (zustand) phản chiếu `views:/conns:/model` của Y.Doc, chỉ thay object của khoá vừa đổi; mọi ghi qua `engine.apply(tx)` = một transaction Yjs = một bước undo. Undo/redo dùng `Y.UndoManager` đã có từ P03 (thay Immer patches; gộp thao tác trong 450 ms, kéo/đổi kích thước chỉ ghi khi thả nhờ hộp tạm `preview`). Tự giãn hình theo `ShapeDef.measure` sau mỗi lần sửa.
+- **Canvas & viewport:** SVG toàn màn, zoom 10–600% tại con trỏ, pan (Space/chuột giữa/Hand), lưới chấm, Vừa màn hình (Shift+1), minimap, culling khi > 300 hình; nhớ khung nhìn theo sơ đồ.
+- **Registry:** `registerShape` / `registerConnector` / `registerPalette` / `registerRules`; mục palette dạng `kind#preset` cho biến thể. Inspector tự sinh từ zod (chuỗi, enum → Segmented/Select, boolean, số, màu, mảng thêm/xoá/kéo), tab Hình dạng + Mô hình, ghi đè bằng `inspector` riêng.
+- **Chọn & biến đổi:** click/Shift/khung chọn/lasso/Ctrl+A, 8 tay nắm (minSize, aspectLock, resizable), bắt dính lưới + đường gióng hồng (Alt tắt), mũi tên dịch 1/10 px, căn chỉnh/giãn đều/cùng kích thước, z-order, khoá, ẩn, Element Group (Ctrl+G), copy/paste/nhân bản giữ `modelId`, Delete / Ctrl+Delete (xoá khỏi mô hình, cảnh báo nếu phần tử có ở sơ đồ khác).
+- **Container:** `parentId`, thả vào/ra, con đi theo cha, `autoGrow`, highlight khi thả, lồng tối đa 10 cấp.
+- **Connector:** tạo bằng công cụ hoặc chấm nối 4 cạnh; `allow()` khi rê (⊘ + lý do); kéo đầu mút để nối lại; routing orthogonal (port `autoOrtho`/`roundedPath`) / smart (A\* né hình, port `smart-edges.js`) / straight / curved; waypoint; vòng tự nối; nhãn kéo được; cầu nhảy tuỳ chọn; đủ bộ marker mục 3 của spec.
+- **Palette kiểu VP:** Cursor trên cùng, nhóm + đường kẻ, flyout ◢ (bấm tam giác/giữ 400 ms), sticky (double-click), click-đặt/kéo-vẽ/kéo-thả, tìm công cụ, thu gọn chỉ icon; tab dọc Palette · Model Explorer (chờ P12) · Lớp · Sơ đồ.
+- **Sửa chữ & compartment:** ô nhập nổi theo `textRegions`; vùng `list` (Enter thêm dòng, Backspace xoá dòng rỗng, Tab chuyển ngăn). Parser/format thành viên class trong core (`uml/parse-member.ts`: `- bienSo : String [1] = "" {unique}`, `+ getTotal(in x : Int) : Decimal {query}`).
+- **Resource Catalog:** nút kéo cạnh hình khi hover; thả lên hình → menu connector hợp lệ; thả chỗ trống → "connector → hình mới".
+- **Kiểm tra & tìm:** bảng Kiểm tra (rules theo loại sơ đồ, bấm nhảy tới hình), Ctrl+F tìm hình, tự bố cục elkjs (trên-xuống / trái-phải) cho vùng chọn hoặc cả sơ đồ.
+- **Xuất:** hộp Xuất ảnh port từ tool cũ (PNG/JPG/SVG, tỉ lệ/chiều rộng, lề, nền, chỉ vùng chọn, xem trước), PDF một trang A4/A3 tự xoay (jspdf — ảnh nét cao thay svg2pdf để giữ dấu tiếng Việt), sao chép ảnh vào clipboard; SVG nhúng Roboto base64; ảnh thu nhỏ 320×200 cho mọi sơ đồ canvas. Nhập JSON trong editor: Thay thế / Gộp thêm (`core/project/ops.ts: importIntoDiagram`).
+- **Playground (chỉ bản dev):** 3 hình (Hộp, Tròn, Khung chứa) + 2 connector (Mũi tên, Nét đứt) + 1 luật kiểm tra; thẻ "Playground (dev)" trên dashboard.
+- Test: engine `engine.test.ts` (20 test: routing orthogonal 7 cặp cạnh + tự chọn cạnh + viền elip + tự nối, hit-test, bắt dính, gộp kéo thành 1 bước undo, undo/redo 50 bước, không hoàn tác thay đổi của máy khác); core `parse-member.test.ts` (24 test), `ops.test.ts` (+ nhập vào sơ đồ); Playwright `p04-engine.spec.ts` (vẽ 2 hình → nối → undo → redo → xuất JSON → xoá hết → nhập lại giống hệt; container lồng 3 cấp + xuất PNG 2x/SVG; 300 hình + 400 nối kéo mượt).
+
 ## P03 — Dashboard project, cây thư mục, quản lý sơ đồ (2026-10-17)
 
 - **Đồng bộ realtime:** `ProjectSession` (renderer) giữ Y.Doc của project, gửi thay đổi gộp 250 ms qua IPC → main `insertOne` vào `project_updates`; nhận thay đổi máy khác qua change stream (bỏ qua của chính mình); khi kết nối lại thì nạp lại toàn bộ + gửi bù. Phiên dùng chung giữa dashboard và editor, khoá theo người dùng, đóng hết khi đăng xuất.

@@ -34,7 +34,8 @@ const record = z.record(z.unknown());
 
 export const pointSchema = z.object({ x: num, y: num });
 export const sideSchema = z.enum(['top', 'right', 'bottom', 'left']);
-export const diagramTypeSchema = z.enum(DIAGRAM_TYPES);
+/** 8 loại chuẩn + 'playground' (sơ đồ thử engine, chỉ bản dev). */
+export const diagramTypeSchema = z.enum([...DIAGRAM_TYPES, 'playground']);
 
 export const viewSchema = z.object({
   id: z.string().min(1),

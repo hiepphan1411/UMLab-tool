@@ -48,7 +48,7 @@ export function NewDiagramDialog({
   const options = useFolderOptions(session, version);
   useEffect(() => {
     if (!type) return;
-    const base = DIAGRAM_TYPE_BY_ID[type].label;
+    const base = DIAGRAM_TYPE_BY_ID[type]?.label ?? 'Playground';
     setName(
       uniqueName(
         folderDiagrams(session.doc, folderId).map((d) => d.name),
@@ -58,7 +58,7 @@ export function NewDiagramDialog({
     setFolder(folderId ?? '');
   }, [type, folderId, session]);
   if (!type) return null;
-  const info = DIAGRAM_TYPE_BY_ID[type];
+  const info = DIAGRAM_TYPE_BY_ID[type] ?? { label: 'Playground' };
   const submit = () => {
     const id = createDiagram(session.doc, type, name || info.label, folder || null, LOCAL);
     onCreated(id);

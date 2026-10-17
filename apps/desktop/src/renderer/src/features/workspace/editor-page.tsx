@@ -108,7 +108,7 @@ function Placeholder({ diagram }: EditorProps) {
       <aside className="border-r border-line bg-panel p-3 text-muted">Palette</aside>
       <div className="grid place-items-center" style={{ background: 'var(--canvas)' }}>
         <EmptyState
-          title={DIAGRAM_TYPE_BY_ID[diagram.type].label}
+          title={DIAGRAM_TYPE_BY_ID[diagram.type]?.label ?? diagram.type}
           text="Editor cho loại sơ đồ này sẽ có ở phase sau."
         />
       </div>

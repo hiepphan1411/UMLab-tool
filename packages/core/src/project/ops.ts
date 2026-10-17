@@ -6,7 +6,19 @@ import { uid } from '../util/ids';
 import { clone } from '../util/json';
 import { remapDeep } from './bundle';
 import { newDiagram } from './templates';
-import { diagramsMap, foldersMap, modelMap, putDiagram, readDiagram, removeDiagram } from './ydoc';
+import {
+  connsMap,
+  dataMap,
+  diagramsMap,
+  encodeData,
+  foldersMap,
+  modelMap,
+  putDiagram,
+  readDiagram,
+  removeDiagram,
+  syncEntries,
+  viewsMap,
+} from './ydoc';
 
 export type DropPos = 'before' | 'after' | 'inside';
 
@@ -294,3 +306,73 @@ export function importDiagramFile(
     model: content.model,
   });
 }
+
+/**
+ * Nhập tệp `kind: diagram` vào CHÍNH sơ đồ đang mở: 'replace' thay toàn bộ nội dung; 'merge' gộp thêm,
+ * dịch toạ độ xuống dưới nội dung cũ để không đè. Phần tử mô hình chưa có thì thêm, trùng id thì dùng lại.
+ * Ném lỗi nếu khác loại sơ đồ.
+ */
+export function importIntoDiagram(
+  doc: Y.Doc,
+  diagramId: string,
+  file: DiagramFile,
+  mode: 'replace' | 'merge',
+  origin?: unknown,
+): number {
+  const meta = diagramsMap(doc).get(diagramId);
+  if (!meta) throw new Error('Sơ đồ không tồn tại');
+  if (file.diagram.type !== meta.type)
+    throw new Error(`Tệp này là ${typeLabelVi(file.diagram.type)}, không nhập được vào ${typeLabelVi(meta.type)}.`);
+  const cur = readDiagram(doc, diagramId)!;
+  const map = new Map<string, string>();
+  file.diagram.views.forEach((v) => map.set(v.id, uid('v')));
+  file.diagram.connectors.forEach((c) => map.set(c.id, uid('c')));
+  const inc = remapDeep({ views: file.diagram.views, connectors: file.diagram.connectors }, map);
+  let dx = 0;
+  let dy = 0;
+  if (mode === 'merge' && cur.views.length && inc.views.length) {
+    const box = (vs: { x: number; y: number; w: number; h: number }[]) => ({
+      x: Math.min(...vs.map((v) => v.x)),
+      y: Math.min(...vs.map((v) => v.y)),
+      b: Math.max(...vs.map((v) => v.y + v.h)),
+    });
+    const a = box(cur.views);
+    const b = box(inc.views);
+    dx = a.x - b.x;
+    dy = a.b + 120 - b.y;
+  }
+  const z0 = mode === 'merge' ? Math.max(0, ...cur.views.map((v) => v.z ?? 0)) + 1 : 0;
+  const views = inc.views.map((v, i) => ({ ...v, x: v.x + dx, y: v.y + dy, z: (v.z ?? i) + z0 }));
+  const conns = inc.connectors.map((c) => ({
+    ...c,
+    waypoints: c.waypoints.map((p) => ({ x: p.x + dx, y: p.y + dy })),
+    source: c.source.viewId ? c.source : { ...c.source, x: (c.source.x ?? 0) + dx, y: (c.source.y ?? 0) + dy },
+    target: c.target.viewId ? c.target : { ...c.target, x: (c.target.x ?? 0) + dx, y: (c.target.y ?? 0) + dy },
+  }));
+  doc.transact(() => {
+    const vm = viewsMap(doc, diagramId);
+    const cm = connsMap(doc, diagramId);
+    if (mode === 'replace') {
+      vm.clear();
+      cm.clear();
+      if (file.diagram.data !== null && file.diagram.data !== undefined)
+        syncEntries(dataMap(doc, diagramId), encodeData(meta.type, file.diagram.data));
+    }
+    for (const v of views) vm.set(v.id, v);
+    for (const c of conns) cm.set(c.id, c);
+    for (const m of file.model) if (!modelMap(doc).has(m.id)) modelMap(doc).set(m.id, clone(m));
+  }, origin);
+  return views.length;
+}
+
+const TYPE_VI: Record<string, string> = {
+  architecture: 'Sơ đồ kiến trúc',
+  gantt: 'Biểu đồ Gantt',
+  usecase: 'Use Case Diagram',
+  'usecase-spec': 'Đặc tả Use Case',
+  class: 'Class Diagram',
+  erd: 'Sơ đồ cơ sở dữ liệu',
+  activity: 'Activity Diagram',
+  sequence: 'Sequence Diagram',
+};
+const typeLabelVi = (t: string) => TYPE_VI[t] ?? t;

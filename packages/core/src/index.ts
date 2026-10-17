@@ -9,6 +9,7 @@ export * from './project/templates';
 export * from './project/ops';
 export * from './gantt/model';
 export * from './diagram-types';
+export * from './uml/parse-member';
 export * from './util/ids';
 export * from './util/json';
 

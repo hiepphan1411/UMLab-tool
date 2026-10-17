@@ -24,6 +24,7 @@ import { PresenceAvatars } from './presence';
 import { LOCAL, useProjectSession, useSessionState, useYVersion, type ProjectSession } from './session';
 import { ProjectSidebar } from './sidebar';
 import { useWorkspacePrefs } from './ui-state';
+import '../editors/register-all';
 
 export function ProjectError({ error, code }: { error: string; code?: string }) {
   return (

@@ -14,6 +14,7 @@ import {
   type DiagramType,
 } from '@umlab/core';
 import type { Peer } from '@shared/api';
+import { useAppInfo } from '@/lib/app-info';
 import { cn } from '@/lib/cn';
 import { dateTime, timeAgo } from '@/lib/format';
 import { DIAGRAM_COLORS, DiagramIcon } from '@/lib/icons';
@@ -51,6 +52,7 @@ export function DashboardMain(p: Props) {
   const folder = prefs.folder && doc.getMap('folders').has(prefs.folder) ? prefs.folder : null;
   const anchor = useRef<string | null>(null);
   const [moving, setMoving] = useState(false);
+  const info = useAppInfo();
 
   const subfolders = useMemo(() => childFolders(doc, folder), [doc, folder, version]); // eslint-disable-line react-hooks/exhaustive-deps
   const diagrams = useMemo(() => folderDiagrams(doc, folder), [doc, folder, version]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -106,6 +108,21 @@ export function DashboardMain(p: Props) {
                   </span>
                 </button>
               ))}
+              {info?.isDev && (
+                <button
+                  data-new-diagram="playground"
+                  className="card flex items-center gap-3 border-dashed p-3 text-left text-muted hover:border-[var(--accent)]"
+                  onClick={() => p.onNewDiagram('playground' as DiagramType, folder)}
+                >
+                  <span className="grid h-10 w-10 flex-none place-items-center rounded-[10px] bg-[var(--panel-2)]">
+                    ⚙
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block truncate font-semibold text-ink">Playground (dev)</span>
+                    <span className="block truncate text-[11.5px]">Thử engine: hộp, tròn, khung chứa</span>
+                  </span>
+                </button>
+              )}
             </div>
           </section>
         )}
@@ -251,7 +268,7 @@ export function DashboardMain(p: Props) {
                     <div className="min-w-0 flex-1">
                       <div className="truncate font-semibold">{d.name}</div>
                       <div className="truncate text-[11.5px] text-muted" title={dateTime(d.updatedAt)}>
-                        {DIAGRAM_TYPE_BY_ID[d.type].short} · {timeAgo(d.updatedAt)}
+                        {DIAGRAM_TYPE_BY_ID[d.type]?.short ?? d.type} · {timeAgo(d.updatedAt)}
                       </div>
                     </div>
                     <IconButton
@@ -307,7 +324,7 @@ export function DashboardMain(p: Props) {
                         <span className="truncate font-medium">{d.name}</span>
                       </span>
                     </td>
-                    <td className="px-2 text-muted">{DIAGRAM_TYPE_BY_ID[d.type].label}</td>
+                    <td className="px-2 text-muted">{DIAGRAM_TYPE_BY_ID[d.type]?.label ?? d.type}</td>
                     <td className="px-2 whitespace-nowrap text-muted" title={dateTime(d.updatedAt)}>
                       {timeAgo(d.updatedAt)}
                     </td>

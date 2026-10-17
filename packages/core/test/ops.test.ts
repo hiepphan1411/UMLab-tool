@@ -140,3 +140,36 @@ describe('thao tác thư mục / sơ đồ', () => {
     expect(modelMap(doc).get(copy.views[0].modelId!)!.name).toBe('Sinh viên');
   });
 });
+
+describe('nhập JSON vào sơ đồ đang mở', () => {
+  it('Gộp thêm dịch xuống dưới nội dung cũ; Thay thế xoá nội dung cũ; khác loại báo lỗi rõ', async () => {
+    const { importIntoDiagram } = await import('../src');
+    const doc = new Y.Doc();
+    const d = createDiagram(doc, 'class', 'Class', null);
+    const v = (id: string, y: number) => ({
+      id,
+      shape: 'cls.class',
+      modelId: null,
+      x: 0,
+      y,
+      w: 100,
+      h: 60,
+      z: 0,
+      parentId: null,
+      props: {},
+      style: {},
+    });
+    writeContent(doc, d, 'class', { views: [v('v_a', 0)], connectors: [] });
+    const file = toDiagramFile(readDiagram(doc, d)!, []);
+    importIntoDiagram(doc, d, file, 'merge');
+    const merged = readDiagram(doc, d)!.views;
+    expect(merged).toHaveLength(2);
+    expect(Math.max(...merged.map((x) => x.y))).toBe(180);
+    importIntoDiagram(doc, d, file, 'replace');
+    expect(readDiagram(doc, d)!.views).toHaveLength(1);
+    const other = createDiagram(doc, 'sequence', 'Seq', null);
+    expect(() => importIntoDiagram(doc, other, file, 'merge')).toThrow(
+      'Tệp này là Class Diagram, không nhập được vào Sequence Diagram.',
+    );
+  });
+});
