@@ -40,24 +40,36 @@ export interface Run {
   w: number;
   width: number;
   sp: boolean;
+  /** Nghiêng (`*chữ*`). */
+  it?: boolean;
 }
 export interface Line {
   runs: Run[];
   width: number;
 }
 
-/** Ngắt dòng theo độ rộng tối đa; `**chữ**` in đậm. */
+/** Ngắt dòng theo độ rộng tối đa; `**chữ**` in đậm, `*chữ*` nghiêng, dòng bắt đầu bằng "- " thành gạch đầu dòng. */
 export function layoutText(text: string, size: number, baseWeight: number, maxW: number): Line[] {
   const lines: Line[] = [];
   String(text ?? '')
     .split('\n')
     .forEach((par) => {
-      const toks: { t: string; w: number; sp: boolean }[] = [];
+      const toks: { t: string; w: number; sp: boolean; it?: boolean }[] = [];
       let bold = false;
-      par.split('**').forEach((seg, i) => {
-        if (i > 0) bold = !bold;
+      let it = false;
+      const src = /^\s*[-*•] /.test(par) && !/^\s*\*\*/.test(par) ? par.replace(/^(\s*)[-*•] /, '$1• ') : par;
+      const parts = src.split(/(\*\*|\*)/);
+      parts.forEach((seg, i) => {
+        if (seg === '**') {
+          bold = !bold;
+          return;
+        }
+        if (seg === '*' && (it || parts.slice(i + 1).includes('*'))) {
+          it = !it;
+          return;
+        }
         seg.split(/(\s+)/).forEach((t) => {
-          if (t) toks.push({ t, w: bold ? 700 : baseWeight, sp: /^\s+$/.test(t) });
+          if (t) toks.push({ t, w: bold ? 700 : baseWeight, sp: /^\s+$/.test(t), it: it || undefined });
         });
       });
       let line: Run[] = [];
@@ -66,7 +78,7 @@ export function layoutText(text: string, size: number, baseWeight: number, maxW:
         while (line.length && line[line.length - 1].sp) lw -= line.pop()!.width;
       };
       toks.forEach((tk) => {
-        const w = textW(tk.t, size, tk.w);
+        const w = textW(tk.t, size, tk.w, !!tk.it);
         if (!tk.sp && line.length && lw + w > maxW + 0.5) {
           trim();
           lines.push({ runs: line, width: lw });
@@ -83,12 +95,12 @@ export function layoutText(text: string, size: number, baseWeight: number, maxW:
   return lines;
 }
 
-function mergeRuns(runs: Run[]): { t: string; w: number }[] {
-  const out: { t: string; w: number }[] = [];
+function mergeRuns(runs: Run[]): { t: string; w: number; it?: boolean }[] {
+  const out: { t: string; w: number; it?: boolean }[] = [];
   runs.forEach((r) => {
     const l = out[out.length - 1];
-    if (l && l.w === r.w) l.t += r.t;
-    else out.push({ t: r.t, w: r.w });
+    if (l && l.w === r.w && !!l.it === !!r.it) l.t += r.t;
+    else out.push({ t: r.t, w: r.w, it: r.it });
   });
   return out;
 }
@@ -137,7 +149,7 @@ export function TextLines({
             textDecoration={underline ? 'underline' : decoration}
           >
             {mergeRuns(ln.runs).map((r, j) => (
-              <tspan key={j} fontWeight={r.w}>
+              <tspan key={j} fontWeight={r.w} fontStyle={r.it ? 'italic' : undefined}>
                 {r.t}
               </tspan>
             ))}

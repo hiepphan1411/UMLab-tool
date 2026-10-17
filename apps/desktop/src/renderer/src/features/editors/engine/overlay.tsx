@@ -12,7 +12,7 @@ import {
   type Pt,
 } from './geometry';
 import type { ConnectDrag } from './engine';
-import { getShape } from './registry';
+import { getShape, type PenPoint, type ShapeHandle } from './registry';
 import type { Routed } from './route';
 
 export const HANDLES: [string, number, number][] = [
@@ -96,6 +96,9 @@ export interface OverlayProps {
   readOnly: boolean;
   peers: Peer[];
   ink: [number, number][] | null;
+  pen?: PenPoint[] | null;
+  penCursor?: Pt | null;
+  shapeHandles?: ShapeHandle[];
   waypoints: (id: string) => { x: number; y: number }[];
 }
 
@@ -219,6 +222,66 @@ export function Overlay(p: OverlayProps) {
         />,
       );
   }
+
+  // Element Group: khung nét đứt mờ quanh cả nhóm của hình đang chọn
+  const groups = new Set(selViews.map((v) => v.groupId).filter(Boolean) as string[]);
+  for (const g of groups) {
+    const members = [...p.views.values()].filter((v) => v.groupId === g && !v.hidden);
+    const b = unionBox(members.map((v) => p.box(v.id)!).filter(Boolean));
+    if (b)
+      out.push(
+        <rect
+          key={'grp' + g}
+          x={b.x - 6 / z}
+          y={b.y - 6 / z}
+          width={b.w + 12 / z}
+          height={b.h + 12 / z}
+          rx={4 / z}
+          fill="none"
+          stroke="var(--muted)"
+          strokeOpacity={0.7}
+          strokeWidth={1 / z}
+          strokeDasharray={`${3 / z} ${3 / z}`}
+          pointerEvents="none"
+        />,
+      );
+  }
+
+  // tay nắm riêng của hình (đuôi Callout, đỉnh Polygon…)
+  if (!p.dragging)
+    for (const h of p.shapeHandles ?? []) {
+      const r = 5 / z;
+      const common = {
+        'data-shandle': h.key,
+        fill: '#fff',
+        stroke: 'var(--accent)',
+        strokeWidth: 1.6 / z,
+        style: { cursor: 'move' },
+      };
+      out.push(
+        h.shape === 'diamond' ? (
+          <rect
+            key={'sh' + h.key}
+            {...common}
+            x={h.x - r}
+            y={h.y - r}
+            width={r * 2}
+            height={r * 2}
+            transform={`rotate(45 ${h.x} ${h.y})`}
+          >
+            {h.title && <title>{h.title}</title>}
+          </rect>
+        ) : h.shape === 'square' ? (
+          <rect key={'sh' + h.key} {...common} x={h.x - r} y={h.y - r} width={r * 2} height={r * 2} rx={1.5 / z}>
+            {h.title && <title>{h.title}</title>}
+          </rect>
+        ) : (
+          <circle key={'sh' + h.key} {...common} cx={h.x} cy={h.y} r={r} fill="var(--accent)" stroke="#fff">
+            {h.title && <title>{h.title}</title>}
+          </circle>
+        ),
+      );
+    }
 
   // chấm nối 4 cạnh khi rê
   if (p.showAnchors && hov && hb && !hov.locked && !getShape(hov.shape)?.noPorts) {
@@ -406,6 +469,54 @@ export function Overlay(p: OverlayProps) {
       />,
     );
 
+  // nét Pen đang đặt
+  if (p.pen && p.pen.length) {
+    const pts = p.pen;
+    let d = `M${pts[0].x},${pts[0].y}`;
+    for (let i = 1; i < pts.length; i++) d += penSeg(pts[i - 1], pts[i]);
+    if (p.penCursor) d += ` L${p.penCursor[0]},${p.penCursor[1]}`;
+    out.push(
+      <path
+        key="pen"
+        d={d}
+        fill="none"
+        stroke="var(--accent)"
+        strokeWidth={1.5 / z}
+        strokeLinejoin="round"
+        pointerEvents="none"
+      />,
+    );
+    pts.forEach((q, i) => {
+      if (q.cx !== undefined && q.cy !== undefined) {
+        const bx = 2 * q.x - q.cx;
+        const by = 2 * q.y - q.cy;
+        out.push(
+          <path
+            key={'pch' + i}
+            d={`M${bx},${by} L${q.cx},${q.cy}`}
+            stroke="var(--muted)"
+            strokeWidth={1 / z}
+            pointerEvents="none"
+          />,
+          <circle key={'pc' + i} cx={q.cx} cy={q.cy} r={3 / z} fill="var(--muted)" pointerEvents="none" />,
+        );
+      }
+      out.push(
+        <rect
+          key={'pp' + i}
+          x={q.x - 4 / z}
+          y={q.y - 4 / z}
+          width={8 / z}
+          height={8 / z}
+          fill={i === 0 ? 'var(--accent)' : '#fff'}
+          stroke="var(--accent)"
+          strokeWidth={1.4 / z}
+          pointerEvents="none"
+        />,
+      );
+    });
+  }
+
   for (const g of p.guides) {
     out.push(
       g.v !== undefined ? (
@@ -461,3 +572,13 @@ export function Overlay(p: OverlayProps) {
 }
 
 export const boxCenter = (b: Box): Pt => center(b);
+
+/** Đoạn bezier giữa hai điểm Pen (tay cầm ra của a, tay cầm vào đối xứng của b). */
+export function penSeg(a: PenPoint, b: PenPoint): string {
+  const c1x = a.cx ?? a.x;
+  const c1y = a.cy ?? a.y;
+  const c2x = b.cx !== undefined ? 2 * b.x - b.cx : b.x;
+  const c2y = b.cy !== undefined ? 2 * b.y - b.cy : b.y;
+  if (a.cx === undefined && b.cx === undefined) return ` L${b.x},${b.y}`;
+  return ` C${c1x},${c1y} ${c2x},${c2y} ${b.x},${b.y}`;
+}

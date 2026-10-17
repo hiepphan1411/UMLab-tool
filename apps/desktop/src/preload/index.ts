@@ -72,6 +72,7 @@ const api: UmlabApi = {
   files: {
     save: (input) => invoke(IPC.fileSave, input),
     open: (input) => invoke(IPC.fileOpen, input),
+    captureScreen: () => invoke(IPC.fileCaptureScreen),
   },
 };
 

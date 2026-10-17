@@ -198,6 +198,8 @@ export interface UmlabApi {
   files: {
     save(input: { defaultName: string; filters?: FileFilter[]; data: string | Uint8Array }): Promise<string | null>;
     open(input: { filters?: FileFilter[]; multiple?: boolean; asText?: boolean }): Promise<OpenedFile[]>;
+    /** Chụp toàn màn hình chính (ẩn cửa sổ UMLab trong lúc chụp) → data URL PNG, null nếu không chụp được. */
+    captureScreen(): Promise<string | null>;
   };
 }
 
@@ -246,4 +248,5 @@ export const IPC = {
   assetList: 'asset:list',
   fileSave: 'file:save',
   fileOpen: 'file:open',
+  fileCaptureScreen: 'file:captureScreen',
 } as const;

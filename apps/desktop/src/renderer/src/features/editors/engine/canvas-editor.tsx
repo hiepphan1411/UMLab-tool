@@ -50,6 +50,7 @@ import {
   deleteFromModel,
   deleteSelection,
   duplicateSelection,
+  finishPen,
   groupSelection,
   modelUsages,
   nudge,
@@ -60,7 +61,7 @@ import {
 } from './ops';
 import { Palette, UmlIcon } from './palette';
 import { DiagramsPanel, FindPanel, IssuesPanel, LayersPanel, useIssues } from './panels';
-import { getConnector, getShape } from './registry';
+import { getConnector, getPasteHandlers, getShape } from './registry';
 import { resetTextCache } from './text';
 import { FONT_CSS } from './roboto-font';
 
@@ -71,7 +72,7 @@ export function registerModelExplorer(c: ComponentType<{ engine: Engine }>) {
 }
 
 let fontInjected = false;
-function ensureFont() {
+export function ensureFont() {
   if (fontInjected || typeof document === 'undefined') return;
   fontInjected = true;
   const s = document.createElement('style');
@@ -82,7 +83,15 @@ function ensureFont() {
     .then(() => resetTextCache());
 }
 
-type LeftTab = 'palette' | 'model' | 'layers' | 'diagrams';
+type LeftTab = string;
+
+/** Tab thêm vào thanh dọc bên trái (vd. tab Icon của sơ đồ kiến trúc). */
+export interface LeftTabDef {
+  id: string;
+  label: string;
+  icon: ReactNode;
+  render: (e: Engine, api: { center: () => [number, number]; editText: (id: string) => void }) => ReactNode;
+}
 
 export interface CanvasEditorOptions {
   /** Phần bổ sung dưới Inspector (vd. nút Tạo đặc tả). */
@@ -93,6 +102,8 @@ export interface CanvasEditorOptions {
   toolbar?: (e: Engine) => ReactNode;
   /** Lớp phủ thêm trên canvas (banner "Sinh từ đặc tả…"). */
   banner?: (e: Engine) => ReactNode;
+  /** Tab riêng chèn sau tab Palette. */
+  leftTabs?: LeftTabDef[];
 }
 
 /** Editor canvas đầy đủ cho một loại sơ đồ: palette, canvas, inspector, panel phụ, xuất/nhập. */
@@ -110,6 +121,12 @@ export function CanvasEditor(props: EditorProps & { options?: CanvasEditorOption
   const [left, setLeft] = useState<LeftTab>('palette');
   const [exporting, setExporting] = useState(false);
   const panel = useStore(engine.store, (s) => s.panel);
+  const wantTab = useStore(engine.store, (s) => s.leftTab);
+  useEffect(() => {
+    if (!wantTab) return;
+    setLeft(wantTab);
+    engine.set({ leftTab: null });
+  }, [wantTab, engine]);
   const zoom = useStore(engine.store, (s) => s.zoom);
   const grid = useStore(engine.store, (s) => s.grid);
   const issues = useIssues(engine);
@@ -214,6 +231,12 @@ export function CanvasEditor(props: EditorProps & { options?: CanvasEditorOption
       const mod = ev.ctrlKey || ev.metaKey;
       const k = ev.key.toLowerCase();
       const st = engine.state;
+      if (st.pen && (ev.key === 'Enter' || ev.key === 'Escape')) {
+        ev.preventDefault();
+        if (ev.key === 'Enter') finishPen(engine, false);
+        else engine.set({ pen: null });
+        return;
+      }
       if (ev.key === 'Escape') {
         if (st.connecting) engine.set({ connecting: null });
         else if (st.tool !== 'tool:select') engine.set({ tool: 'tool:select', sticky: false });
@@ -257,6 +280,7 @@ export function CanvasEditor(props: EditorProps & { options?: CanvasEditorOption
       }
       if (mod && k === 'v') {
         ev.preventDefault();
+        if (await pasteFromSystem()) return;
         paste(engine);
         return;
       }
@@ -312,6 +336,28 @@ export function CanvasEditor(props: EditorProps & { options?: CanvasEditorOption
     return () => window.removeEventListener('keydown', onKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [engine, readOnly]);
+
+  /** Dán ảnh (chụp màn hình…) từ clipboard hệ thống qua các PasteHandler đã đăng ký. */
+  const pasteFromSystem = async (): Promise<boolean> => {
+    const hs = getPasteHandlers(diagram.type);
+    if (!hs.length || !navigator.clipboard?.read) return false;
+    let items: ClipboardItems;
+    try {
+      items = await navigator.clipboard.read();
+    } catch {
+      return false;
+    }
+    if (!items.some((it) => it.types.some((t) => t.startsWith('image/')))) return false;
+    const ctx = {
+      engine,
+      at: api.current?.center() ?? ([0, 0] as [number, number]),
+      shift: false,
+      target: null,
+      editText: (id: string) => api.current?.editText(id),
+    };
+    for (const h of hs) if (await h.paste(items, ctx)) return true;
+    return false;
+  };
 
   const deleteFromModelConfirm = async () => {
     const mids = [
@@ -522,11 +568,16 @@ export function CanvasEditor(props: EditorProps & { options?: CanvasEditorOption
   const onDoubleClickView = (v: { id: string; shape: string }) => {
     const full = engine.lookup.view(v.id);
     if (!full) return false;
-    return !!getShape(full.shape)?.onDoubleClick?.(full, { open: openDiagram, lookup: engine.lookup });
+    return !!getShape(full.shape)?.onDoubleClick?.(full, {
+      open: openDiagram,
+      lookup: engine.lookup,
+      apply: (fn) => engine.apply(fn),
+    });
   };
 
   const tabs: [LeftTab, ReactNode, string][] = [
     ['palette', <Shapes key="p" />, 'Palette'],
+    ...(options?.leftTabs ?? []).map((t): [LeftTab, ReactNode, string] => [t.id, t.icon, t.label]),
     ['model', <Boxes key="m" />, 'Model Explorer'],
     ['layers', <Layers key="l" />, 'Lớp'],
     ['diagrams', <LayoutDashboard key="d" />, 'Sơ đồ trong project'],
@@ -543,6 +594,16 @@ export function CanvasEditor(props: EditorProps & { options?: CanvasEditorOption
       </nav>
       <aside className="editor-left">
         {left === 'palette' && <Palette engine={engine} />}
+        {options?.leftTabs
+          ?.filter((t) => t.id === left)
+          .map((t) => (
+            <div key={t.id} className="contents">
+              {t.render(engine, {
+                center: () => api.current?.center() ?? [0, 0],
+                editText: (id) => api.current?.editText(id),
+              })}
+            </div>
+          ))}
         {left === 'model' &&
           (ModelExplorerSlot ? (
             <ModelExplorerSlot engine={engine} />

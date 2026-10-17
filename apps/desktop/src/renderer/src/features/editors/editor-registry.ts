@@ -1,5 +1,6 @@
 import { createContext, useContext, type ComponentType, type ReactNode } from 'react';
-import type { DiagramMeta, DiagramType } from '@umlab/core';
+import type * as Y from 'yjs';
+import type { DiagramRecord, DiagramMeta, DiagramType, ModelElement } from '@umlab/core';
 import type { ProjectSession } from '../workspace/session';
 import type { UndoApi } from '../workspace/use-undo';
 
@@ -37,3 +38,22 @@ export function useEditorContext(): EditorProps {
   if (!c) throw new Error('useEditorContext ngoài editor');
   return c;
 }
+
+/** Nội dung khởi tạo của sơ đồ mới (theo mẫu). */
+export type DiagramInit = Partial<Pick<DiagramRecord, 'views' | 'connectors' | 'data' | 'canvas'>> & {
+  model?: ModelElement[];
+};
+
+/** Mẫu khi tạo sơ đồ mới (Trống / Kiến trúc UniPark+ / Gantt theo sprint…). Mẫu đầu tiên là mặc định. */
+export interface DiagramTemplate {
+  id: string;
+  label: string;
+  description?: string;
+  build: (ctx: { doc: Y.Doc; name: string }) => DiagramInit | Promise<DiagramInit>;
+}
+
+const templates = new Map<string, DiagramTemplate[]>();
+export function registerDiagramTemplates(type: DiagramType | 'playground', list: DiagramTemplate[]): void {
+  templates.set(type, list);
+}
+export const getDiagramTemplates = (type: string) => templates.get(type) ?? [];

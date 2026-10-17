@@ -139,7 +139,7 @@ export function createConnectorTx(
   kind: string,
   source: Endpoint,
   target: Endpoint,
-  o: { props?: Record<string, unknown>; model?: Record<string, unknown> } = {},
+  o: { props?: Record<string, unknown>; model?: Record<string, unknown>; style?: Record<string, unknown> } = {},
 ): Connector | null {
   const def = getConnector(kind);
   if (!def) return null;
@@ -167,7 +167,7 @@ export function createConnectorTx(
     waypoints: [],
     labels: [],
     props: { ...(def.defaultProps?.() ?? {}), ...(o.props ?? {}) },
-    style: {},
+    style: { ...(def.defaultStyle ?? {}), ...(o.style ?? {}) },
     z: tx.lookup.conns().length,
   };
   tx.addConn(c);
@@ -180,7 +180,7 @@ export function createConnector(
   kind: string,
   source: Endpoint,
   target: Endpoint,
-  o: { props?: Record<string, unknown>; model?: Record<string, unknown> } = {},
+  o: { props?: Record<string, unknown>; model?: Record<string, unknown>; style?: Record<string, unknown> } = {},
 ): string | null {
   let id: string | null = null;
   e.apply((tx) => {
@@ -317,6 +317,8 @@ export function copySelection(e: Engine): number {
   try {
     localStorage.setItem(CLIP_KEY, JSON.stringify(clip));
   } catch {}
+  // ghi đè clipboard hệ thống để ảnh chụp cũ trong đó không chen vào lần dán tiếp theo
+  void globalThis.navigator?.clipboard?.writeText?.(`UMLab: ${views.length} đối tượng`).catch(() => {});
   return views.length;
 }
 
@@ -525,4 +527,16 @@ export function pointInPoly(x: number, y: number, poly: [number, number][]): boo
     if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi || 1e-9) + xi) c = !c;
   }
   return c;
+}
+
+/** Kết thúc nét Pen đang đặt: tạo hình từ các điểm (khép kín hoặc hở). */
+export function finishPen(e: Engine, closed: boolean): void {
+  const pts = e.state.pen;
+  e.set({ pen: null });
+  const def = getShape(e.state.tool);
+  if (!pts || pts.length < 2 || !def?.pen) return;
+  const made = def.pen(pts, closed);
+  if (!made) return;
+  createView(e, def.type, made.x, made.y, { size: { w: made.w, h: made.h }, props: made.props, parentId: null });
+  if (!e.state.sticky) e.set({ tool: 'tool:select' });
 }

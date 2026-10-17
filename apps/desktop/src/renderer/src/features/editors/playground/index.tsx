@@ -11,6 +11,7 @@ import {
   type TextRegion,
 } from '../engine';
 import { TextLines, wrapText } from '../engine/text';
+import { COMMON_PALETTE_GROUPS } from '../shapes/common';
 
 const textProps = z.object({ text: z.string().describe('Chữ|textarea'), fontSize: z.number().describe('Cỡ chữ') });
 type TP = z.infer<typeof textProps>;
@@ -164,6 +165,7 @@ registerConnector({
 registerPalette('playground', [
   { id: 'shapes', items: [{ id: 'pg.box' }, { id: 'pg.circle' }, { id: 'pg.container' }] },
   { id: 'links', items: [{ id: 'pg.arrow' }, { id: 'pg.dashed' }] },
+  ...COMMON_PALETTE_GROUPS,
 ]);
 
 registerRules('playground', [

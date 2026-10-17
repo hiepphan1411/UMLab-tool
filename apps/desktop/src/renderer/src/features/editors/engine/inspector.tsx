@@ -233,6 +233,7 @@ function ViewInspector({ engine, view }: { engine: Engine; view: View }) {
               apply={(fn) => engine.apply(fn)}
               lookup={engine.lookup}
               readOnly={ro}
+              requestTab={(t) => engine.set({ leftTab: t })}
             />
           )}
           {def?.propsSchema && (

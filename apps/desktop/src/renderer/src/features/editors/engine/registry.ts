@@ -4,6 +4,7 @@ import type { ZodTypeAny } from 'zod';
 import type * as Y from 'yjs';
 import type { Connector, DiagramMeta, ModelElement, Routing, Style, View } from '@umlab/core';
 import type { Box, Pt } from './geometry';
+import type { Engine } from './engine';
 
 export interface EngineLookup {
   doc: Y.Doc;
@@ -17,6 +18,15 @@ export interface EngineLookup {
   diagram(id: string): DiagramMeta | undefined;
   diagrams(): DiagramMeta[];
   allModel(): ModelElement[];
+  /** Thông tin project (Diagram Info); không có khi dựng ảnh thu nhỏ ngoài editor. */
+  project?(): ProjectInfoLite | null;
+}
+
+export interface ProjectInfoLite {
+  name: string;
+  ownerName: string;
+  /** userId → tên hiển thị (thành viên project). */
+  members: Record<string, string>;
 }
 
 /** Giao dịch ghi (một bước undo). Mọi giá trị là JSON thuần, thay cả object. */
@@ -86,6 +96,26 @@ export interface ShapeInspectorProps {
   apply: (fn: (tx: Tx) => void) => void;
   lookup: EngineLookup;
   readOnly: boolean;
+  /** Mở một tab bên trái của editor (vd. 'icons'). */
+  requestTab?: (id: string) => void;
+}
+
+/** Tay nắm riêng của hình (đuôi Callout, đỉnh Polygon…), vẽ khi hình được chọn một mình. */
+export interface ShapeHandle {
+  key: string;
+  x: number;
+  y: number;
+  shape?: 'circle' | 'diamond' | 'square';
+  title?: string;
+}
+
+/** Một điểm của công cụ Pen: toạ độ + tay cầm bezier (đối xứng). */
+export interface PenPoint {
+  x: number;
+  y: number;
+  /** Tay cầm phía sau (điểm điều khiển ra); tay cầm phía trước đối xứng qua điểm. */
+  cx?: number;
+  cy?: number;
 }
 
 export interface ShapeDef<P = Record<string, unknown>> {
@@ -132,12 +162,31 @@ export interface ShapeDef<P = Record<string, unknown>> {
     label: string;
     onSelect: () => void;
   }[];
+  /** Vẽ lại khi danh sách/thông tin sơ đồ trong project đổi (Diagram Overview, Diagram Info). */
+  live?: boolean;
+  /** Tay nắm riêng (khi hình được chọn một mình). */
+  handles?: (ctx: RenderCtx<P>) => ShapeHandle[];
+  /** Kéo tay nắm riêng → props mới (xem trước khi kéo, ghi khi thả). null = không đổi. */
+  dragHandle?: (ctx: RenderCtx<P>, key: string, pt: Pt, mods: { shift: boolean }) => Record<string, unknown> | null;
+  /** Công cụ Pen: bấm từng điểm (kéo để tạo tay cầm), Enter / nhấp đúp kết thúc, bấm điểm đầu để khép kín. */
+  pen?: (
+    pts: PenPoint[],
+    closed: boolean,
+  ) => { x: number; y: number; w: number; h: number; props: Record<string, unknown> } | null;
   /** Công cụ vẽ tay (Pencil, Calligraphy): kéo chuột ghi điểm rồi tạo hình từ nét. */
   ink?: (pts: Pt[]) => { x: number; y: number; w: number; h: number; props: Record<string, unknown> } | null;
   /** Phím tắt khi hình đang được chọn, vd. 'Alt+Shift+A' thêm thuộc tính. Trả về khoá vùng chữ cần mở sửa (nếu có). */
   shortcuts?: Record<string, (tx: Tx, view: View) => string | void>;
-  /** Nhấp đúp mở thứ khác (Diagram Overview, Interaction Use, Call Behavior). */
-  onDoubleClick?: (view: View, api: { open: (diagramId: string) => void; lookup: EngineLookup }) => boolean;
+  /** Nhấp đúp mở thứ khác (Diagram Overview, Interaction Use, Call Behavior, chọn ảnh). */
+  onDoubleClick?: (
+    view: View,
+    api: { open: (diagramId: string) => void; lookup: EngineLookup; apply: (fn: (tx: Tx) => void) => void },
+  ) => boolean;
+  /** Gọi ngay sau khi người dùng đặt hình bằng công cụ / kéo thả (mở chọn ảnh, chụp màn hình…). */
+  onPlaced?: (
+    view: View,
+    api: { apply: (fn: (tx: Tx) => void) => void; lookup: EngineLookup; remove: () => void },
+  ) => void;
 }
 
 export type MarkerKind =
@@ -208,6 +257,8 @@ export interface ConnectorDef {
   propsSchema?: ZodTypeAny;
   modelSchema?: ZodTypeAny;
   defaultProps?: () => Record<string, unknown>;
+  /** Màu/độ dày mặc định khi tạo. */
+  defaultStyle?: Style;
   inspector?: ComponentType<{
     conn: Connector;
     model: ModelElement | null;
@@ -228,6 +279,8 @@ export interface PaletteItem {
   icon?: string;
   /** Biến thể trong flyout ◢. */
   variants?: PaletteItem[];
+  /** Mục là một lệnh (Element Group: nhóm vùng chọn) thay vì công cụ. */
+  action?: (e: Engine) => void;
   /** props/model ghi đè khi tạo (vd. Dependency «call»). */
   preset?: {
     props?: Record<string, unknown>;
@@ -259,8 +312,36 @@ export interface RuleCtx {
 
 export type Rule = (ctx: RuleCtx) => Issue[];
 
+/** Ngữ cảnh khi thả/dán dữ liệu ngoài vào canvas. */
+export interface CanvasInputCtx {
+  engine: Engine;
+  /** Toạ độ thế giới (vị trí thả hoặc tâm khung nhìn khi dán). */
+  at: Pt;
+  shift: boolean;
+  /** Hình dưới con trỏ (khi thả). */
+  target: View | null;
+  /** Mở sửa chữ hình vừa tạo. */
+  editText: (viewId: string) => void;
+}
+
+/** Thả từ ngoài (icon từ tab Icon, tệp ảnh…). Trả về true nếu đã xử lý. */
+export interface DropHandler {
+  /** Kiểu dữ liệu nhận (dataTransfer.types) — 'Files' cho tệp. */
+  types: string[];
+  diagramTypes?: string[];
+  drop: (dt: DataTransfer, ctx: CanvasInputCtx) => boolean | Promise<boolean>;
+}
+
+/** Dán từ clipboard hệ thống (ảnh chụp màn hình…) trước khi dán hình nội bộ. */
+export interface PasteHandler {
+  diagramTypes?: string[];
+  paste: (items: ClipboardItems, ctx: CanvasInputCtx) => Promise<boolean>;
+}
+
 // ---------------- registry ----------------
 const shapes = new Map<string, ShapeDef>();
+const dropHandlers: DropHandler[] = [];
+const pasteHandlers: PasteHandler[] = [];
 const connectors = new Map<string, ConnectorDef>();
 const palettes = new Map<string, PaletteGroup[]>();
 const rules = new Map<string, Rule[]>();
@@ -285,6 +366,16 @@ export const getConnector = (kind: string) => connectors.get(baseTool(kind));
 export const getPalette = (diagramType: string) => palettes.get(diagramType) ?? [];
 export const getRules = (diagramType: string) => rules.get(diagramType) ?? [];
 export const allShapes = () => [...shapes.values()];
+export function registerDropHandler(h: DropHandler): void {
+  dropHandlers.push(h);
+}
+export function registerPasteHandler(h: PasteHandler): void {
+  pasteHandlers.push(h);
+}
+export const getDropHandlers = (diagramType: string) =>
+  dropHandlers.filter((h) => !h.diagramTypes || h.diagramTypes.includes(diagramType));
+export const getPasteHandlers = (diagramType: string) =>
+  pasteHandlers.filter((h) => !h.diagramTypes || h.diagramTypes.includes(diagramType));
 export const allConnectors = () => [...connectors.values()];
 
 export function connLook(

@@ -1,4 +1,4 @@
-import { BrowserWindow, dialog } from 'electron';
+import { BrowserWindow, desktopCapturer, dialog, screen } from 'electron';
 import { readFile, writeFile } from 'node:fs/promises';
 import { basename } from 'node:path';
 import type { FileFilter, OpenedFile } from '@shared/api';
@@ -41,4 +41,31 @@ export async function openFiles(input: {
     );
   }
   return out;
+}
+
+/** Chụp màn hình chính: ẩn cửa sổ UMLab một nhịp để ảnh không chứa chính app, rồi hiện lại. */
+export async function captureScreen(): Promise<string | null> {
+  const win = BrowserWindow.getFocusedWindow() ?? BrowserWindow.getAllWindows()[0];
+  const display = screen.getPrimaryDisplay();
+  const { width, height } = display.size;
+  const k = display.scaleFactor || 1;
+  const wasVisible = !!win?.isVisible();
+  try {
+    if (win && wasVisible) {
+      win.hide();
+      await new Promise((r) => setTimeout(r, 350));
+    }
+    const sources = await desktopCapturer.getSources({
+      types: ['screen'],
+      thumbnailSize: { width: Math.round(width * k), height: Math.round(height * k) },
+    });
+    const src = sources.find((s) => s.display_id === String(display.id)) ?? sources[0];
+    if (!src || src.thumbnail.isEmpty()) return null;
+    return src.thumbnail.toDataURL();
+  } finally {
+    if (win && wasVisible) {
+      win.show();
+      win.focus();
+    }
+  }
 }

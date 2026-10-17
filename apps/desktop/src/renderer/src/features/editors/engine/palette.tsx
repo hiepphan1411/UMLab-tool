@@ -147,8 +147,22 @@ export function Palette({ engine }: { engine: Engine }) {
     const id = chosen[it.id];
     return { ...(it.variants.find((v) => v.id === id) ?? it.variants[0]), variants: it.variants };
   };
+  const actions = useMemo(() => {
+    const m = new Map<string, (e: Engine) => void>();
+    const walk = (it: PaletteItem) => {
+      if (it.action) m.set(it.id, it.action);
+      it.variants?.forEach(walk);
+    };
+    groups.forEach((g) => g.items.forEach(walk));
+    return m;
+  }, [groups]);
   const pick = (id: string, isSticky = false) => {
-    engine.set({ tool: id, sticky: isSticky });
+    const act = actions.get(id);
+    if (act) {
+      if (!engine.readOnly) act(engine);
+      return;
+    }
+    engine.set({ tool: id, sticky: isSticky, pen: null });
   };
   const choose = (parent: PaletteItem, v: PaletteItem) => {
     const n = { ...chosen, [parent.id]: v.id };

@@ -122,6 +122,12 @@ type Pending =
       text: ReactNode;
       options: { value: string; label: string; variant?: 'primary' | 'outline' | 'danger' }[];
       resolve: (v: string | null) => void;
+    }
+  | {
+      kind: 'custom';
+      id: number;
+      render: (done: (v: unknown) => void) => ReactNode;
+      resolve: (v: unknown) => void;
     };
 
 const useDialogs = create<{ queue: Pending[] }>(() => ({ queue: [] }));
@@ -191,6 +197,30 @@ export function choiceDialog<T extends string>(o: {
       resolve: resolve as (v: string | null) => void,
     }),
   );
+}
+
+/**
+ * Hộp thoại tuỳ biến dạng lệnh: `render(done)` trả về một <Dialog>; gọi done(giá trị) hoặc done(null) để đóng.
+ * Dùng cho hộp cắt ảnh, dán bảng Excel… (không dùng window.prompt).
+ */
+export function openDialog<T>(render: (done: (v: T | null) => void) => ReactNode): Promise<T | null> {
+  return new Promise((resolve) => {
+    const id = ++dseq;
+    push({
+      kind: 'custom',
+      id,
+      render: render as (done: (v: unknown) => void) => ReactNode,
+      resolve: resolve as (v: unknown) => void,
+    });
+  });
+}
+
+function CustomView({ p }: { p: Extract<Pending, { kind: 'custom' }> }) {
+  const done = (v: unknown) => {
+    pop(p.id);
+    p.resolve(v);
+  };
+  return <>{p.render(done)}</>;
 }
 
 function ConfirmView({ p }: { p: Extract<Pending, { kind: 'confirm' }> }) {
@@ -340,5 +370,6 @@ export function DialogHost() {
   if (!p) return null;
   if (p.kind === 'confirm') return <ConfirmView key={p.id} p={p} />;
   if (p.kind === 'prompt') return <PromptView key={p.id} p={p} />;
+  if (p.kind === 'custom') return <CustomView key={p.id} p={p} />;
   return <ChoiceView key={p.id} p={p} />;
 }

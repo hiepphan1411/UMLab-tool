@@ -15,7 +15,7 @@ import {
 import { LOCAL, type ProjectSession } from '../../workspace/session';
 import type { Box, Guide } from './geometry';
 import { buildCtx } from './render';
-import { getShape, type EngineLookup, type Tx } from './registry';
+import { getShape, type EngineLookup, type PenPoint, type Tx } from './registry';
 
 export type ToolId = string;
 
@@ -39,8 +39,12 @@ export interface EngineState {
   /** Thứ tự vẽ: cha trước con, anh em theo z. */
   order: View[];
   version: number;
+  /** Tăng khi meta các sơ đồ trong project đổi (hình `live` vẽ lại). */
+  metaVersion: number;
   /** Hộp tạm khi kéo/đổi kích thước (chưa ghi vào Y.Doc). */
   preview: Map<string, Box>;
+  /** props tạm khi kéo tay nắm riêng của hình (đuôi Callout, đỉnh Polygon). */
+  propPreview: Map<string, Record<string, unknown>>;
   /** Waypoint tạm khi kéo đoạn/điểm của đường nối. */
   connPreview: Map<string, Partial<Connector>>;
   sel: Set<string>;
@@ -63,6 +67,10 @@ export interface EngineState {
   panel: 'none' | 'issues' | 'find';
   /** Đường nét tạm (pencil/pen/calligraphy). */
   ink: [number, number][] | null;
+  /** Các điểm đang đặt bằng công cụ Pen. */
+  pen: PenPoint[] | null;
+  /** Yêu cầu mở một tab bên trái (vd. Inspector bấm "Thêm icon" → tab Icon). */
+  leftTab: string | null;
 }
 
 const viewportKey = (did: string) => `umlab.vp.${did}`;
@@ -103,8 +111,10 @@ export class Engine {
       model: new Map(),
       order: [],
       version: 0,
+      metaVersion: 0,
       preview: new Map(),
       connPreview: new Map(),
+      propPreview: new Map(),
       sel: new Set(),
       selConns: new Set(),
       hover: null,
@@ -123,6 +133,8 @@ export class Engine {
       editing: null,
       panel: 'none',
       ink: null,
+      pen: null,
+      leftTab: null,
     }));
     const vm = viewsMap(this.doc, diagramId);
     const cm = connsMap(this.doc, diagramId);
@@ -142,11 +154,25 @@ export class Engine {
       diagram: (id) => diagramsMap(doc).get(id),
       diagrams: () => [...diagramsMap(doc).values()],
       allModel: () => [...getState().model.values()],
+      project: () => {
+        const p = session.getSnapshot?.().project;
+        return p
+          ? {
+              name: p.name,
+              ownerName: p.members.find((m) => m.userId === p.ownerId)?.name ?? '',
+              members: Object.fromEntries(p.members.map((m) => [m.userId, m.name])),
+            }
+          : null;
+      },
     };
     this.syncAll();
     const onV = (ev: Y.YMapEvent<View>) => this.syncKeys('views', ev.keysChanged);
     const onC = (ev: Y.YMapEvent<Connector>) => this.syncKeys('conns', ev.keysChanged);
     const onM = (ev: Y.YMapEvent<ModelElement>) => this.syncKeys('model', ev.keysChanged);
+    const dmap = diagramsMap(this.doc);
+    const onD = () => this.store.setState({ metaVersion: this.store.getState().metaVersion + 1 });
+    dmap.observe(onD);
+    this.unobs.push(() => dmap.unobserve(onD));
     vm.observe(onV);
     cm.observe(onC);
     mm.observe(onM);
@@ -363,6 +389,12 @@ export class Engine {
   }
   clearSelection(): void {
     this.select([], []);
+  }
+
+  /** View với props tạm (đang kéo tay nắm riêng) áp vào. */
+  viewWithPreview(v: View): View {
+    const p = this.state.propPreview.get(v.id);
+    return p ? { ...v, props: { ...v.props, ...p } } : v;
   }
 
   /** View với hộp tạm (đang kéo) áp vào. */

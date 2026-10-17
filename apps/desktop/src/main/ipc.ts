@@ -13,7 +13,7 @@ import { auth } from './auth.service';
 import { hostOf, loadSettings, paths, saveSettings } from './config';
 import { database, friendlyError } from './db';
 import { broadcast } from './events';
-import { openFiles, saveFile } from './files';
+import { captureScreen, openFiles, saveFile } from './files';
 import { presence } from './presence.service';
 import { projects } from './projects.service';
 import { sync } from './sync.service';
@@ -172,4 +172,5 @@ export function registerIpc(isDev: boolean): void {
     (input: { filters?: { name: string; extensions: string[] }[]; multiple?: boolean; asText?: boolean }) =>
       openFiles(input),
   );
+  handle(IPC.fileCaptureScreen, () => captureScreen());
 }

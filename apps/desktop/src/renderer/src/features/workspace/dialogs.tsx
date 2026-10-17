@@ -8,7 +8,9 @@ import {
   type DiagramType,
 } from '@umlab/core';
 import { DiagramIcon } from '@/lib/icons';
-import { Button, Dialog, Field, Input, Select } from '@/ui';
+import { cn } from '@/lib/cn';
+import { Button, Dialog, Field, Input, Select, toast } from '@/ui';
+import { getDiagramTemplates } from '../editors/editor-registry';
 import { LOCAL, type ProjectSession } from './session';
 
 /** Danh sách thư mục dạng thụt lề cho ô chọn. */
@@ -45,7 +47,10 @@ export function NewDiagramDialog({
 }) {
   const [name, setName] = useState('');
   const [folder, setFolder] = useState<string>(folderId ?? '');
+  const [tpl, setTpl] = useState('');
+  const [busy, setBusy] = useState(false);
   const options = useFolderOptions(session, version);
+  const tpls = type ? getDiagramTemplates(type) : [];
   useEffect(() => {
     if (!type) return;
     const base = DIAGRAM_TYPE_BY_ID[type]?.label ?? 'Playground';
@@ -56,12 +61,22 @@ export function NewDiagramDialog({
       ),
     );
     setFolder(folderId ?? '');
+    setTpl(getDiagramTemplates(type)[0]?.id ?? '');
   }, [type, folderId, session]);
   if (!type) return null;
   const info = DIAGRAM_TYPE_BY_ID[type] ?? { label: 'Playground' };
-  const submit = () => {
-    const id = createDiagram(session.doc, type, name || info.label, folder || null, LOCAL);
-    onCreated(id);
+  const submit = async () => {
+    if (busy) return;
+    const t = tpls.find((x) => x.id === tpl);
+    setBusy(true);
+    try {
+      const init = t ? await t.build({ doc: session.doc, name: name || info.label }) : undefined;
+      const id = createDiagram(session.doc, type, name || info.label, folder || null, LOCAL, init);
+      onCreated(id);
+    } catch (e) {
+      toast(e instanceof Error ? e.message : String(e), { error: true });
+      setBusy(false);
+    }
   };
   return (
     <Dialog
@@ -79,7 +94,7 @@ export function NewDiagramDialog({
           <Button variant="outline" onClick={onClose}>
             Huỷ
           </Button>
-          <Button variant="primary" onClick={submit}>
+          <Button variant="primary" onClick={() => void submit()} disabled={busy}>
             Tạo & mở
           </Button>
         </>
@@ -89,7 +104,7 @@ export function NewDiagramDialog({
         className="grid gap-4"
         onSubmit={(e) => {
           e.preventDefault();
-          submit();
+          void submit();
         }}
       >
         <Field label="Tên sơ đồ">
@@ -105,6 +120,27 @@ export function NewDiagramDialog({
         <Field label="Thư mục">
           <Select value={folder} onChange={(e) => setFolder(e.target.value)} options={options} />
         </Field>
+        {tpls.length > 1 && (
+          <div>
+            <span className="lbl">Mẫu</span>
+            <div className="grid gap-2" role="radiogroup" aria-label="Mẫu sơ đồ">
+              {tpls.map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={tpl === t.id}
+                  data-template={t.id}
+                  className={cn('tpl-card', tpl === t.id && 'on')}
+                  onClick={() => setTpl(t.id)}
+                >
+                  <span className="font-semibold">{t.label}</span>
+                  {t.description && <span className="text-[11.5px] text-muted">{t.description}</span>}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
         <button type="submit" hidden />
       </form>
     </Dialog>

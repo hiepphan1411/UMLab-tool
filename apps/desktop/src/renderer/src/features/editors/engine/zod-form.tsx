@@ -125,7 +125,14 @@ export function FieldControl({
   if (u instanceof z.ZodBoolean)
     return <Checkbox label={meta.label} checked={!!value} onChange={(v) => !ro && onChange(v)} disabled={ro} />;
   if (u instanceof z.ZodEnum) {
-    const opts = (u.options as string[]).map((o) => ({ value: o, label: o || '(không)' }));
+    const named = new Map<string, string>();
+    for (const f of meta.flags)
+      if (f.startsWith('opts:'))
+        for (const pair of f.slice(5).split(';')) {
+          const [k, ...rest] = pair.split('=');
+          named.set(k, rest.join('='));
+        }
+    const opts = (u.options as string[]).map((o) => ({ value: o, label: named.get(o) ?? (o || '(không)') }));
     if (opts.length <= 4 && !meta.flags.has('select') && opts.every((o) => o.label.length < 14))
       return (
         <Segmented

@@ -7,6 +7,8 @@ import { presence } from './presence.service';
 import { sync } from './sync.service';
 
 const isDev = !app.isPackaged;
+// Giao diện tiếng Việt: ô chọn ngày hiện dd/mm/yyyy, thông báo hệ thống tiếng Việt
+app.commandLine.appendSwitch('lang', 'vi');
 
 // Cho phép chạy nhiều bản (mỗi bản một userData) để thử cộng tác trên cùng máy: UMLAB_PROFILE=b npm run dev
 if (process.env.UMLAB_PROFILE) {

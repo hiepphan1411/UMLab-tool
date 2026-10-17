@@ -24,13 +24,14 @@ import {
   containerAt,
   createConnector,
   createView,
+  finishPen,
   growParents,
   pointInPoly,
   reparent,
   viewsInBox,
 } from './ops';
 import { Overlay } from './overlay';
-import { getConnector, getShape, type TextRegion } from './registry';
+import { getConnector, getDropHandlers, getShape, type ShapeHandle, type TextRegion } from './registry';
 import { ConnectorView, ShapeView, buildCtx, contentBox, makeRouteEnv } from './render';
 import { routeConnector, type Routed } from './route';
 import { TextEditor } from './text-edit';
@@ -67,6 +68,8 @@ type Drag =
     }
   | { mode: 'draw'; type: string; sx: number; sy: number; cur: Pt }
   | { mode: 'ink'; type: string }
+  | { mode: 'pen'; i: number; sx: number; sy: number }
+  | { mode: 'shandle'; id: string; key: string }
   | { mode: 'catalog'; fromId: string };
 
 export interface CanvasApi {
@@ -107,6 +110,7 @@ export function Canvas({
   const [size, setSize] = useState({ w: 800, h: 600 });
   const [editing, setEditing] = useState<{ viewId: string; region: TextRegion } | null>(null);
   const [catalogHover, setCatalogHover] = useState<string | null>(null);
+  const [penCur, setPenCur] = useState<Pt | null>(null);
   const ro = engine.readOnly;
 
   // ---------- kích thước khung ----------
@@ -211,6 +215,9 @@ export function Canvas({
 
   // ---------- culling ----------
   const viewport: Box = { x: -s.tx / s.zoom, y: -s.ty / s.zoom, w: size.w / s.zoom, h: size.h / s.zoom };
+  // ô lưới 200px của khung nhìn (chỉ đổi khi cuộn đủ xa) — dựng lại danh sách hình hiển thị
+  const cellX = s.order.length > 300 ? Math.round(viewport.x / 200) : 0;
+  const cellY = s.order.length > 300 ? Math.round(viewport.y / 200) : 0;
   const visible = useMemo(() => {
     if (s.order.length <= 300) return s.order;
     const m = 200 / s.zoom;
@@ -223,14 +230,7 @@ export function Canvas({
         getShape(v.shape)?.container,
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    s.order,
-    s.sel,
-    s.preview,
-    s.order.length > 300 ? Math.round(viewport.x / 200) : 0,
-    s.order.length > 300 ? Math.round(viewport.y / 200) : 0,
-    s.zoom,
-  ]);
+  }, [s.order, s.sel, s.preview, cellX, cellY, s.zoom]);
 
   // ---------- con trỏ / presence ----------
   const sendCursor = (p: Pt | null) => engine.session.setPresence({ cursor: p ? { x: p[0], y: p[1] } : null });
@@ -264,6 +264,23 @@ export function Canvas({
     lastClick.current = { t: isDouble ? 0 : now, x: ev.clientX, y: ev.clientY };
     if (isDouble && st.tool === 'tool:select' && onDouble(t, wx, wy)) return;
 
+    // công cụ Pen: bấm từng điểm, kéo để tạo tay cầm; nhấp đúp kết thúc; bấm điểm đầu để khép kín
+    const penShape = getShape(st.tool);
+    if (penShape?.pen && !ro && ev.button === 0 && !space.current) {
+      const pts = st.pen ?? [];
+      if (isDouble && pts.length >= 2) {
+        finishPen(engine, false);
+        return;
+      }
+      if (pts.length >= 3 && Math.hypot(wx - pts[0].x, wy - pts[0].y) * st.zoom < 9) {
+        finishPen(engine, true);
+        return;
+      }
+      engine.set({ pen: [...pts, { x: r1(wx), y: r1(wy) }] });
+      drag.current = { mode: 'pen', i: pts.length, sx: wx, sy: wy };
+      return;
+    }
+
     if (ev.button === 1 || space.current || st.tool === 'tool:hand') {
       drag.current = { mode: 'pan', sx: ev.clientX, sy: ev.clientY, tx: st.tx, ty: st.ty };
       wrap.current?.classList.add('panning');
@@ -279,6 +296,11 @@ export function Canvas({
       return;
     }
 
+    const shandle = t.closest('[data-shandle]');
+    if (shandle && st.sel.size === 1) {
+      drag.current = { mode: 'shandle', id: [...st.sel][0], key: shandle.getAttribute('data-shandle')! };
+      return;
+    }
     const handle = t.closest('[data-handle]');
     const anchor = t.closest('[data-anchor]');
     const ep = t.closest('[data-ep]');
@@ -476,6 +498,7 @@ export function Canvas({
     sendCursor([wx, wy]);
     const d = drag.current;
     const st = engine.state;
+    if (st.pen) setPenCur([wx, wy]);
     if (!d) {
       const t = ev.target as Element;
       const anchor = t.closest('[data-anchor]');
@@ -585,6 +608,20 @@ export function Canvas({
     }
     if (d.mode === 'ink') {
       engine.set({ ink: [...(st.ink ?? []), [wx, wy]] });
+      return;
+    }
+    if (d.mode === 'pen') {
+      if (Math.hypot(wx - d.sx, wy - d.sy) * st.zoom < 3 || !st.pen) return;
+      engine.set({ pen: st.pen.map((p, i) => (i === d.i ? { ...p, cx: r1(wx), cy: r1(wy) } : p)) });
+      return;
+    }
+    if (d.mode === 'shandle') {
+      const v = engine.lookup.view(d.id);
+      const def = v ? getShape(v.shape) : undefined;
+      if (!v || !def?.dragHandle) return;
+      const cur = engine.viewWithPreview(v);
+      const patch = def.dragHandle(buildCtx(cur, def, engine.lookup), d.key, [wx, wy], { shift: ev.shiftKey });
+      if (patch) engine.set({ propPreview: new Map([[v.id, { ...(st.propPreview.get(v.id) ?? {}), ...patch }]]) });
       return;
     }
     if (d.mode === 'draw') {
@@ -733,6 +770,13 @@ export function Canvas({
       engine.set(clear);
       return;
     }
+    if (d.mode === 'pen') return;
+    if (d.mode === 'shandle') {
+      const p = st.propPreview.get(d.id);
+      engine.set({ ...clear, propPreview: new Map() });
+      if (p) engine.apply((tx) => tx.setViewProps(d.id, p));
+      return;
+    }
     if (d.mode === 'ink') {
       const pts = st.ink ?? [];
       engine.set({ ink: null });
@@ -767,6 +811,7 @@ export function Canvas({
       });
       if (!st.sticky) engine.set({ tool: 'tool:select' });
       if (id && getShape(d.type)?.textRegions && !def.container) requestAnimationFrame(() => editText(id));
+      if (id) placed(id);
       return;
     }
     if (d.mode === 'connect' || d.mode === 'catalog') {
@@ -820,6 +865,18 @@ export function Canvas({
       return;
     }
     engine.set(clear);
+  };
+
+  /** Hook ShapeDef.onPlaced sau khi người dùng đặt hình. */
+  const placed = (id: string) => {
+    const v = engine.lookup.view(id);
+    const def = v ? getShape(v.shape) : undefined;
+    if (!v || !def?.onPlaced) return;
+    def.onPlaced(v, {
+      apply: (fn) => engine.apply(fn),
+      lookup: engine.lookup,
+      remove: () => engine.apply((tx) => tx.deleteView(id)),
+    });
   };
 
   // ---------- nhấp đúp ----------
@@ -902,11 +959,34 @@ export function Canvas({
   }, []);
 
   // ---------- thả từ palette ----------
+  const dropHandlers = useMemo(() => getDropHandlers(engine.diagramType), [engine.diagramType]);
+  const acceptsDrop = (types: readonly string[]) =>
+    types.includes('text/x-umlab-tool') ||
+    types.includes('text/x-umlab-model') ||
+    dropHandlers.some((h) => h.types.some((t) => types.includes(t)));
   const onDrop = (ev: React.DragEvent) => {
-    const tool = ev.dataTransfer.getData('text/x-umlab-tool');
-    if (!tool || ro) return;
-    ev.preventDefault();
+    if (ro) return;
     const [wx, wy] = toWorld(ev.clientX, ev.clientY);
+    const tool = ev.dataTransfer.getData('text/x-umlab-tool');
+    if (!tool) {
+      const types = [...ev.dataTransfer.types];
+      const hs = dropHandlers.filter((h) => h.types.some((t) => types.includes(t)));
+      if (!hs.length) return;
+      ev.preventDefault();
+      const ctx = {
+        engine,
+        at: [wx, wy] as Pt,
+        shift: ev.shiftKey,
+        target: viewAtPoint(wx, wy),
+        editText: (id: string) => requestAnimationFrame(() => editText(id)),
+      };
+      const dt = ev.dataTransfer;
+      void (async () => {
+        for (const h of hs) if (await h.drop(dt, ctx)) return;
+      })();
+      return;
+    }
+    ev.preventDefault();
     const def = getShape(tool);
     if (def) {
       const pre = presetOf(engine, tool);
@@ -919,6 +999,7 @@ export function Canvas({
         pre,
       );
       if (id && def.textRegions && !def.container) requestAnimationFrame(() => editText(id));
+      if (id) placed(id);
     }
     const mid = ev.dataTransfer.getData('text/x-umlab-model');
     if (mid) ev.preventDefault();
@@ -932,6 +1013,16 @@ export function Canvas({
     [st.order, engine.lookup],
   );
   const catalogView = catalogHover ? st.views.get(catalogHover) : null;
+  // tay nắm riêng của hình đang chọn một mình
+  let shapeHandles: ShapeHandle[] = [];
+  if (st.sel.size === 1 && !ro) {
+    const v0 = st.views.get([...st.sel][0]);
+    const def0 = v0 ? getShape(v0.shape) : undefined;
+    if (v0 && def0?.handles && !v0.locked && !(drag.current && drag.current.mode === 'move')) {
+      const b0 = engine.box(v0.id)!;
+      shapeHandles = def0.handles(buildCtx({ ...engine.viewWithPreview(v0), ...b0 }, def0, engine.lookup));
+    }
+  }
   const catB = catalogView ? engine.box(catalogView.id) : null;
 
   return (
@@ -969,7 +1060,7 @@ export function Canvas({
         onContextMenu?.(e, { view: v ?? undefined, conn: v ? undefined : c, at: [wx, wy] });
       }}
       onDragOver={(e) => {
-        if (e.dataTransfer.types.includes('text/x-umlab-tool') || e.dataTransfer.types.includes('text/x-umlab-model')) {
+        if (!ro && acceptsDrop(e.dataTransfer.types)) {
           e.preventDefault();
           e.dataTransfer.dropEffect = 'copy';
         }
@@ -989,7 +1080,9 @@ export function Canvas({
         >
           {visible.map((v) => {
             const p = st.preview.get(v.id);
-            const view = p ? { ...v, ...p } : v;
+            const pp = st.propPreview.get(v.id);
+            const base = pp ? { ...v, props: { ...v.props, ...pp } } : v;
+            const view = p ? { ...base, ...p } : base;
             return (
               <ShapeView
                 key={v.id}
@@ -998,7 +1091,13 @@ export function Canvas({
                 lookup={engine.lookup}
                 zoom={st.zoom}
                 editing={editingKey && editingKey.viewId === v.id ? editingKey.key : null}
-                version={getShape(v.shape)?.container || v.modelId ? st.version : 0}
+                version={
+                  getShape(v.shape)?.live
+                    ? st.version * 1000 + st.metaVersion
+                    : getShape(v.shape)?.container || v.modelId
+                      ? st.version
+                      : 0
+                }
               />
             );
           })}
@@ -1039,6 +1138,9 @@ export function Canvas({
             readOnly={ro}
             peers={peers}
             ink={st.ink}
+            pen={st.pen}
+            penCursor={penCur}
+            shapeHandles={shapeHandles}
             waypoints={(id) =>
               (st.connPreview.get(id)?.waypoints ?? engine.lookup.conn(id)?.waypoints ?? []) as {
                 x: number;
