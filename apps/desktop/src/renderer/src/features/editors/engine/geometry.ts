@@ -288,6 +288,11 @@ export function nearestSide(b: Box, wx: number, wy: number): { side: Side; t: nu
 }
 
 /** Cạnh của hộp hướng về điểm p (dùng cho định tuyến tự chọn cạnh). */
+/** Điểm (x,y) có nằm sát mép hộp (trong khoảng tol) không — kéo nối từ sát mép thì khoá cạnh, từ giữa hình thì tự chọn. */
+export function nearEdge(b: Box, x: number, y: number, tol: number): boolean {
+  return Math.min(Math.abs(x - b.x), Math.abs(x - b.x - b.w), Math.abs(y - b.y), Math.abs(y - b.y - b.h)) <= tol;
+}
+
 export function sideToward(b: Box, p: Pt): Side {
   const [cx, cy] = center(b);
   const dx = (p[0] - cx) / (b.w || 1);

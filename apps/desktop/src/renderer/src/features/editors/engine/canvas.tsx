@@ -8,6 +8,7 @@ import {
   clamp,
   intersects,
   nearestSegment,
+  nearEdge,
   nearestSide,
   projectT,
   pointAt,
@@ -413,7 +414,9 @@ export function Canvas({
       } else if (viewHit) {
         const b = engine.box(viewHit.id)!;
         const ns = nearestSide(b, wx, wy);
-        src = { id: viewHit.id, pt: [wx, wy], side: ns.side, t: ns.t };
+        src = nearEdge(b, wx, wy, 12 / st.zoom)
+          ? { id: viewHit.id, pt: [wx, wy], side: ns.side, t: ns.t }
+          : { id: viewHit.id, pt: [wx, wy] };
       } else src = { id: null, pt: [wx, wy] };
       engine.set({
         connecting: {
@@ -642,9 +645,11 @@ export function Canvas({
       let tt: number | undefined;
       if (target) {
         const b = engine.box(target.id)!;
-        const ns = nearestSide(b, wx, wy);
-        side = ns.side;
-        tt = ns.t;
+        if (nearEdge(b, wx, wy, 12 / st.zoom)) {
+          const ns = nearestSide(b, wx, wy);
+          side = ns.side;
+          tt = ns.t;
+        }
         if (d.mode === 'connect') {
           const ok = canConnect(engine, c.kind, c.sourceId, target.id);
           invalid = ok === true ? null : ok;
@@ -694,9 +699,10 @@ export function Canvas({
       const t = viewAtPoint(wx, wy);
       let end: Connector['source'];
       if (t && (t.id !== other || getConnector(c.kind)?.selfLoop)) {
-        const ns = nearestSide(engine.box(t.id)!, wx, wy);
+        const tb = engine.box(t.id)!;
+        const ns = nearestSide(tb, wx, wy);
         end =
-          c.routing === 'straight' || c.routing === 'curved'
+          c.routing === 'straight' || c.routing === 'curved' || !nearEdge(tb, wx, wy, 12 / st.zoom)
             ? { viewId: t.id }
             : { viewId: t.id, side: ns.side, t: ns.t };
       } else if (getConnector(c.kind)?.freeEnds) end = { viewId: null, x: wx, y: wy };

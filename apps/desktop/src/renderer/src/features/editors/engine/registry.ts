@@ -78,6 +78,8 @@ export interface TextRegion {
   placeholder?: string;
   /** Vùng danh sách (compartment): mỗi dòng một mục; Enter thêm dòng, Backspace dòng rỗng xoá dòng, Tab chuyển ngăn. */
   list?: boolean;
+  /** Gợi ý khi gõ (vd. kiểu sau dấu `:`): nhận phần dòng trước con trỏ, trả về vị trí bắt đầu từ cần thay + danh sách. */
+  suggest?: (lineBeforeCaret: string) => { from: number; items: string[] } | null;
   commit: (tx: Tx, value: string) => void;
 }
 

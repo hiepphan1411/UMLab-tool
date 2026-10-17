@@ -6,3 +6,4 @@ import './architecture';
 import './gantt';
 import './usecase';
 import './usecase-spec';
+import './class';
