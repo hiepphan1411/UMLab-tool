@@ -1,4 +1,5 @@
 import { _electron as electron, expect, type ElectronApplication, type Page } from '@playwright/test';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 export interface Launched {
@@ -20,6 +21,7 @@ export async function launch(profile = `e2e-${Date.now()}-${++seq}`, dbName = 'u
       UMLAB_MONGO_URI_OVERRIDE: uri,
       UMLAB_DB_OVERRIDE: dbName,
       UMLAB_NO_SEED: '1',
+      UMLAB_LOCAL_DIR: join(tmpdir(), 'umlab-e2e-local', profile),
       NODE_ENV: 'production',
     },
   });

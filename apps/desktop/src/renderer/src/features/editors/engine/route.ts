@@ -66,6 +66,78 @@ function roughPoint(e: Endpoint, env: RouteEnv): Pt | null {
   return b ? center(b) : null;
 }
 
+/** Đoạn thẳng có cắt vào (phần trong) hộp không — dùng cho đường vuông góc / thẳng. */
+export function segHitsBox(a: Pt, b: Pt, o: Box, inset = 3): boolean {
+  const x1 = o.x + inset;
+  const y1 = o.y + inset;
+  const x2 = o.x + o.w - inset;
+  const y2 = o.y + o.h - inset;
+  if (x2 <= x1 || y2 <= y1) return false;
+  // Liang–Barsky: cắt hình chữ nhật mở
+  let t0 = 0;
+  let t1 = 1;
+  const dx = b[0] - a[0];
+  const dy = b[1] - a[1];
+  const clip = (p: number, q: number) => {
+    if (Math.abs(p) < 1e-9) return q > 0;
+    const r = q / p;
+    if (p < 0) {
+      if (r > t1) return false;
+      if (r > t0) t0 = r;
+    } else {
+      if (r < t0) return false;
+      if (r < t1) t1 = r;
+    }
+    return true;
+  };
+  return clip(-dx, a[0] - x1) && clip(dx, x2 - a[0]) && clip(-dy, a[1] - y1) && clip(dy, y2 - a[1]) && t1 - t0 > 1e-6;
+}
+
+/** Đường đi qua hình nào trong `boxes` không. */
+export function pathHits(pts: Pt[], boxes: Box[]): boolean {
+  for (let i = 1; i < pts.length; i++) for (const o of boxes) if (segHitsBox(pts[i - 1], pts[i], o)) return true;
+  return false;
+}
+
+const aligned = (a: Pt, b: Pt) => Math.abs(a[0] - b[0]) < 0.5 || Math.abs(a[1] - b[1]) < 0.5;
+
+/**
+ * Đường chỉnh tay có các điểm uốn vuông góc (≥ 2 điểm thẳng hàng từng cặp): nối đầu mút vào điểm uốn đầu/cuối bằng
+ * khuỷu vuông góc theo hướng cạnh — trượt đầu mút sang cạnh khác không làm đoạn đầu bị xiên.
+ */
+function orthoJoin(src: EndInfo, inner: Pt[], tgt: EndInfo): Pt[] {
+  const ortho = inner.length >= 2 && inner.every((p, i) => i === 0 || aligned(inner[i - 1], p));
+  if (!ortho) return [src.pt, ...inner, tgt.pt];
+  const STUB = 18;
+  const elbow = (end: EndInfo, p: Pt): Pt[] => {
+    const [x, y] = end.pt;
+    const vertical = end.side === 'top' || end.side === 'bottom';
+    // điểm uốn nằm "phía sau" cạnh (đi thẳng sẽ cắt vào hình) → ra một đoạn ngắn ngoài cạnh rồi vòng
+    const inward =
+      (end.side === 'top' && p[1] > y) ||
+      (end.side === 'bottom' && p[1] < y) ||
+      (end.side === 'left' && p[0] > x) ||
+      (end.side === 'right' && p[0] < x);
+    if (inward) {
+      const d = end.side === 'top' || end.side === 'left' ? -STUB : STUB;
+      return vertical
+        ? [
+            [x, y + d],
+            [p[0], y + d],
+          ]
+        : [
+            [x + d, y],
+            [x + d, p[1]],
+          ];
+    }
+    if (aligned(end.pt, p)) return [];
+    return [vertical ? [x, p[1]] : [p[0], y]];
+  };
+  const first = inner[0];
+  const last = inner[inner.length - 1];
+  return [src.pt, ...elbow(src, first), ...inner, ...elbow(tgt, last).reverse(), tgt.pt];
+}
+
 /** Điểm của đường nối (đã gồm 2 đầu). null nếu thiếu hình nguồn/đích. */
 export function routeConnector(c: Connector, env: RouteEnv): Routed | null {
   const rs = roughPoint(c.source, env);
@@ -85,21 +157,36 @@ export function routeConnector(c: Connector, env: RouteEnv): Routed | null {
   const tgt = resolve(c.target, lastWp ?? rs, env);
   if (!src || !tgt) return null;
   if (wp.length || c.routing === 'manual') {
-    return { pts: cleanPts([src.pt, ...wp.map((p) => [p.x, p.y] as Pt), tgt.pt]), src, tgt, curved: false };
+    const inner = wp.map((p) => [p.x, p.y] as Pt);
+    return { pts: cleanPts(orthoJoin(src, inner, tgt)), src, tgt, curved: false };
   }
   if (c.routing === 'straight') return { pts: [src.pt, tgt.pt], src, tgt, curved: false };
   if (c.routing === 'curved') return { pts: curvedPts(src.pt, src.side, tgt.pt, tgt.side), src, tgt, curved: true };
   const s1 = src.side ?? 'right';
   const s2 = tgt.side ?? 'left';
+  const exclude = [c.source.viewId, c.target.viewId].filter(Boolean) as string[];
   if (c.routing === 'smart' && env.obstacles) {
-    const smart = smartRoute(
-      src.pt,
-      s1,
-      tgt.pt,
-      s2,
-      env.obstacles([c.source.viewId, c.target.viewId].filter(Boolean) as string[]),
-    );
+    const smart = smartRoute(src.pt, s1, tgt.pt, s2, env.obstacles(exclude));
     if (smart) return { pts: smart, src, tgt, curved: false };
   }
-  return { pts: autoOrtho(src.pt, s1, tgt.pt, s2), src, tgt, curved: false };
+  const ortho = autoOrtho(src.pt, s1, tgt.pt, s2);
+  // vuông góc mặc định: nếu đi xuyên qua hình khác thì tự né (A* như chế độ Thông minh)
+  if (c.routing === 'orthogonal' && env.obstacles) {
+    const xs = ortho.map((p) => p[0]);
+    const ys = ortho.map((p) => p[1]);
+    const bx = {
+      x: Math.min(...xs),
+      y: Math.min(...ys),
+      w: Math.max(...xs) - Math.min(...xs),
+      h: Math.max(...ys) - Math.min(...ys),
+    };
+    const near = env
+      .obstacles(exclude)
+      .filter((o) => o.x < bx.x + bx.w && bx.x < o.x + o.w && o.y < bx.y + bx.h && bx.y < o.y + o.h);
+    if (near.length && pathHits(ortho, near)) {
+      const smart = smartRoute(src.pt, s1, tgt.pt, s2, env.obstacles(exclude));
+      if (smart) return { pts: smart, src, tgt, curved: false };
+    }
+  }
+  return { pts: ortho, src, tgt, curved: false };
 }

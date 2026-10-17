@@ -11,6 +11,7 @@ import {
   ArrowRightLeft,
   ArrowUp,
   BringToFront,
+  Crosshair,
   Copy,
   Group,
   Lock,
@@ -333,8 +334,8 @@ function ConnInspector({ engine, conn }: { engine: Engine; conn: Connector }) {
           </div>
         </div>
         <p className="text-[11.5px] text-muted" style={{ lineHeight: 1.5 }}>
-          Kéo 2 đầu để nối lại. Nhấp đúp lên đường để thêm điểm uốn, nhấp đúp điểm uốn để xoá, kéo tay nắm giữa đoạn để
-          dời cả đoạn.
+          Kéo đầu mút trượt dọc cạnh hình để đổi vị trí (hoặc sang hình khác để nối lại). Nhấp đúp lên đường để bẻ vuông
+          góc tại chỗ đó, nhấp đúp điểm uốn để xoá, kéo tay nắm giữa đoạn để dời cả đoạn.
         </p>
       </Group2>
       {Custom && (
@@ -385,6 +386,24 @@ function ConnInspector({ engine, conn }: { engine: Engine; conn: Connector }) {
               <ArrowRightLeft />
               Đảo chiều
             </button>
+            {(conn.source.side || conn.target.side) && (
+              <button
+                className="btn outline"
+                title="Bỏ khoá vị trí đầu mút — tự chọn giữa cạnh hướng về đầu kia"
+                onClick={() =>
+                  engine.apply((tx) =>
+                    tx.setConn(conn.id, (c) => ({
+                      ...c,
+                      source: c.source.viewId ? { viewId: c.source.viewId } : c.source,
+                      target: c.target.viewId ? { viewId: c.target.viewId } : c.target,
+                    })),
+                  )
+                }
+              >
+                <Crosshair />
+                Đầu mút về giữa
+              </button>
+            )}
             <button className="btn outline ghost-danger" onClick={() => deleteSelection(engine)}>
               <Trash2 />
               Xoá
@@ -477,7 +496,7 @@ function DiagramInspector({ engine }: { engine: Engine }) {
         />
         <Checkbox
           label="Cầu nhảy tại chỗ đường cắt nhau"
-          checked={!!meta.canvas.lineJumps}
+          checked={meta.canvas.lineJumps !== false}
           onChange={(v) => setCanvas({ lineJumps: v })}
         />
         <p className="text-[11.5px] text-muted">

@@ -65,7 +65,10 @@ class PresenceService {
       lastSig: '',
     };
     this.rooms.set(projectId, room);
-    void room.feed.start().then(() => this.reload(projectId));
+    void room.feed
+      .start()
+      .then(() => this.reload(projectId))
+      .catch((e) => console.warn('[presence] reload', e));
     void this.write(projectId);
   }
 

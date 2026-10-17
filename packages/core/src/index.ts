@@ -32,3 +32,4 @@ export * from './orm/input';
 export * from './orm/class-to-erd';
 export * from './orm/sync';
 export * from './orm/write';
+export * from './media/attachment';

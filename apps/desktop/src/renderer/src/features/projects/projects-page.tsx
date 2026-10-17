@@ -339,6 +339,15 @@ export function ProjectsPage() {
                         <div className="mt-0.5 text-[11.5px] text-muted" title={dateTime(p.updatedAt)}>
                           Cập nhật {timeAgo(p.updatedAt)}
                           {p.role !== 'owner' && ` · ${p.role === 'editor' ? 'được chia sẻ' : 'chỉ xem'}`}
+                          {p.local?.pendingCreate && (
+                            <span
+                              className="ml-1 font-medium"
+                              style={{ color: 'var(--warn)' }}
+                              title="Tạo khi mất mạng — sẽ tự đồng bộ lên MongoDB"
+                            >
+                              · chưa đồng bộ
+                            </span>
+                          )}
                         </div>
                       </div>
                       <IconButton

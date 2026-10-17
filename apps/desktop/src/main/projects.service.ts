@@ -2,6 +2,7 @@ import { Binary } from 'mongodb';
 import { z } from 'zod';
 import {
   IPC,
+  type ProjectCreateInput,
   type ProjectInput,
   type ProjectMember,
   type ProjectStats,
@@ -12,6 +13,7 @@ import { auth } from './auth.service';
 import { database, type ProjectDoc, type UserDoc } from './db';
 import { broadcast } from './events';
 import { ChangeFeed } from './feed';
+import { local } from './local.service';
 import { AppError, fail, newId } from './util';
 
 const RANK: Record<Role, number> = { viewer: 0, editor: 1, owner: 2 };
@@ -123,25 +125,134 @@ class ProjectsService {
         createdAt: d.createdAt.toISOString(),
         updatedAt: d.updatedAt.toISOString(),
         stats: d.stats ?? { diagramCount: 0, diagramCountByType: {} },
+        local: local.info(d._id),
       };
     });
   }
 
+  /** Người dùng hiện tại khi mất mạng (chỉ cần id phiên đã lưu). */
+  private offlineUserId(): string {
+    const uid = auth.userId;
+    if (!uid) fail('UNAUTHORIZED', 'Bạn cần đăng nhập.');
+    return uid!;
+  }
+
+  /** Bản tóm tắt từ tệp local (mở / liệt kê khi mất mạng). */
+  localSummary(id: string): ProjectSummary | null {
+    const e = local.get(id);
+    if (!e || e.userId !== auth.userId) return null;
+    return { ...e.project, local: local.info(id) };
+  }
+
   async list(): Promise<ProjectSummary[]> {
+    if (!database.ready) {
+      const uid = this.offlineUserId();
+      return local
+        .entries(uid)
+        .map((e) => ({ ...e.project, local: local.info(e.projectId) }))
+        .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+    }
     const user = await auth.require();
     this.ensureFeed();
+    await this.flushPendingCreates();
     const docs = await database.projects().find({ memberIds: user._id }).sort({ updatedAt: -1 }).toArray();
-    return this.summaries(docs, user._id);
+    const out = await this.summaries(docs, user._id);
+    for (const p of out) local.touch(p, user._id);
+    return out;
   }
 
   async get(id: string): Promise<ProjectSummary> {
+    if (!database.ready) {
+      const s = this.localSummary(id);
+      if (s) return s;
+    }
     const { project, user } = await this.access(id);
-    return (await this.summaries([project], user._id))[0];
+    const s = (await this.summaries([project], user._id))[0];
+    local.touch(s, user._id);
+    return s;
   }
 
-  async create(input: ProjectInput & { initialUpdate?: Uint8Array }): Promise<ProjectSummary> {
-    const user = await auth.require();
+  /** Project tạo khi mất mạng → ghi lên MongoDB (kèm toàn bộ nội dung local) khi có mạng lại. */
+  private creating: Promise<void> | null = null;
+  flushPendingCreates(): Promise<void> {
+    // tuần tự: sự kiện có mạng lại và trang chủ có thể gọi cùng lúc
+    this.creating ??= this.doFlushPendingCreates().finally(() => {
+      this.creating = null;
+    });
+    return this.creating;
+  }
+
+  private async doFlushPendingCreates(): Promise<void> {
+    const uid = auth.userId;
+    if (!uid || !database.ready) return;
+    for (const e of local.entries(uid)) {
+      if (!e.pendingCreate) continue;
+      const p = e.project;
+      const now = new Date();
+      const exists = await database.projects().findOne({ _id: p.id }, { projection: { _id: 1 } });
+      if (!exists)
+        await database
+          .projects()
+          .insertOne({
+            _id: p.id,
+            ownerId: uid,
+            name: p.name,
+            description: p.description,
+            color: p.color,
+            icon: p.icon,
+            members: [{ userId: uid, role: 'owner' }],
+            memberIds: [uid],
+            stats: p.stats,
+            createdAt: new Date(p.createdAt),
+            updatedAt: now,
+          })
+          .catch((e: { code?: number }) => {
+            if (e.code !== 11000) throw e;
+          });
+      await database.updates().insertOne({
+        projectId: p.id,
+        kind: 's',
+        data: new Binary(Buffer.from(local.state(p.id))),
+        clientId: 'local-create',
+        userId: uid,
+        createdAt: now,
+      });
+      local.markCreated(p.id);
+      this.notify();
+    }
+  }
+
+  async create(input: ProjectCreateInput): Promise<ProjectSummary> {
     const data = parseInput(input);
+    if (input.initialUpdate && input.initialUpdate.byteLength > MAX_INITIAL_BYTES)
+      fail('VALIDATION', 'Dữ liệu project quá lớn (tối đa 12 MB).');
+    const localDir = typeof input.localDir === 'string' && input.localDir.trim() ? input.localDir.trim() : undefined;
+    if (!database.ready) {
+      // Mất mạng: tạo project trên máy, ghi lên MongoDB khi có mạng lại.
+      const uid = this.offlineUserId();
+      const now = new Date().toISOString();
+      const me = auth.cachedPublic();
+      const summary: ProjectSummary = {
+        id: newId('p'),
+        name: data.name,
+        description: data.description ?? '',
+        color: data.color ?? '#2E62E6',
+        icon: data.icon ?? 'folder-kanban',
+        ownerId: uid,
+        role: 'owner',
+        members: [
+          { userId: uid, role: 'owner', name: me?.name ?? '', email: me?.email ?? '', color: me?.color ?? '#2E62E6' },
+        ],
+        createdAt: now,
+        updatedAt: now,
+        stats: { diagramCount: 0, diagramCountByType: {} },
+      };
+      local.register(summary, uid, localDir, { pendingCreate: true });
+      if (input.initialUpdate?.byteLength) local.apply(summary.id, input.initialUpdate);
+      local.flush(summary.id);
+      return { ...summary, local: local.info(summary.id) };
+    }
+    const user = await auth.require();
     const now = new Date();
     const doc: ProjectDoc = {
       _id: newId('p'),
@@ -157,9 +268,11 @@ class ProjectsService {
       updatedAt: now,
     };
     await database.projects().insertOne(doc);
+    const first = (await this.summaries([doc], user._id))[0];
+    local.register(first, user._id, localDir);
     if (input.initialUpdate && input.initialUpdate.byteLength) {
-      if (input.initialUpdate.byteLength > MAX_INITIAL_BYTES)
-        fail('VALIDATION', 'Dữ liệu project quá lớn (tối đa 12 MB).');
+      local.apply(doc._id, input.initialUpdate);
+      local.flush(doc._id);
       await database.updates().insertOne({
         projectId: doc._id,
         kind: 's',
@@ -169,7 +282,17 @@ class ProjectsService {
         createdAt: now,
       });
     }
-    return (await this.summaries([doc], user._id))[0];
+    return { ...first, local: local.info(doc._id) };
+  }
+
+  /** Chuyển tệp local của project sang thư mục khác. */
+  async moveLocal(id: string, dir: string): Promise<ProjectSummary> {
+    if (!dir || typeof dir !== 'string') fail('VALIDATION', 'Thư mục không hợp lệ.');
+    const s = database.ready ? await this.get(id) : this.localSummary(id);
+    if (!s) fail('NOT_FOUND', 'Project không có bản lưu trên máy này.');
+    if (!local.get(id)) local.register(s!, auth.userId ?? '', dir);
+    else local.move(id, dir);
+    return { ...s!, local: local.info(id) };
   }
 
   async update(id: string, patch: ProjectInput): Promise<ProjectSummary> {
@@ -188,7 +311,14 @@ class ProjectsService {
   }
 
   async remove(id: string): Promise<void> {
+    const pending = local.get(id)?.pendingCreate;
+    if (pending) {
+      // chưa từng lên MongoDB: chỉ bỏ khỏi danh mục local (tệp .umlab vẫn giữ trên đĩa)
+      local.unregister(id);
+      return;
+    }
     await this.access(id, 'owner');
+    local.unregister(id);
     await Promise.all([
       database.updates().deleteMany({ projectId: id }),
       database.presence().deleteMany({ projectId: id }),
@@ -221,16 +351,14 @@ class ProjectsService {
     const target = await database.users().findOne({ email: String(email).trim().toLowerCase() });
     if (!target) fail('NOT_FOUND', 'Chưa có tài khoản UMLab nào dùng email này. Người đó cần đăng ký trước.');
     if (project.memberIds.includes(target!._id)) fail('CONFLICT', `${target!.name} đã là thành viên.`);
-    await database
-      .projects()
-      .updateOne(
-        { _id: id },
-        {
-          $push: { members: { userId: target!._id, role } },
-          $addToSet: { memberIds: target!._id },
-          $set: { updatedAt: new Date() },
-        },
-      );
+    await database.projects().updateOne(
+      { _id: id },
+      {
+        $push: { members: { userId: target!._id, role } },
+        $addToSet: { memberIds: target!._id },
+        $set: { updatedAt: new Date() },
+      },
+    );
     const fresh = await database.projects().findOne({ _id: id });
     return (await this.summaries([fresh!], user._id))[0];
   }

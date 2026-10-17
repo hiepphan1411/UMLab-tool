@@ -17,6 +17,7 @@ import {
   type GanttTask,
 } from '@umlab/core';
 import { Checkbox, IconButton, Segmented, Select } from '@/ui';
+import { ImageAttachments } from '../../media/image-attachments';
 import { IconPreview, iconKeyInfo } from '../architecture/icons';
 import { isModule } from './chart';
 import type { GanttOps } from './ops';
@@ -484,14 +485,21 @@ export function TaskInspector({
       )}
       <div className="pgroup">
         <div className="pgroup-h">Chi tiết</div>
-        <Txt label="Mục tiêu sprint" rows={3} value={t.goal} onCommit={(goal) => set({ goal })} readOnly={readOnly} />
-        <Txt
-          label="Deliverables"
-          rows={3}
-          value={t.deliverables}
-          onCommit={(deliverables) => set({ deliverables })}
+        <ImageAttachments
+          label="Ảnh đính kèm"
+          value={t.images ?? []}
           readOnly={readOnly}
-        />
+          onChange={(images) => set({ images })}
+        >
+          <Txt label="Mục tiêu sprint" rows={3} value={t.goal} onCommit={(goal) => set({ goal })} readOnly={readOnly} />
+          <Txt
+            label="Deliverables"
+            rows={3}
+            value={t.deliverables}
+            onCommit={(deliverables) => set({ deliverables })}
+            readOnly={readOnly}
+          />
+        </ImageAttachments>
         <Txt
           label="Jira"
           value={t.jira}

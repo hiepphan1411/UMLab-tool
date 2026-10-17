@@ -1,19 +1,21 @@
-import { BrowserWindow, app, ipcMain, shell } from 'electron';
+import { BrowserWindow, app, dialog, ipcMain, shell } from 'electron';
 import {
   IPC,
   type AppInfo,
   type ConnStatus,
   type PresenceState,
+  type ProjectCreateInput,
   type ProjectInput,
   type ProjectStats,
   type Role,
 } from '@shared/api';
 import { assets } from './assets.service';
 import { auth } from './auth.service';
-import { hostOf, loadSettings, paths, saveSettings } from './config';
-import { database, friendlyError } from './db';
+import { paths } from './config';
+import { database } from './db';
 import { broadcast } from './events';
 import { captureScreen, openFiles, saveFile } from './files';
+import { local } from './local.service';
 import { presence } from './presence.service';
 import { projects } from './projects.service';
 import { sync } from './sync.service';
@@ -57,33 +59,29 @@ export function registerIpc(isDev: boolean): void {
 
   // ---------- kết nối ----------
   handle(IPC.connStatus, (): ConnStatus => database.current);
-  handle(IPC.connGetSettings, () => {
-    const s = loadSettings();
-    return { mongoUri: s.usingBuiltIn ? '' : s.mongoUri, dbName: s.dbName, usingBuiltIn: s.usingBuiltIn };
+  handle(IPC.connRetry, async (): Promise<ConnStatus> => {
+    await database.restart();
+    return database.current;
   });
-  handle(IPC.connSaveSettings, (input: { mongoUri: string; dbName: string } | null) =>
-    wrap(async () => {
-      saveSettings(input && input.mongoUri ? input : null);
-      await database.restart();
-      return database.current;
-    }),
-  );
-  handle(IPC.connTest, (input: { mongoUri: string; dbName: string }) =>
-    wrap(async () => {
-      const { MongoClient } = await import('mongodb');
-      const c = new MongoClient(String(input.mongoUri), { serverSelectionTimeoutMS: 8000, connectTimeoutMS: 8000 });
-      try {
-        await c.connect();
-        const db = c.db(String(input.dbName || 'umlab'));
-        await db.command({ ping: 1 });
-        const hello = (await db.command({ hello: 1 })) as { setName?: string; msg?: string };
-        return { realtime: !!hello.setName || hello.msg === 'isdbgrid', host: hostOf(String(input.mongoUri)) };
-      } catch (e) {
-        throw new AppError('OFFLINE', friendlyError(e instanceof Error ? e.message : String(e)));
-      } finally {
-        await c.close(true).catch(() => {});
-      }
-    }),
+
+  // ---------- lưu trên máy (local-first) ----------
+  handle(IPC.localDefaultDir, () => local.defaultDir());
+  handle(IPC.localPickFolder, async (initial?: string) => {
+    const win = BrowserWindow.getFocusedWindow() ?? BrowserWindow.getAllWindows()[0];
+    const opts: Electron.OpenDialogOptions = {
+      title: 'Chọn thư mục lưu project trên máy',
+      defaultPath: typeof initial === 'string' && initial ? initial : local.defaultDir(),
+      properties: ['openDirectory', 'createDirectory', 'promptToCreate'],
+    };
+    const r = win ? await dialog.showOpenDialog(win, opts) : await dialog.showOpenDialog(opts);
+    return r.canceled || !r.filePaths[0] ? null : r.filePaths[0];
+  });
+  handle(IPC.localReveal, (projectId: string) => {
+    const e = local.get(String(projectId));
+    if (e) shell.showItemInFolder(e.file);
+  });
+  handle(IPC.localMove, (projectId: string, dir: string) =>
+    wrap(() => projects.moveLocal(String(projectId), String(dir))),
   );
 
   // ---------- auth ----------
@@ -114,7 +112,7 @@ export function registerIpc(isDev: boolean): void {
   // ---------- project ----------
   handle(IPC.projList, () => wrap(() => projects.list()));
   handle(IPC.projGet, (id: string) => wrap(() => projects.get(String(id))));
-  handle(IPC.projCreate, (input: ProjectInput & { initialUpdate?: Uint8Array }) =>
+  handle(IPC.projCreate, (input: ProjectCreateInput) =>
     wrap(() =>
       projects.create({ ...input, initialUpdate: input.initialUpdate ? toU8(input.initialUpdate) : undefined }),
     ),

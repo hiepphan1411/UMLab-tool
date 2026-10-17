@@ -2,21 +2,12 @@ import { app, safeStorage } from 'electron';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-/** Thiết lập kết nối người dùng tự nhập (ghi đè chuỗi nhúng sẵn trong bản build). */
-interface StoredSettings {
-  mongoUri?: string;
-  dbName?: string;
-}
-
 export const BUILT_IN_URI: string = typeof __UMLAB_MONGO_URI__ === 'string' ? __UMLAB_MONGO_URI__ : '';
 export const BUILT_IN_DB: string = typeof __UMLAB_DB__ === 'string' && __UMLAB_DB__ ? __UMLAB_DB__ : 'umlab';
 
 export const paths = {
   get root() {
     return app.getPath('userData');
-  },
-  get settings() {
-    return join(this.root, 'settings.bin');
   },
   get session() {
     return join(this.root, 'session.bin');
@@ -56,18 +47,15 @@ export function removeFile(file: string): void {
   } catch {}
 }
 
+/**
+ * Chuỗi kết nối cố định: nhúng trong bản build (.env lúc build) — không sửa được từ app.
+ * Biến môi trường UMLAB_MONGO_URI_OVERRIDE chỉ dùng cho test E2E.
+ */
 export function loadSettings(): { mongoUri: string; dbName: string; usingBuiltIn: boolean } {
-  const s = readSecure<StoredSettings>(paths.settings) ?? {};
   const override = process.env.UMLAB_MONGO_URI_OVERRIDE;
   if (override)
     return { mongoUri: override, dbName: process.env.UMLAB_DB_OVERRIDE || BUILT_IN_DB, usingBuiltIn: false };
-  if (s.mongoUri) return { mongoUri: s.mongoUri, dbName: s.dbName || BUILT_IN_DB, usingBuiltIn: false };
-  return { mongoUri: BUILT_IN_URI, dbName: s.dbName || BUILT_IN_DB, usingBuiltIn: true };
-}
-
-export function saveSettings(input: { mongoUri: string; dbName: string } | null): void {
-  if (!input) removeFile(paths.settings);
-  else writeSecure(paths.settings, { mongoUri: input.mongoUri.trim(), dbName: input.dbName.trim() || BUILT_IN_DB });
+  return { mongoUri: BUILT_IN_URI, dbName: BUILT_IN_DB, usingBuiltIn: true };
 }
 
 /** Ẩn mật khẩu trong chuỗi kết nối khi hiển thị. */

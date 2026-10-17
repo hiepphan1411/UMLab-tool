@@ -1,4 +1,5 @@
 // Đặc tả Use Case (docs/spec/usecase-spec-template.md mục 1): schema zod + chuẩn hoá.
+import { attachmentSchema, normAttachments } from '../media/attachment';
 import { z } from 'zod';
 import { uid } from '../util/ids';
 
@@ -63,6 +64,8 @@ export const useCaseSpecSchema = z.object({
   frequency: z.string().optional(),
   notes: z.string().optional(),
   screens: z.array(z.object({ id: z.string(), name: z.string() })),
+  /** Ảnh màn hình / phác thảo dán vào mục "Màn hình & dữ liệu". */
+  images: z.array(attachmentSchema).optional(),
   entities: z.array(z.object({ id: z.string(), name: z.string(), classId: z.string().optional() })),
 });
 
@@ -160,6 +163,8 @@ export function normSpec(raw: unknown): UseCaseSpec {
   };
   if (r.frequency !== undefined) spec.frequency = s(r.frequency);
   if (r.notes !== undefined) spec.notes = s(r.notes);
+  const images = normAttachments(r.images);
+  if (images.length) spec.images = images;
   spec.mainFlow.forEach((st, i) => (st.no = i + 1));
   for (const f of [...spec.alternativeFlows, ...spec.exceptionFlows]) f.steps.forEach((st, i) => (st.no = i + 1));
   return spec;

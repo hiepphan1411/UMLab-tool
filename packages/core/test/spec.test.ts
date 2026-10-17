@@ -144,6 +144,26 @@ describe('Đặc tả use case — lưu & xuất', () => {
     expect(xml).toContain('w:val="26"');
   });
 
+  it('ảnh màn hình dán vào đặc tả: giữ khi chuẩn hoá, nhúng vào DOCX, có trong Markdown', async () => {
+    // PNG 1×1 trong suốt
+    const png =
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
+    const spec = normSpec({
+      ...UC03,
+      images: [
+        { id: 'i1', name: 'cong.png', src: png, w: 1, h: 1, caption: 'Màn hình cổng' },
+        { id: 'x', src: 'http://bad' },
+      ],
+    });
+    expect(spec.images).toEqual([{ id: 'i1', name: 'cong.png', src: png, w: 1, h: 1, caption: 'Màn hình cổng' }]);
+    const { doc } = setup();
+    const bytes = await specsDocx([{ spec, ctx: specContext(doc, spec) }]);
+    const zip = await JSZip.loadAsync(bytes);
+    expect(Object.keys(zip.files).some((f) => f.startsWith('word/media/'))).toBe(true);
+    expect(await zip.file('word/document.xml')!.async('string')).toContain('Màn hình cổng');
+    expect(specToMarkdown(spec, specContext(doc, spec))).toContain('![Màn hình cổng](data:image/png');
+  });
+
   it('tệp fixture docs/reference/uc03-spec.umlab.json nhập được, dữ liệu đúng UC03', () => {
     const p = parseImport(
       readFileSync(new URL('../../../docs/reference/uc03-spec.umlab.json', import.meta.url), 'utf8'),

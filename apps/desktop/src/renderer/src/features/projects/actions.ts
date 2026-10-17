@@ -23,12 +23,14 @@ export interface ProjectForm {
   color: string;
   icon: string;
   template: ProjectTemplate;
+  /** Thư mục lưu project trên máy (local-first). */
+  localDir?: string;
 }
 
 /** Tạo project từ một bundle (mẫu, nhập tệp, nhân bản): sinh lại id, gửi kèm dữ liệu ban đầu, cập nhật thống kê. */
 export async function createFromBundle(
   bundle: ProjectBundle,
-  info: { name: string; description?: string; color?: string; icon?: string },
+  info: { name: string; description?: string; color?: string; icon?: string; localDir?: string },
 ): Promise<ProjectSummary> {
   const b = regenerateIds(bundle);
   const update = bundleToUpdate(b);
@@ -39,6 +41,7 @@ export async function createFromBundle(
       color: info.color ?? b.project.color,
       icon: info.icon ?? b.project.icon,
       initialUpdate: update,
+      localDir: info.localDir,
     }),
   );
   await umlab.projects.setStats(p.id, computeStats(docFromUpdates([update])));

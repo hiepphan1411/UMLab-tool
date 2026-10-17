@@ -1,9 +1,10 @@
-import { LayoutTemplate, Sparkles } from 'lucide-react';
+import { FolderOpen, HardDrive, LayoutTemplate, Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import type { ProjectSummary } from '@shared/api';
+import { call, umlab } from '@/lib/api';
 import { PROJECT_COLORS, PROJECT_ICONS } from '@/lib/icons';
 import { cn } from '@/lib/cn';
-import { Button, Dialog, Field, Input, Textarea } from '@/ui';
+import { Button, Dialog, Field, Input, Textarea, toast } from '@/ui';
 import type { ProjectForm } from './actions';
 
 /** Hộp thoại tạo / sửa thông tin project: tên, mô tả, màu (8 ô), icon (lưới), mẫu Trống / Mẫu UniPark+. */
@@ -28,10 +29,13 @@ export function ProjectDialog({
   });
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [localFile, setLocalFile] = useState<string | null>(null);
 
   useEffect(() => {
     if (!open) return;
     setErr(null);
+    setLocalFile(initial?.local?.file ?? null);
+    if (!initial) void umlab.local.defaultDir().then((d) => setF((x) => ({ ...x, localDir: x.localDir || d })));
     setF(
       initial
         ? {
@@ -41,12 +45,20 @@ export function ProjectDialog({
             icon: initial.icon,
             template: 'blank',
           }
-        : { name: '', description: '', color: PROJECT_COLORS[0], icon: 'folder-kanban', template: 'blank' },
+        : {
+            name: '',
+            description: '',
+            color: PROJECT_COLORS[0],
+            icon: 'folder-kanban',
+            template: 'blank',
+            localDir: '',
+          },
     );
   }, [open, initial]);
 
   const submit = async () => {
     if (!f.name.trim()) return setErr('Hãy nhập tên project');
+    if (!editing && !f.localDir?.trim()) return setErr('Hãy chọn thư mục lưu project trên máy');
     setBusy(true);
     setErr(null);
     try {
@@ -140,6 +152,69 @@ export function ProjectDialog({
             ))}
           </div>
         </Field>
+        {!editing ? (
+          <Field label="Lưu trên máy (đồng bộ lên MongoDB khi có mạng)">
+            <div className="flex gap-2">
+              <Input
+                id="project-local-dir"
+                value={f.localDir ?? ''}
+                readOnly
+                title={f.localDir}
+                aria-label="Thư mục lưu trên máy"
+                className="flex-1"
+                style={{ fontFamily: 'var(--font-mono)', fontSize: 12 }}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                icon={<FolderOpen />}
+                onClick={async () => {
+                  const d = await umlab.local.pickFolder(f.localDir);
+                  if (d) setF((x) => ({ ...x, localDir: d }));
+                }}
+              >
+                Chọn…
+              </Button>
+            </div>
+          </Field>
+        ) : (
+          initial && (
+            <Field label="Bản lưu trên máy">
+              <div className="flex items-center gap-2">
+                <HardDrive size={16} className="flex-none text-muted" />
+                <code className="min-w-0 flex-1 truncate text-[12px]" title={localFile ?? ''}>
+                  {localFile ?? 'Chưa có (sẽ tạo khi mở project)'}
+                  {initial.local?.pendingCreate ? ' · chưa đồng bộ lên MongoDB' : ''}
+                </code>
+                {localFile && (
+                  <Button type="button" size="sm" variant="outline" onClick={() => void umlab.local.reveal(initial.id)}>
+                    Mở thư mục
+                  </Button>
+                )}
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={async () => {
+                    const d = await umlab.local.pickFolder(
+                      localFile ? localFile.replace(/[\\/][^\\/]*$/, '') : undefined,
+                    );
+                    if (!d) return;
+                    try {
+                      const p = await call(umlab.local.move(initial.id, d));
+                      setLocalFile(p.local?.file ?? null);
+                      toast('Đã chuyển bản lưu trên máy');
+                    } catch (e) {
+                      toast(e instanceof Error ? e.message : String(e), { error: true });
+                    }
+                  }}
+                >
+                  Chuyển…
+                </Button>
+              </div>
+            </Field>
+          )
+        )}
         {!editing && (
           <Field label="Bắt đầu từ">
             <div className="grid grid-cols-2 gap-2">

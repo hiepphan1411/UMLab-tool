@@ -134,5 +134,6 @@ export function specToMarkdown(spec: UseCaseSpec, ctx: SpecContext): string {
   if (spec.screens.length) parts.push('', `**Màn hình:** ${spec.screens.map((x) => x.name).join(', ')}`);
   if (spec.entities.length) parts.push('', `**Dữ liệu:** ${spec.entities.map((x) => x.name).join(', ')}`);
   if (spec.notes) parts.push('', `**Ghi chú:** ${spec.notes}`);
+  for (const a of spec.images ?? []) parts.push('', `![${(a.caption || a.name).replace(/[[\]]/g, '')}](${a.src})`);
   return parts.join('\n') + '\n';
 }

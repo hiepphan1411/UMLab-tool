@@ -13,6 +13,8 @@ interface Session {
   userId: string;
   tv: number;
   remember: boolean;
+  /** Hồ sơ công khai lần cuối — để dùng app khi mất mạng (local-first). */
+  profile?: PublicUser;
 }
 
 const MAX_ATTEMPTS = 5;
@@ -79,7 +81,7 @@ class AuthService {
   }
 
   private setSession(user: UserDoc, remember: boolean): void {
-    this.session = { userId: user._id, tv: user.tokenVersion, remember };
+    this.session = { userId: user._id, tv: user.tokenVersion, remember, profile: toPublic(user) };
     this.user = user;
     this.checkedAt = Date.now();
     if (remember) writeSecure(paths.session, this.session);
@@ -155,6 +157,11 @@ class AuthService {
     return u!;
   }
 
+  /** Hồ sơ công khai đã biết (kể cả khi mất mạng). */
+  cachedPublic(): PublicUser | null {
+    return this.user ? toPublic(this.user) : (this.session?.profile ?? null);
+  }
+
   async current(): Promise<PublicUser | null> {
     if (!this.session) return null;
     try {
@@ -162,10 +169,18 @@ class AuthService {
       if (!this.feed) this.watch();
       return toPublic(u);
     } catch (e) {
-      if (e instanceof AppError && e.code === 'OFFLINE') return null;
+      // mất mạng: vẫn vào app bằng hồ sơ đã lưu, làm việc trên bản local; có mạng lại sẽ kiểm phiên
+      if (e instanceof AppError && e.code === 'OFFLINE') {
+        if (!this.offlineHook)
+          this.offlineHook = database.onStatus((st) => {
+            if (st.state === 'online' && this.session && !this.feed) this.watch();
+          });
+        return this.session?.profile ?? null;
+      }
       return null;
     }
   }
+  private offlineHook: (() => void) | null = null;
 
   async register(input: { name: string; email: string; password: string }): Promise<PublicUser> {
     const name = parse(nameSchema, input.name);

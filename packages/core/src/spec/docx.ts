@@ -4,6 +4,7 @@ import {
   AlignmentType,
   BorderStyle,
   Document,
+  ImageRun,
   Packer,
   Paragraph,
   ShadingType,
@@ -29,6 +30,36 @@ const BORDERS = {
   insideHorizontal: BLACK,
   insideVertical: BLACK,
 };
+
+/** data URL → bytes (Node 20 và trình duyệt đều có atob). */
+function dataUrlBytes(src: string): { bytes: Uint8Array; type: 'png' | 'jpg' | 'gif' | 'bmp' } | null {
+  const m = src.match(/^data:image\/(png|jpe?g|gif|bmp);base64,(.*)$/);
+  if (!m) return null;
+  const bin = atob(m[2]);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return { bytes, type: m[1] === 'jpeg' ? 'jpg' : (m[1] as 'png' | 'jpg' | 'gif' | 'bmp') };
+}
+
+/** Ảnh đính kèm (rộng tối đa 420 px) + chú thích nghiêng. SVG bỏ qua. */
+function imageParas(a: { src: string; w: number; h: number; name: string; caption?: string }): Paragraph[] {
+  const img = dataUrlBytes(a.src);
+  if (!img) return [];
+  const k = Math.min(1, 420 / Math.max(1, a.w));
+  return [
+    new Paragraph({
+      alignment: AlignmentType.CENTER,
+      children: [
+        new ImageRun({
+          type: img.type,
+          data: img.bytes,
+          transformation: { width: Math.round(a.w * k), height: Math.round(a.h * k) },
+        }),
+      ],
+    }),
+    para(a.caption || a.name, { italics: true, align: AlignmentType.CENTER }),
+  ];
+}
 
 const run = (text: string, o: { bold?: boolean; italics?: boolean } = {}) =>
   new TextRun({ text, font: FONT, size: SIZE, bold: o.bold, italics: o.italics });
@@ -145,6 +176,8 @@ export function specTable(spec: UseCaseSpec, ctx: SpecContext): Table {
   );
   if (spec.frequency) rows.push(['Tần suất', [para(spec.frequency)]]);
   if (spec.notes) rows.push(['Ghi chú', [para(spec.notes)]]);
+  const imgs = (spec.images ?? []).flatMap((a) => imageParas(a));
+  if (imgs.length) rows.push(['Ảnh màn hình', imgs]);
   return new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },
     borders: BORDERS,

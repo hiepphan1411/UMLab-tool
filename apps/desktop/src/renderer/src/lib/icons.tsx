@@ -38,6 +38,7 @@ import {
   Workflow,
   type LucideIcon,
 } from 'lucide-react';
+import { DiagramGlyph } from './diagram-icons';
 import type { DiagramType } from '@umlab/core';
 
 /** Icon project chọn được trong hộp thoại tạo project (~24 icon lucide). */
@@ -100,7 +101,8 @@ export const DIAGRAM_COLORS: Record<DiagramType, string> = {
   gantt: '#D9463E',
 };
 
+/** Icon loại sơ đồ: hình thu nhỏ đúng ký hiệu của sơ đồ đó (lib/diagram-icons.tsx). */
 export function DiagramIcon({ type, size = 16, colored }: { type: DiagramType; size?: number; colored?: boolean }) {
-  const I = DIAGRAM_ICONS[type] ?? FileText;
-  return <I size={size} style={colored ? { color: DIAGRAM_COLORS[type] } : undefined} />;
+  if (!DIAGRAM_ICONS[type]) return <FileText size={size} />;
+  return <DiagramGlyph type={type} size={size} color={colored ? DIAGRAM_COLORS[type] : 'currentColor'} />;
 }

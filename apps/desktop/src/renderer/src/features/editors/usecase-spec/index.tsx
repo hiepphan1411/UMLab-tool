@@ -38,6 +38,7 @@ import { umlab } from '@/lib/api';
 import { cn } from '@/lib/cn';
 import { slug } from '@/lib/format';
 import { Button, Segmented, Select, confirmDialog, toast, useTooltip } from '@/ui';
+import { ImageAttachments } from '../../media/image-attachments';
 import { LOCAL } from '../../workspace/session';
 import { registerDiagramTemplates, registerEditor, type EditorProps } from '../editor-registry';
 import { registerThumbnail } from '../thumbnails';
@@ -1061,14 +1062,21 @@ export function SpecEditor({ session, diagram, readOnly, setActions }: EditorPro
                   />
                 )}
               </div>
-              <label>Ghi chú</label>
-              <Txt
-                label="Ghi chú"
-                rows={2}
-                value={spec.notes ?? ''}
+              <label>Ghi chú & ảnh màn hình</label>
+              <ImageAttachments
+                label="Ảnh màn hình / phác thảo"
+                value={spec.images ?? []}
                 readOnly={readOnly}
-                onCommit={(v) => setField('notes', v)}
-              />
+                onChange={(v) => setField('images', v)}
+              >
+                <Txt
+                  label="Ghi chú"
+                  rows={2}
+                  value={spec.notes ?? ''}
+                  readOnly={readOnly}
+                  onCommit={(v) => setField('notes', v)}
+                />
+              </ImageAttachments>
             </div>
           </Section>
         </div>

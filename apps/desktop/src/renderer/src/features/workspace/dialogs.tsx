@@ -1,33 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
-import {
-  DIAGRAM_TYPE_BY_ID,
-  childFolders,
-  createDiagram,
-  folderDiagrams,
-  uniqueName,
-  type DiagramType,
-} from '@umlab/core';
+import { useEffect, useState } from 'react';
+import { DIAGRAM_TYPE_BY_ID, createDiagram, folderDiagrams, uniqueName, type DiagramType } from '@umlab/core';
 import { DiagramIcon } from '@/lib/icons';
 import { cn } from '@/lib/cn';
-import { Button, Dialog, Field, Input, Select, toast } from '@/ui';
+import { Button, Dialog, Input, toast } from '@/ui';
 import { getDiagramTemplates } from '../editors/editor-registry';
+import { FolderBrowser } from './folder-browser';
 import { LOCAL, type ProjectSession } from './session';
-
-/** Danh sách thư mục dạng thụt lề cho ô chọn. */
-export function useFolderOptions(s: ProjectSession, version: number) {
-  return useMemo(() => {
-    const out: { value: string; label: string }[] = [{ value: '', label: '(Gốc project)' }];
-    const walk = (parent: string | null, depth: number) => {
-      for (const f of childFolders(s.doc, parent)) {
-        out.push({ value: f.id, label: `${' '.repeat(depth)}${f.name}` });
-        walk(f.id, depth + 1);
-      }
-    };
-    walk(null, 1);
-    return out;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [s, version]);
-}
 
 /** Tạo sơ đồ mới: hỏi tên + thư mục (mặc định thư mục đang chọn). */
 export function NewDiagramDialog({
@@ -49,7 +27,6 @@ export function NewDiagramDialog({
   const [folder, setFolder] = useState<string>(folderId ?? '');
   const [tpl, setTpl] = useState('');
   const [busy, setBusy] = useState(false);
-  const options = useFolderOptions(session, version);
   const tpls = type ? getDiagramTemplates(type) : [];
   useEffect(() => {
     if (!type) return;
@@ -88,7 +65,7 @@ export function NewDiagramDialog({
           {info.label} mới
         </span>
       }
-      width={460}
+      width={tpls.length > 1 ? 860 : 680}
       footer={
         <>
           <Button variant="outline" onClick={onClose}>
@@ -107,40 +84,57 @@ export function NewDiagramDialog({
           void submit();
         }}
       >
-        <Field label="Tên sơ đồ">
-          <Input
-            id="diagram-name"
-            size2="lg"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            data-autofocus
-            onFocus={(e) => e.currentTarget.select()}
-          />
-        </Field>
-        <Field label="Thư mục">
-          <Select value={folder} onChange={(e) => setFolder(e.target.value)} options={options} />
-        </Field>
-        {tpls.length > 1 && (
-          <div>
-            <span className="lbl">Mẫu</span>
-            <div className="grid gap-2" role="radiogroup" aria-label="Mẫu sơ đồ">
-              {tpls.map((t) => (
-                <button
-                  key={t.id}
-                  type="button"
-                  role="radio"
-                  aria-checked={tpl === t.id}
-                  data-template={t.id}
-                  className={cn('tpl-card', tpl === t.id && 'on')}
-                  onClick={() => setTpl(t.id)}
-                >
-                  <span className="font-semibold">{t.label}</span>
-                  {t.description && <span className="text-[11.5px] text-muted">{t.description}</span>}
-                </button>
-              ))}
+        <div className={cn('grid gap-4', tpls.length > 1 && 'md:grid-cols-[1fr_250px]')}>
+          <div className="grid min-w-0 gap-3">
+            <FolderBrowser
+              session={session}
+              version={version}
+              value={folder || null}
+              onChange={(f) => setFolder(f ?? '')}
+            />
+            <div className="fb-name">
+              <label htmlFor="diagram-name" className="lbl" style={{ margin: 0 }}>
+                Tên sơ đồ
+              </label>
+              <Input
+                id="diagram-name"
+                size2="lg"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                data-autofocus
+                onFocus={(e) => e.currentTarget.select()}
+              />
+              <span className="lbl" style={{ margin: 0 }}>
+                Loại
+              </span>
+              <span className="flex items-center gap-1.5 text-[12.5px]">
+                <DiagramIcon type={type} size={15} colored />
+                {info.label}
+              </span>
             </div>
           </div>
-        )}
+          {tpls.length > 1 && (
+            <div>
+              <span className="lbl">Mẫu</span>
+              <div className="grid gap-2" role="radiogroup" aria-label="Mẫu sơ đồ">
+                {tpls.map((t) => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={tpl === t.id}
+                    data-template={t.id}
+                    className={cn('tpl-card', tpl === t.id && 'on')}
+                    onClick={() => setTpl(t.id)}
+                  >
+                    <span className="font-semibold">{t.label}</span>
+                    {t.description && <span className="text-[11.5px] text-muted">{t.description}</span>}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
         <button type="submit" hidden />
       </form>
     </Dialog>
@@ -160,26 +154,25 @@ export function MoveDialog({
   onClose: () => void;
   onMove: (folderId: string | null) => void;
 }) {
-  const options = useFolderOptions(session, version);
-  const [folder, setFolder] = useState('');
+  const [folder, setFolder] = useState<string | null>(null);
   return (
     <Dialog
       open
       onClose={onClose}
       title={`Chuyển ${count} sơ đồ tới thư mục`}
-      width={420}
+      width={680}
       footer={
         <>
           <Button variant="outline" onClick={onClose}>
             Huỷ
           </Button>
-          <Button variant="primary" onClick={() => onMove(folder || null)}>
+          <Button variant="primary" onClick={() => onMove(folder)}>
             Chuyển
           </Button>
         </>
       }
     >
-      <Select value={folder} onChange={(e) => setFolder(e.target.value)} options={options} />
+      <FolderBrowser session={session} version={version} value={folder} onChange={setFolder} />
     </Dialog>
   );
 }

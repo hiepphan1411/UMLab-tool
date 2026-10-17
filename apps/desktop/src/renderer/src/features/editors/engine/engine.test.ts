@@ -4,11 +4,11 @@ import * as Y from 'yjs';
 import { connsMap, dataMap, diagramsMap, modelMap, viewsMap, type Connector, type Side, type View } from '@umlab/core';
 import { LOCAL, type ProjectSession } from '../../workspace/session';
 import { Engine } from './engine';
-import { autoOrtho, anchorPt, snapMove, type Box, type Pt } from './geometry';
+import { autoOrtho, anchorPt, bendAt, snapMove, type Box, type Pt } from './geometry';
 import { hitView } from './hit';
 import { createConnector, createView, nudge } from './ops';
 import { registerConnector, registerShape } from './registry';
-import { routeConnector, type RouteEnv } from './route';
+import { pathHits, routeConnector, type RouteEnv } from './route';
 
 beforeAll(() => {
   registerShape({ type: 't.box', label: 'Box', icon: 'rectangle', defaultSize: { w: 100, h: 60 }, render: () => null });
@@ -98,6 +98,47 @@ describe('routing orthogonal', () => {
       [100, 30],
       [300, 30],
     ]);
+  });
+
+  it('vuông góc mặc định tự né hình khác nằm chắn giữa đường', () => {
+    const boxes = { a: A, b: { x: 400, y: 0, w: 100, h: 60 }, mid: { x: 200, y: -20, w: 80, h: 100 } };
+    const e: RouteEnv = {
+      ...env(boxes),
+      obstacles: (ex) =>
+        Object.entries(boxes)
+          .filter(([k]) => !ex.includes(k))
+          .map(([, v]) => v),
+    };
+    const r = routeConnector(conn('a', 'b'), e)!;
+    expect(pathHits(r.pts, [boxes.mid])).toBe(false);
+    expect(r.pts[0]).toEqual([100, 30]);
+    expect(r.pts[r.pts.length - 1][0]).toBe(400);
+    // không có hình chắn → giữ đường thẳng 1 đoạn
+    const free = routeConnector(conn('a', 'b'), { ...e, obstacles: () => [] })!;
+    expect(free.pts).toEqual([
+      [100, 30],
+      [400, 30],
+    ]);
+  });
+
+  it('nhấp đúp bẻ vuông góc: chia đoạn tại điểm bấm, mọi đoạn vẫn ngang/dọc', () => {
+    const pts: Pt[] = [
+      [100, 30],
+      [200, 30],
+      [200, 230],
+      [300, 230],
+    ];
+    const inner = bendAt(pts, 2, [205, 120]); // đoạn dọc (200,30)→(200,230), bấm ở y=120
+    const all = [pts[0], ...inner, pts[3]];
+    for (let i = 1; i < all.length; i++) expect(all[i][0] === all[i - 1][0] || all[i][1] === all[i - 1][1]).toBe(true);
+    expect(inner).toContainEqual([200, 120]);
+    expect(inner).toContainEqual([224, 120]);
+    // đoạn cuối chạm đầu mút: đầu mút giữ nguyên
+    const tail = bendAt(pts, 3, [250, 230]);
+    expect(tail[tail.length - 1]).toEqual([300, 254]);
+    const all2 = [pts[0], ...tail, pts[3]];
+    for (let i = 1; i < all2.length; i++)
+      expect(all2[i][0] === all2[i - 1][0] || all2[i][1] === all2[i - 1][1]).toBe(true);
   });
 
   it('đầu mút trên hình tròn nằm đúng viền', () => {

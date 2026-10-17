@@ -171,7 +171,7 @@ export function CanvasEditor(props: EditorProps & { options?: CanvasEditorOption
         padding,
         bg,
         embedFont: true,
-        jumps: !!diagram.canvas.lineJumps,
+        jumps: diagram.canvas.lineJumps !== false,
       });
     },
   };

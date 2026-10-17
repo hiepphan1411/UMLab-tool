@@ -407,3 +407,32 @@ export function diamondBoundary(b: Box, toward: Pt): Pt {
   const k = 1 / (Math.abs(dx) / (b.w / 2) + Math.abs(dy) / (b.h / 2));
   return [cx + dx * k, cy + dy * k];
 }
+
+/**
+ * Nhấp đúp lên đường: bẻ một khúc vuông góc tại `at` trên đoạn `i` (pts[i-1] → pts[i]). Đoạn vuông góc được tách
+ * thành bậc thang lệch 24 px để thấy rõ chỗ bẻ, sau đó kéo tay nắm đoạn để chỉnh. Đoạn xiên: thêm điểm uốn tự do.
+ * Trả về các điểm uốn bên trong (không gồm 2 đầu mút).
+ */
+export function bendAt(pts: Pt[], i: number, at: Pt, step = 24): Pt[] {
+  const a = pts[i - 1];
+  const b = pts[i];
+  const inner = pts.slice(1, -1).map((p) => [p[0], p[1]] as Pt);
+  const hor = Math.abs(a[1] - b[1]) < 0.5 && Math.abs(a[0] - b[0]) > 0.5;
+  const ver = Math.abs(a[0] - b[0]) < 0.5 && Math.abs(a[1] - b[1]) > 0.5;
+  if (!hor && !ver) {
+    inner.splice(i - 1, 0, at);
+    return inner;
+  }
+  // điểm bẻ nằm trên đoạn (chiếu lên trục của đoạn)
+  const k: Pt = hor ? [at[0], a[1]] : [a[0], at[1]];
+  const k2: Pt = hor ? [at[0], a[1] + step] : [a[0] + step, at[1]];
+  const b2: Pt = hor ? [b[0], b[1] + step] : [b[0] + step, b[1]];
+  if (i < pts.length - 1) {
+    // b là điểm uốn: dời b theo bậc (đoạn kế tiếp vuông góc nên vẫn thẳng hàng) → bậc chữ Z
+    inner.splice(i - 1, 1, k, k2, b2);
+    return inner;
+  }
+  // b là đầu mút bám hình: giữ nguyên, thêm bậc quay về
+  inner.splice(i - 1, 0, k, k2, b2);
+  return inner;
+}

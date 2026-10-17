@@ -41,6 +41,8 @@ export interface ProjectSummary {
   createdAt: string;
   updatedAt: string;
   stats: ProjectStats;
+  /** Bản lưu trên máy này (local-first): tệp .umlab; pendingCreate = tạo khi mất mạng, chưa có trên MongoDB. */
+  local?: { file: string; pendingCreate?: boolean } | null;
 }
 
 export interface ProjectInput {
@@ -48,6 +50,12 @@ export interface ProjectInput {
   description?: string;
   color?: string;
   icon?: string;
+}
+
+/** Tạo project: thư mục lưu trên máy (bắt buộc ở hộp thoại tạo; trống = thư mục mặc định Documents/UMLab). */
+export interface ProjectCreateInput extends ProjectInput {
+  initialUpdate?: Uint8Array;
+  localDir?: string;
 }
 
 export type ConnState = 'connecting' | 'online' | 'offline' | 'unconfigured';
@@ -61,13 +69,17 @@ export interface ConnStatus {
   error?: string;
   /** Số bản cập nhật đang chờ gửi lên DB (khi mất mạng). */
   pending: number;
+  /** Độ trễ heartbeat gần nhất tới MongoDB (ms) — để báo kết nối yếu. */
+  latencyMs?: number;
 }
 
-export interface ConnSettings {
-  mongoUri: string;
-  dbName: string;
-  /** true nếu đang dùng chuỗi kết nối nhúng sẵn trong bản build. */
-  usingBuiltIn: boolean;
+/** Chất lượng kết nối hiển thị bằng icon wifi: tốt (xanh) / yếu hoặc đang đồng bộ (vàng) / mất (đỏ). */
+export type ConnQuality = 'good' | 'weak' | 'down';
+export const WEAK_LATENCY_MS = 600;
+export function connQuality(s: ConnStatus): ConnQuality {
+  if (s.state === 'offline' || s.state === 'unconfigured') return 'down';
+  if (s.state === 'connecting' || s.pending > 0 || (s.latencyMs ?? 0) >= WEAK_LATENCY_MS) return 'weak';
+  return 'good';
 }
 
 export interface AppInfo {
@@ -145,9 +157,17 @@ export interface UmlabApi {
   conn: {
     status(): Promise<ConnStatus>;
     onStatus(cb: (s: ConnStatus) => void): Unsubscribe;
-    getSettings(): Promise<ConnSettings>;
-    saveSettings(input: { mongoUri: string; dbName: string } | null): Promise<Result<ConnStatus>>;
-    test(input: { mongoUri: string; dbName: string }): Promise<Result<{ realtime: boolean; host: string }>>;
+    /** Kết nối lại ngay (chuỗi kết nối cố định trong bản build, không sửa được từ app). */
+    retry(): Promise<ConnStatus>;
+  };
+  local: {
+    /** Thư mục mặc định: Documents/UMLab. */
+    defaultDir(): Promise<string>;
+    pickFolder(initial?: string): Promise<string | null>;
+    /** Mở thư mục chứa tệp .umlab của project trong Explorer. */
+    reveal(projectId: string): Promise<void>;
+    /** Chuyển tệp .umlab của project sang thư mục khác. */
+    move(projectId: string, dir: string): Promise<Result<ProjectSummary>>;
   };
   auth: {
     session(): Promise<PublicUser | null>;
@@ -162,7 +182,7 @@ export interface UmlabApi {
   projects: {
     list(): Promise<Result<ProjectSummary[]>>;
     get(id: string): Promise<Result<ProjectSummary>>;
-    create(input: ProjectInput & { initialUpdate?: Uint8Array }): Promise<Result<ProjectSummary>>;
+    create(input: ProjectCreateInput): Promise<Result<ProjectSummary>>;
     update(id: string, patch: ProjectInput): Promise<Result<ProjectSummary>>;
     remove(id: string): Promise<Result<void>>;
     setStats(id: string, stats: ProjectStats): Promise<void>;
@@ -211,9 +231,11 @@ export const IPC = {
   appReload: 'app:reload',
   connStatus: 'conn:status',
   connStatusEvt: 'conn:status:evt',
-  connGetSettings: 'conn:getSettings',
-  connSaveSettings: 'conn:saveSettings',
-  connTest: 'conn:test',
+  connRetry: 'conn:retry',
+  localDefaultDir: 'local:defaultDir',
+  localPickFolder: 'local:pickFolder',
+  localReveal: 'local:reveal',
+  localMove: 'local:move',
   authSession: 'auth:session',
   authRegister: 'auth:register',
   authLogin: 'auth:login',

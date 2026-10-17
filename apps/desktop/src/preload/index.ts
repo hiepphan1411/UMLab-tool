@@ -21,9 +21,13 @@ const api: UmlabApi = {
   conn: {
     status: () => invoke(IPC.connStatus),
     onStatus: (cb) => on(IPC.connStatusEvt, cb),
-    getSettings: () => invoke(IPC.connGetSettings),
-    saveSettings: (input) => invoke(IPC.connSaveSettings, input),
-    test: (input) => invoke(IPC.connTest, input),
+    retry: () => invoke(IPC.connRetry),
+  },
+  local: {
+    defaultDir: () => invoke(IPC.localDefaultDir),
+    pickFolder: (initial) => invoke(IPC.localPickFolder, initial),
+    reveal: (projectId) => invoke(IPC.localReveal, projectId),
+    move: (projectId, dir) => invoke(IPC.localMove, projectId, dir),
   },
   auth: {
     session: () => invoke(IPC.authSession),

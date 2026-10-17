@@ -103,6 +103,13 @@ class Database {
     return () => this.listeners.delete(fn);
   }
 
+  /** Cập nhật độ trễ (chỉ phát khi đổi đáng kể để không dội sự kiện). */
+  private setLatency(ms: number): void {
+    const v = Math.round(ms);
+    const cur = this.status.latencyMs ?? 0;
+    if (Math.abs(v - cur) >= 50 || v >= 600 !== cur >= 600) this.emit({ latencyMs: v });
+  }
+
   setPending(n: number): void {
     if (n !== this.status.pending) this.emit({ pending: n });
   }
@@ -137,6 +144,7 @@ class Database {
     this.client = null;
     this.db = null;
     if (c) await c.close(true).catch(() => {});
+    if (this.status.state === 'online') this.emit({ state: 'offline', error: 'Đã ngắt kết nối' });
   }
 
   private async connect(): Promise<void> {
@@ -151,28 +159,32 @@ class Database {
       serverSelectionTimeoutMS: 8000,
       connectTimeoutMS: 8000,
       maxPoolSize: 20,
+      heartbeatFrequencyMS: 5000,
       retryWrites: true,
     });
     client.on('serverHeartbeatFailed', () => {
       if (this.client === client && this.status.state === 'online')
         this.emit({ state: 'offline', error: 'Mất kết nối tới MongoDB' });
     });
-    client.on('serverHeartbeatSucceeded', () => {
-      if (this.client === client && this.status.state === 'offline') {
+    client.on('serverHeartbeatSucceeded', (ev) => {
+      if (this.client !== client) return;
+      if (this.status.state === 'offline') {
         this.generation++;
-        this.emit({ state: 'online', error: undefined });
-      }
+        this.emit({ state: 'online', error: undefined, latencyMs: Math.round(ev.duration) });
+      } else this.setLatency(ev.duration);
     });
     try {
       await client.connect();
       const db = client.db(dbName);
+      const t0 = Date.now();
       await db.command({ ping: 1 });
+      const latencyMs = Date.now() - t0;
       this.client = client;
       this.db = db;
       await this.ensureIndexes(db);
       const realtime = await this.probeChangeStreams(db);
       this.generation++;
-      this.emit({ state: 'online', realtime, error: undefined });
+      this.emit({ state: 'online', realtime, error: undefined, latencyMs });
     } catch (err) {
       await client.close(true).catch(() => {});
       const msg = err instanceof Error ? err.message : String(err);

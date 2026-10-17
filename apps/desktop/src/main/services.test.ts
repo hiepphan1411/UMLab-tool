@@ -1,3 +1,6 @@
+import { mkdtempSync, readFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import * as Y from 'yjs';
@@ -204,31 +207,32 @@ describe('projects.service + sync.service (P02/P03)', () => {
     after.forEach((u) => Y.applyUpdate(doc, u));
     expect(doc.getMap('model').size).toBe(210);
     expect(doc.getMap('diagrams').has('d1')).toBe(true);
-    expect(opened.updates.length).toBeGreaterThan(200);
+    // local-first: trả về một trạng thái đã gộp (tệp local + mọi bản trên DB)
+    const merged = new Y.Doc();
+    opened.updates.forEach((u) => Y.applyUpdate(merged, u));
+    expect(merged.getMap('model').size).toBe(210);
     syncMod.sync.close(pid);
   });
 
   it('presence: thấy người khác qua change stream, bỏ chính mình', async () => {
     sent.length = 0;
     await syncMod.sync.openProject(pid);
-    await db.database
-      .presence()
-      .replaceOne(
-        { _id: `${pid}:c_peer` },
-        {
-          projectId: pid,
-          clientId: 'c_peer',
-          userId: 'u_x',
-          name: 'Chi',
-          color: '#D9463E',
-          diagramId: 'd1',
-          cursor: { x: 1, y: 2 },
-          selection: [],
-          dragging: null,
-          updatedAt: new Date(),
-        },
-        { upsert: true },
-      );
+    await db.database.presence().replaceOne(
+      { _id: `${pid}:c_peer` },
+      {
+        projectId: pid,
+        clientId: 'c_peer',
+        userId: 'u_x',
+        name: 'Chi',
+        color: '#D9463E',
+        diagramId: 'd1',
+        cursor: { x: 1, y: 2 },
+        selection: [],
+        dragging: null,
+        updatedAt: new Date(),
+      },
+      { upsert: true },
+    );
     await waitFor(() =>
       sent.some(
         (s) => s.channel === IPC.presencePeersEvt && (s.args[1] as { name: string }[]).some((p) => p.name === 'Chi'),
@@ -248,5 +252,92 @@ describe('projects.service + sync.service (P02/P03)', () => {
     await projects.remove(pid);
     expect(await db.database.updates().countDocuments({ projectId: pid })).toBe(0);
     expect((await err(projects.get(pid))).code).toBe('NOT_FOUND');
+  });
+});
+
+describe('local-first (lưu trên máy trước, đồng bộ MongoDB sau)', () => {
+  const stateOf = (file: string) => {
+    const raw = JSON.parse(readFileSync(file, 'utf8')) as { format: string; projectId: string; state: string };
+    const d = new Y.Doc();
+    Y.applyUpdate(d, new Uint8Array(Buffer.from(raw.state, 'base64')));
+    return { raw, doc: d };
+  };
+  const edit = (key: string, value: string) => {
+    const d = new Y.Doc();
+    d.getMap('meta').set(key, value);
+    return Y.encodeStateAsUpdate(d);
+  };
+
+  it('tạo project với thư mục đã chọn → tệp .umlab; mọi thay đổi ghi vào tệp trước', async () => {
+    const { projects } = projMod;
+    const { sync } = syncMod;
+    const { local } = await import('./local.service');
+    const dir = mkdtempSync(join(tmpdir(), 'umlab-local-'));
+    const p = await projects.create({ name: 'Bãi xe: Cơ sở 1', localDir: dir });
+    expect(p.local?.file).toBe(join(dir, 'Bãi xe_ Cơ sở 1.umlab'));
+    await sync.openProject(p.id);
+    await sync.push(p.id, edit('a', '1'));
+    local.flush(p.id);
+    const { raw, doc } = stateOf(p.local!.file);
+    expect(raw).toMatchObject({ format: 'umlab-local', projectId: p.id });
+    expect(doc.getMap('meta').get('a')).toBe('1');
+    expect(await db.database.updates().countDocuments({ projectId: p.id })).toBeGreaterThan(0);
+    sync.close(p.id);
+  });
+
+  it('mất mạng: vẫn liệt kê / mở / sửa / tạo project; có mạng lại → tự đồng bộ lên MongoDB', async () => {
+    const { projects } = projMod;
+    const { sync } = syncMod;
+    const { local } = await import('./local.service');
+    const dir = mkdtempSync(join(tmpdir(), 'umlab-off-'));
+    const p = await projects.create({ name: 'Offline', localDir: dir });
+    await sync.openProject(p.id);
+    sync.close(p.id);
+
+    await db.database.stop();
+    expect(db.database.ready).toBe(false);
+    expect((await projects.list()).map((x) => x.id)).toContain(p.id);
+    const opened = await sync.openProject(p.id);
+    expect(opened.project.id).toBe(p.id);
+    await sync.push(p.id, edit('offline', 'yes'));
+    const fresh = await projects.create({ name: 'Tạo lúc mất mạng', localDir: dir, initialUpdate: edit('seed', 'x') });
+    expect(fresh.local?.pendingCreate).toBe(true);
+    await sync.openProject(fresh.id);
+    await sync.push(fresh.id, edit('more', 'y'));
+    local.flushAll();
+    expect(stateOf(fresh.local!.file).doc.getMap('meta').toJSON()).toEqual({ seed: 'x', more: 'y' });
+    sync.close(p.id);
+    sync.close(fresh.id);
+
+    await db.database.start();
+    await waitFor(() => db.database.ready);
+    await projects.list(); // đẩy project tạo lúc offline lên
+    await waitFor(() => db.database.current.pending === 0, 15_000);
+    const remote = new Y.Doc();
+    for (const u of await sync.loadAll(p.id)) Y.applyUpdate(remote, u);
+    expect(remote.getMap('meta').get('offline')).toBe('yes');
+    expect(await db.database.projects().countDocuments({ _id: fresh.id })).toBe(1);
+    const r2 = new Y.Doc();
+    for (const u of await sync.loadAll(fresh.id)) Y.applyUpdate(r2, u);
+    expect(r2.getMap('meta').toJSON()).toEqual({ seed: 'x', more: 'y' });
+    expect(local.get(fresh.id)?.pendingCreate).toBeUndefined();
+  }, 40_000);
+
+  it('mở project đã sửa trên máy khi offline (chưa vào hàng đợi) → phần thiếu được đẩy lên', async () => {
+    const { projects } = projMod;
+    const { sync } = syncMod;
+    const { local } = await import('./local.service');
+    const p = await projects.create({ name: 'Lệch', localDir: mkdtempSync(join(tmpdir(), 'umlab-diff-')) });
+    // sửa thẳng bản local (như sửa ở máy này lúc tắt app khi đang offline)
+    local.apply(p.id, edit('onlyLocal', '1'));
+    const opened = await sync.openProject(p.id);
+    const d = new Y.Doc();
+    for (const u of opened.updates) Y.applyUpdate(d, u);
+    expect(d.getMap('meta').get('onlyLocal')).toBe('1');
+    await waitFor(() => db.database.current.pending === 0);
+    const remote = new Y.Doc();
+    for (const u of await sync.loadAll(p.id)) Y.applyUpdate(remote, u);
+    expect(remote.getMap('meta').get('onlyLocal')).toBe('1');
+    sync.close(p.id);
   });
 });

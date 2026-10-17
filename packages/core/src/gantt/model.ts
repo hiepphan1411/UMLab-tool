@@ -1,4 +1,5 @@
 // Mô hình Gantt — port nguyên logic từ tool cũ (docs/reference/diagram-studio/index.html, mục GANTT MODEL).
+import { normAttachments, type Attachment } from '../media/attachment';
 import { uid } from '../util/ids';
 
 export const DAYMS = 86_400_000;
@@ -84,6 +85,8 @@ export interface GanttTask {
   icon: string;
   items: GanttItem[];
   autoProg: boolean;
+  /** Ảnh đính kèm (dán Ctrl+V vào ô mô tả / kéo thả). */
+  images?: Attachment[];
 }
 
 export interface GanttData {
@@ -144,6 +147,8 @@ export function normTask(raw: unknown): GanttTask {
     items,
     autoProg: !!t.autoProg,
   };
+  const images = normAttachments(t.images);
+  if (images.length) o.images = images;
   syncProg(o);
   if (isNaN(dn(o.start))) o.start = ds(todayDn());
   if (isNaN(dn(o.end)) || dn(o.end) < dn(o.start)) o.end = o.start;

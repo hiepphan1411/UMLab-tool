@@ -109,10 +109,13 @@ export function DashboardMain(p: Props) {
                   onClick={() => p.onNewDiagram(t.type, folder)}
                 >
                   <span
-                    className="grid h-10 w-10 flex-none place-items-center rounded-[10px]"
-                    style={{ background: DIAGRAM_COLORS[t.type] + '1A' }}
+                    className="grid h-11 w-11 flex-none place-items-center rounded-[10px]"
+                    style={{
+                      background: DIAGRAM_COLORS[t.type] + '14',
+                      border: `1px solid ${DIAGRAM_COLORS[t.type]}33`,
+                    }}
                   >
-                    <DiagramIcon type={t.type} size={20} colored />
+                    <DiagramIcon type={t.type} size={28} colored />
                   </span>
                   <span className="min-w-0">
                     <span className="block truncate font-semibold">{t.label}</span>

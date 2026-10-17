@@ -8,6 +8,7 @@ import { paths, removeFile } from './config';
 import { database, type UpdateDoc } from './db';
 import { broadcast } from './events';
 import { ChangeFeed } from './feed';
+import { local } from './local.service';
 import { presence } from './presence.service';
 import { projects } from './projects.service';
 import { CLIENT_ID } from './client-id';
@@ -43,6 +44,7 @@ class SyncService {
   }
 
   dispose(): void {
+    local.flushAll();
     if (this.flushTimer) clearInterval(this.flushTimer);
     for (const id of [...this.open.keys()]) this.closeNow(id);
   }
@@ -102,8 +104,9 @@ class SyncService {
     if (this.flushing || !database.ready || !auth.userId) return;
     this.flushing = true;
     try {
+      await projects.flushPendingCreates();
       for (const [projectId, q] of [...this.queue]) {
-        if (!q.length) continue;
+        if (!q.length || local.get(projectId)?.pendingCreate) continue;
         const merged = q.length === 1 ? q[0] : Y.mergeUpdates(q);
         try {
           await this.insert(projectId, merged);
@@ -146,26 +149,53 @@ class SyncService {
     }
   }
 
-  // ---------- mở / đóng project ----------
+  // ---------- mở / đóng project (local-first) ----------
+  /**
+   * Mở project: đọc tệp .umlab trên máy trước; có mạng thì gộp thêm các bản trên MongoDB và đẩy phần chỉ có ở
+   * local (sửa lúc mất mạng) lên. Mất mạng mà đã có bản local → vẫn mở được để làm việc.
+   */
   async openProject(projectId: string): Promise<OpenedProject> {
+    if (!database.ready) {
+      const project = projects.localSummary(projectId);
+      if (!project) fail('OFFLINE', 'Mất kết nối và project này chưa có bản lưu trên máy.');
+      this.attach(projectId);
+      return { project: project!, updates: [local.state(projectId)], clientId: this.clientId };
+    }
+    const pending = local.get(projectId)?.pendingCreate;
+    if (pending) {
+      await projects.flushPendingCreates();
+    }
     await projects.access(projectId, 'viewer');
-    const project = await projects.get(projectId);
+    let project = await projects.get(projectId);
+    if (!local.get(projectId)) {
+      local.register(project, auth.userId ?? '');
+      project = { ...project, local: local.info(projectId) };
+    }
+    const st = this.attach(projectId);
+    // Mở stream trước rồi mới đọc: bản cập nhật chen giữa vẫn tới (trùng thì bỏ nhờ `seen`).
+    await st.feed.ready;
+    const docs = await database.updates().find({ projectId }).toArray();
+    for (const d of docs) st.seen.add(String(d._id));
+    if (docs.length > COMPACT_AT) void this.compact(projectId, docs).catch((e) => console.warn('[sync] compact', e));
+    const remote = docs.map((d) => toU8(d.data));
+    // phần chỉ có ở local → đẩy lên (người có quyền sửa)
+    const missing = project.role === 'viewer' ? null : local.missingFrom(projectId, remote);
+    for (const u of remote) local.apply(projectId, u);
+    if (missing) this.enqueue(projectId, missing);
+    void this.flush();
+    return { project, updates: [local.state(projectId)], clientId: this.clientId };
+  }
+
+  private attach(projectId: string): OpenState {
     let st = this.open.get(projectId);
     if (!st) {
       st = { feed: this.makeFeed(projectId), seen: new Set(), refs: 0, sinceCompact: 0 };
       this.open.set(projectId, st);
-      // Mở stream trước rồi mới đọc: bản cập nhật chen giữa vẫn tới (trùng thì bỏ nhờ `seen`).
-      await st.feed.start();
+      void st.feed.start();
       presence.join(projectId);
-    } else await st.feed.ready;
+    }
     st.refs++;
-    const docs = await database.updates().find({ projectId }).toArray();
-    for (const d of docs) st.seen.add(String(d._id));
-    if (docs.length > COMPACT_AT) void this.compact(projectId, docs).catch((e) => console.warn('[sync] compact', e));
-    const updates = docs.map((d) => toU8(d.data));
-    const pending = this.queue.get(projectId);
-    if (pending) updates.push(...pending);
-    return { project, updates, clientId: this.clientId };
+    return st;
   }
 
   close(projectId: string): void {
@@ -175,6 +205,7 @@ class SyncService {
   }
 
   private closeNow(projectId: string): void {
+    local.flush(projectId);
     const st = this.open.get(projectId);
     if (!st) return;
     st.feed.stop();
@@ -185,6 +216,17 @@ class SyncService {
   async push(projectId: string, update: Uint8Array): Promise<void> {
     if (!(update instanceof Uint8Array) || !update.byteLength) fail('VALIDATION', 'Bản cập nhật rỗng.');
     if (update.byteLength > MAX_UPDATE_BYTES) fail('VALIDATION', 'Thay đổi quá lớn (tối đa 8 MB một lần).');
+    const entry = local.get(projectId);
+    // mất mạng: kiểm quyền bằng vai trò đã lưu; có mạng thì insert() kiểm lại trên DB
+    if (!database.ready && entry && entry.project.role === 'viewer')
+      fail('FORBIDDEN', 'Bạn chỉ có quyền xem project này.');
+    // local-first: ghi vào tệp .umlab trước
+    local.apply(projectId, update);
+    // tạo khi mất mạng, chưa có trên MongoDB: toàn bộ nội dung sẽ được gửi lúc tạo
+    if (entry?.pendingCreate) {
+      void this.flush();
+      return;
+    }
     if (!database.ready || this.queue.get(projectId)?.length) {
       // Kiểm quyền bằng thông tin đã có; mất mạng thì vẫn nhận vào hàng đợi.
       if (database.ready) await projects.access(projectId, 'editor');
@@ -202,6 +244,7 @@ class SyncService {
   }
 
   async loadAll(projectId: string): Promise<Uint8Array[]> {
+    if (!database.ready && projects.localSummary(projectId)) return [local.state(projectId)];
     await projects.access(projectId, 'viewer');
     const docs = await database.updates().find({ projectId }).toArray();
     return docs.map((d) => toU8(d.data));
@@ -214,7 +257,9 @@ class SyncService {
       if (!st || st.seen.has(key)) return;
       st.seen.add(key);
       if (d.clientId === this.clientId) return;
-      broadcast(IPC.syncUpdateEvt, projectId, toU8(d.data));
+      const u = toU8(d.data);
+      local.apply(projectId, u);
+      broadcast(IPC.syncUpdateEvt, projectId, u);
     };
     return new ChangeFeed<UpdateDoc>({
       name: 'updates:' + projectId,
@@ -245,11 +290,19 @@ class SyncService {
         if (!st) return;
         const docs = await database.updates().find({ projectId }).toArray();
         for (const d of docs) st.seen.add(String(d._id));
-        broadcast(
-          IPC.syncResyncEvt,
-          projectId,
-          docs.map((d) => toU8(d.data)),
-        );
+        const remote = docs.map((d) => toU8(d.data));
+        // sửa lúc mất mạng mà chưa vào hàng đợi (vd. mở app khi đang offline) → đẩy lên
+        const missing = local.missingFrom(projectId, remote);
+        for (const u of remote) local.apply(projectId, u);
+        if (
+          missing &&
+          (await projects.access(projectId, 'editor').then(
+            () => true,
+            () => false,
+          ))
+        )
+          this.enqueue(projectId, missing);
+        broadcast(IPC.syncResyncEvt, projectId, remote);
         await this.flush();
       },
     });

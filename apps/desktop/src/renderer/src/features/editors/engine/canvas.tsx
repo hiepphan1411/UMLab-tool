@@ -8,6 +8,7 @@ import {
   clamp,
   intersects,
   nearestSegment,
+  bendAt,
   nearEdge,
   nearestSide,
   projectT,
@@ -212,7 +213,7 @@ export function Canvas({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [s.views, s.conns, s.preview, s.connPreview]);
 
-  const lineJumps = !!engine.meta?.canvas?.lineJumps;
+  const lineJumps = engine.meta?.canvas?.lineJumps !== false;
   const allPts = useMemo(() => (lineJumps ? [...routes.values()].map((r) => r.pts) : null), [routes, lineJumps]);
 
   // ---------- culling ----------
@@ -701,10 +702,12 @@ export function Canvas({
       if (t && (t.id !== other || getConnector(c.kind)?.selfLoop)) {
         const tb = engine.box(t.id)!;
         const ns = nearestSide(tb, wx, wy);
+        // kéo trên chính hình đang nối → trượt dọc cạnh (luôn khoá cạnh + vị trí); hình khác: khoá khi thả sát mép
+        const same = t.id === (d.end === 'source' ? c.source.viewId : c.target.viewId);
         end =
-          c.routing === 'straight' || c.routing === 'curved' || !nearEdge(tb, wx, wy, 12 / st.zoom)
-            ? { viewId: t.id }
-            : { viewId: t.id, side: ns.side, t: ns.t };
+          same || (c.routing !== 'straight' && c.routing !== 'curved' && nearEdge(tb, wx, wy, 12 / st.zoom))
+            ? { viewId: t.id, side: ns.side, t: Math.round(ns.t * 1000) / 1000 }
+            : { viewId: t.id };
       } else if (getConnector(c.kind)?.freeEnds) end = { viewId: null, x: wx, y: wy };
       else end = { viewId: null, x: wx, y: wy };
       engine.set({ connPreview: new Map([[c.id, { [d.end]: end } as Partial<Connector>]]) });
@@ -925,8 +928,7 @@ export function Canvas({
       const r = routes.get(c.id);
       if (!r || r.curved) return true;
       const i = nearestSegment([wx, wy], r.pts);
-      const inner = r.pts.slice(1, -1).map((p) => ({ x: r1(p[0]), y: r1(p[1]) }));
-      inner.splice(i - 1, 0, { x: r1(wx), y: r1(wy) });
+      const inner = bendAt(r.pts, i, [wx, wy]).map((p) => ({ x: r1(p[0]), y: r1(p[1]) }));
       engine.apply((tx) => tx.setConn(c.id, { waypoints: inner, routing: 'manual' }));
       engine.select([], [c.id]);
       return true;
