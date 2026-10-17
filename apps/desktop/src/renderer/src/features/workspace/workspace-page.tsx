@@ -1,5 +1,16 @@
-import { ChevronRight, Copy, FileJson, FileUp, FolderOpen, Pencil, Search, Share2, Trash2 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import {
+  ChevronRight,
+  Copy,
+  FileJson,
+  FileUp,
+  FolderOpen,
+  Grid3x3,
+  Pencil,
+  Search,
+  Share2,
+  Trash2,
+} from 'lucide-react';
+import { useCallback, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   diagramsMap,
@@ -21,8 +32,10 @@ import { DashboardMain } from './dashboard-main';
 import { confirmDeleteDiagrams, exportDiagrams, importIntoProject } from './diagram-actions';
 import { NewDiagramDialog } from './dialogs';
 import { PresenceAvatars } from './presence';
+import { SearchDialog, useSearchShortcut } from './search-dialog';
 import { LOCAL, useProjectSession, useSessionState, useYVersion, type ProjectSession } from './session';
 import { ProjectSidebar } from './sidebar';
+import { TraceMatrix } from './trace-matrix';
 import { useWorkspacePrefs } from './ui-state';
 import '../editors/register-all';
 
@@ -127,6 +140,9 @@ function Workspace({ session: s }: { session: ProjectSession }) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [newDiagram, setNewDiagram] = useState<{ type: DiagramType; folder: string | null } | null>(null);
   const [share, setShare] = useState(false);
+  const [page, setPage] = useState<'home' | 'trace'>('home');
+  const [search, setSearch] = useState(false);
+  useSearchShortcut(useCallback(() => setSearch(true), []));
   const Icon = projectIcon(project.icon);
 
   const open = (id: string) => nav(`/p/${s.projectId}/d/${id}`);
@@ -195,6 +211,21 @@ function Workspace({ session: s }: { session: ProjectSession }) {
         </nav>
         <Spacer />
         <DiagramSearch session={s} version={version} onOpen={open} />
+        <Button
+          variant="outline"
+          icon={<Search />}
+          onClick={() => setSearch(true)}
+          title="Tìm trong cả project (Ctrl+K)"
+        >
+          Ctrl+K
+        </Button>
+        <Button
+          variant={page === 'trace' ? 'primary' : 'outline'}
+          icon={<Grid3x3 />}
+          onClick={() => setPage(page === 'trace' ? 'home' : 'trace')}
+        >
+          Truy vết
+        </Button>
         <PresenceAvatars session={s} peers={peers} />
         {s.canEdit && (
           <Button
@@ -243,18 +274,22 @@ function Workspace({ session: s }: { session: ProjectSession }) {
             window.addEventListener('pointerup', up);
           }}
         />
-        <DashboardMain
-          session={s}
-          version={version}
-          prefs={prefs}
-          setPrefs={setPrefs}
-          selected={selected}
-          setSelected={setSelected}
-          peers={peers}
-          onOpenDiagram={open}
-          onNewDiagram={(type, folder) => setNewDiagram({ type, folder })}
-          menuFor={menuFor}
-        />
+        {page === 'trace' ? (
+          <TraceMatrix session={s} version={version} onOpen={open} onClose={() => setPage('home')} />
+        ) : (
+          <DashboardMain
+            session={s}
+            version={version}
+            prefs={prefs}
+            setPrefs={setPrefs}
+            selected={selected}
+            setSelected={setSelected}
+            peers={peers}
+            onOpenDiagram={open}
+            onNewDiagram={(type, folder) => setNewDiagram({ type, folder })}
+            menuFor={menuFor}
+          />
+        )}
       </div>
       <NewDiagramDialog
         session={s}
@@ -271,6 +306,7 @@ function Workspace({ session: s }: { session: ProjectSession }) {
         }}
       />
       {share && <ShareDialog project={project} onClose={() => setShare(false)} onChanged={() => {}} />}
+      {search && <SearchDialog session={s} onClose={() => setSearch(false)} />}
     </div>
   );
 }

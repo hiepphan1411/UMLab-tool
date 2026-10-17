@@ -391,6 +391,22 @@ export const baseTool = (id: string) => id.split('#')[0];
 export const getShape = (type: string) => shapes.get(baseTool(type));
 export const getConnector = (kind: string) => connectors.get(baseTool(kind));
 export const getPalette = (diagramType: string) => palettes.get(diagramType) ?? [];
+
+/** Hình dùng để đặt phần tử mô hình loại `modelKind` lên sơ đồ loại `diagramType` (ưu tiên công cụ có trong palette). */
+export function shapeForModel(diagramType: string, modelKind: string): string | null {
+  const ids: string[] = [];
+  const walk = (it: PaletteItem) => {
+    ids.push(it.id);
+    it.variants?.forEach(walk);
+  };
+  getPalette(diagramType).forEach((g) => g.items.forEach(walk));
+  for (const id of ids) {
+    if (id.includes('#')) continue;
+    const def = getShape(id);
+    if (def?.modelKind === modelKind) return def.type;
+  }
+  return null;
+}
 export const getRules = (diagramType: string) => rules.get(diagramType) ?? [];
 export const allShapes = () => [...shapes.values()];
 export function registerDropHandler(h: DropHandler): void {

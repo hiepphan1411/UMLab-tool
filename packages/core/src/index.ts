@@ -36,3 +36,5 @@ export * from './media/attachment';
 export * from './generators/spec-to-activity';
 export * from './sequence/layout';
 export * from './generators/spec-to-sequence';
+export * from './util/text';
+export * from './project/model-index';

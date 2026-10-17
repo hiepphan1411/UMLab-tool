@@ -1785,3 +1785,52 @@ main:has(> .gen-banner) > .canvas-wrap {
   text-decoration: underline;
   text-underline-offset: 2px;
 }
+
+/* ---------- Ma trận truy vết (P12) ---------- */
+.trace-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--panel);
+}
+.trace-table th {
+  background: var(--panel-2);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--line);
+}
+.trace-table td {
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+.trace-table tr:last-child td {
+  border-bottom: 0;
+}
+.trace-table th:nth-child(n + 2):nth-child(-n + 4),
+.trace-table td:nth-child(n + 2):nth-child(-n + 4) {
+  width: 92px;
+  text-align: center;
+}
+.trace-ok {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 26px;
+  padding: 0 8px;
+  border-radius: 6px;
+  color: var(--ok);
+  background: var(--accent-soft);
+  font-weight: 600;
+}
+.trace-ok:hover {
+  outline: 1.5px solid var(--accent);
+}

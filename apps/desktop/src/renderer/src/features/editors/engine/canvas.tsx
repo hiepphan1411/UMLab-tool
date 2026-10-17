@@ -34,7 +34,7 @@ import {
   viewsInBox,
 } from './ops';
 import { Overlay } from './overlay';
-import { getConnector, getDropHandlers, getShape, type ShapeHandle, type TextRegion } from './registry';
+import { getConnector, getDropHandlers, getShape, shapeForModel, type ShapeHandle, type TextRegion } from './registry';
 import { ConnectorView, ShapeView, buildCtx, contentBox, makeRouteEnv } from './render';
 import { routeConnector, type Routed } from './route';
 import { TextEditor } from './text-edit';
@@ -1032,6 +1032,31 @@ export function Canvas({
     if (ro) return;
     const [wx, wy] = toWorld(ev.clientX, ev.clientY);
     const tool = ev.dataTransfer.getData('text/x-umlab-tool');
+    // phần tử từ Model Explorer → view mới cùng modelId
+    const mid = ev.dataTransfer.getData('text/x-umlab-model');
+    if (!tool && mid) {
+      ev.preventDefault();
+      const m = engine.lookup.model(mid);
+      if (!m) return;
+      const type = shapeForModel(engine.diagramType, m.kind);
+      const def = type ? getShape(type) : undefined;
+      if (!type || !def) {
+        toast(`Không đặt được “${m.name}” lên loại sơ đồ này`, { error: true });
+        return;
+      }
+      const sz = def.defaultSize;
+      const id = createView(
+        engine,
+        type,
+        snapV(wx - sz.w / 2, engine.state.grid),
+        snapV(wy - sz.h / 2, engine.state.grid),
+        {
+          modelId: mid,
+        },
+      );
+      if (id) engine.select([id]);
+      return;
+    }
     if (!tool) {
       const types = [...ev.dataTransfer.types];
       const hs = dropHandlers.filter((h) => h.types.some((t) => types.includes(t)));
@@ -1065,8 +1090,6 @@ export function Canvas({
       if (id && def.textRegions && !def.container) requestAnimationFrame(() => editText(id));
       if (id) placed(id);
     }
-    const mid = ev.dataTransfer.getData('text/x-umlab-model');
-    if (mid) ev.preventDefault();
   };
 
   const st = s;

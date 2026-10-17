@@ -6,6 +6,7 @@
 import type { Connector, ModelElement, View } from '../format/types';
 import type { Step, UseCaseSpec } from '../spec/model';
 import { uid } from '../util/ids';
+import { unaccent } from '../util/text';
 import { computeSequence, SEQ, type SeqMsgKind } from '../sequence/layout';
 
 export type SeqLifelineKind = 'actor' | 'boundary' | 'control' | 'entity' | 'lifeline';
@@ -70,9 +71,6 @@ const PREPOSITIONS = new Set([
   'đến',
   'tới',
 ]);
-
-/** Bỏ dấu tiếng Việt. */
-export const unaccent = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D');
 
 /** "Check-in xe vào bãi" → "CheckInXe" (bỏ cụm giới từ phía sau, không dấu, PascalCase). */
 export function controllerBase(useCaseName: string): string {

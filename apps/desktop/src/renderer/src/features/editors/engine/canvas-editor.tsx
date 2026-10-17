@@ -61,6 +61,7 @@ import {
   zOrder,
 } from './ops';
 import { Palette, UmlIcon } from './palette';
+import { takeSelectRequest, useSelectRequest } from './select-request';
 import { DiagramsPanel, FindPanel, IssuesPanel, LayersPanel, useIssues } from './panels';
 import { getConnector, getPasteHandlers, getShape } from './registry';
 import { resetTextCache } from './text';
@@ -155,6 +156,19 @@ export function CanvasEditor(props: EditorProps & { options?: CanvasEditorOption
       });
     }
   };
+
+  // yêu cầu chọn sẵn hình khi mở sơ đồ (Model Explorer / tìm kiếm Ctrl+K)
+  const selReq = useStore(useSelectRequest, (x) => x.req);
+  useEffect(() => {
+    const r = takeSelectRequest(diagram.id);
+    if (!r) return;
+    // không huỷ khi effect chạy lại (lấy yêu cầu xong store đổi → effect chạy lần nữa)
+    requestAnimationFrame(() => {
+      if (r.viewIds[0]) focusView(r.viewIds[0]);
+      engine.select(r.viewIds, r.connIds);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selReq, engine, diagram.id]);
 
   const exportSource: ExportSource = {
     name: diagram.name,

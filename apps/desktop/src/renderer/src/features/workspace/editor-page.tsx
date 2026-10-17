@@ -1,5 +1,16 @@
-import { AlertTriangle, ArrowLeft, Braces, CloudOff, FileUp, ImageDown, Loader2, Redo2, Undo2 } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import {
+  AlertTriangle,
+  ArrowLeft,
+  Braces,
+  CloudOff,
+  FileUp,
+  ImageDown,
+  Loader2,
+  Redo2,
+  Search,
+  Undo2,
+} from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { DIAGRAM_TYPE_BY_ID, diagramsMap, renameDiagram } from '@umlab/core';
 import { hhmm } from '@/lib/format';
@@ -12,6 +23,7 @@ import { ThemeButton } from '../shell/theme-button';
 import { Spacer, TopBar } from '../shell/top-bar';
 import { EditorContext, getEditor, type EditorActions, type EditorProps } from '../editors/editor-registry';
 import { PresenceAvatars } from './presence';
+import { SearchDialog, useSearchShortcut } from './search-dialog';
 import { ProjectError } from './workspace-page';
 import { LOCAL, useProjectSession, useSessionState, useYVersion, type ProjectSession } from './session';
 import { pushRecent } from './ui-state';
@@ -127,6 +139,8 @@ function DiagramEditor({ session: s, diagramId }: { session: ProjectSession; dia
   const undo = useUndo(s, diagramId);
   const [actions, setActions] = useState<EditorActions>({});
   const readOnly = !s.canEdit;
+  const [search, setSearch] = useState(false);
+  useSearchShortcut(useCallback(() => setSearch(true), []));
 
   useEffect(() => {
     if (user) pushRecent(user.id, s.projectId, diagramId);
@@ -198,6 +212,9 @@ function DiagramEditor({ session: s, diagramId }: { session: ProjectSession; dia
           {actions.extra}
           <Spacer />
           <PresenceAvatars session={s} peers={peers} diagramId={diagram.id} />
+          <IconButton label="Tìm trong project" shortcut="Ctrl+K" onClick={() => setSearch(true)}>
+            <Search />
+          </IconButton>
           <IconButton label="Kiểm tra mô hình" disabled={!actions.check} onClick={actions.check}>
             <span className="relative">
               <AlertTriangle />
@@ -230,6 +247,7 @@ function DiagramEditor({ session: s, diagramId }: { session: ProjectSession; dia
         <div className="min-h-0 flex-1">
           <Editor {...props} />
         </div>
+        {search && <SearchDialog session={s} onClose={() => setSearch(false)} />}
       </div>
     </EditorContext.Provider>
   );

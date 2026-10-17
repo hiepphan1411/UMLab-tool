@@ -10,3 +10,4 @@ import './class';
 import './erd';
 import './activity';
 import './sequence';
+import './model-explorer';

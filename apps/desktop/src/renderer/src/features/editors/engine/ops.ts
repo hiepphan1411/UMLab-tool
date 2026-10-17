@@ -1,13 +1,9 @@
 // Thao tác editor dùng chung: tạo hình/đường nối, xoá, nhân bản, sao chép/dán, căn chỉnh, z-order, nhóm, container.
-import type * as Y from 'yjs';
 import {
-  connsMap,
-  diagramsMap,
-  modelMap,
+  deleteModelEverywhere,
   uid,
   viewsMap,
   type Connector,
-  type DiagramMeta,
   type Endpoint,
   type ModelElement,
   type Style,
@@ -272,37 +268,11 @@ export function deleteSelection(e: Engine): void {
   for (const [c, m] of gone) getConnector(c.kind)?.afterDelete?.(e, c, m);
 }
 
-/** Nơi một phần tử mô hình xuất hiện: [{diagram, viewIds}] trên toàn project. */
-export function modelUsages(
-  doc: Y.Doc,
-  modelId: string,
-): { diagram: DiagramMeta; viewIds: string[]; connIds: string[] }[] {
-  const out: { diagram: DiagramMeta; viewIds: string[]; connIds: string[] }[] = [];
-  for (const d of diagramsMap(doc).values()) {
-    const viewIds = [...viewsMap(doc, d.id).values()].filter((v) => v.modelId === modelId).map((v) => v.id);
-    const connIds = [...connsMap(doc, d.id).values()].filter((c) => c.modelId === modelId).map((c) => c.id);
-    if (viewIds.length || connIds.length) out.push({ diagram: d, viewIds, connIds });
-  }
-  return out;
-}
+export { modelUsages } from '@umlab/core';
 
-/** Xoá khỏi mô hình (Ctrl+Delete): xoá phần tử và MỌI view/đường nối tham chiếu nó ở mọi sơ đồ. */
+/** Xoá khỏi mô hình (Ctrl+Delete): xoá phần tử và MỌI view/đường nối tham chiếu nó ở mọi sơ đồ (core). */
 export function deleteFromModel(e: Engine, modelIds: string[]): void {
-  const doc = e.doc;
-  e.apply(() => {
-    for (const mid of modelIds) {
-      for (const u of modelUsages(doc, mid)) {
-        const vm = viewsMap(doc, u.diagram.id);
-        const cm = connsMap(doc, u.diagram.id);
-        const gone = new Set(u.viewIds);
-        for (const c of cm.values())
-          if (u.connIds.includes(c.id) || gone.has(c.source.viewId ?? '') || gone.has(c.target.viewId ?? ''))
-            cm.delete(c.id);
-        for (const id of u.viewIds) vm.delete(id);
-      }
-      modelMap(doc).delete(mid);
-    }
-  });
+  e.apply(() => deleteModelEverywhere(e.doc, modelIds));
   e.clearSelection();
 }
 
