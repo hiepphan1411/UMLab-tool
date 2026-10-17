@@ -124,6 +124,7 @@ function Dashboard() {
 function CreateUser({ onDone }: { onDone: (created: UserRow | null) => void }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -133,7 +134,7 @@ function CreateUser({ onDone }: { onDone: (created: UserRow | null) => void }) {
     setBusy(true);
     setError('');
     try {
-      setResult(await api.createUser({ name, email, password }));
+      setResult(await api.createUser({ name, email, username, password }));
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -147,7 +148,8 @@ function CreateUser({ onDone }: { onDone: (created: UserRow | null) => void }) {
         {result ? (
           <div className="grid">
             <p>
-              Đã tạo tài khoản <b>{result.user.email}</b>.
+              Đã tạo tài khoản <b>{result.user.username}</b>
+              {result.user.username !== result.user.email && <> ({result.user.email})</>}.
             </p>
             {result.tempPassword && (
               <div className="temp">
@@ -180,6 +182,18 @@ function CreateUser({ onDone }: { onDone: (created: UserRow | null) => void }) {
             <label>
               <span>Email</span>
               <input className="field" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            </label>
+            <label>
+              <span>Tên đăng nhập (để trống = dùng email)</span>
+              <input
+                className="field"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder={email.trim().toLowerCase() || undefined}
+                autoComplete="off"
+                autoCapitalize="none"
+                spellCheck={false}
+              />
             </label>
             <label>
               <span>Mật khẩu (để trống = sinh mật khẩu tạm)</span>
@@ -225,7 +239,7 @@ function UsersPage() {
           <Search size={15} />
           <input
             className="field"
-            placeholder="Tìm theo tên hoặc email…"
+            placeholder="Tìm theo tên, email, tên đăng nhập…"
             aria-label="Tìm tài khoản"
             value={q}
             onChange={(e) => setQ(e.target.value)}
@@ -241,6 +255,7 @@ function UsersPage() {
           <thead>
             <tr>
               <th>Tài khoản</th>
+              <th>Tên đăng nhập</th>
               <th>Email</th>
               <th>Ngày tạo</th>
               <th className="num">Project</th>
@@ -256,6 +271,7 @@ function UsersPage() {
                     {u.name}
                   </Link>
                 </td>
+                <td>{u.username}</td>
                 <td>{u.email}</td>
                 <td>{fmtDay(u.createdAt)}</td>
                 <td className="num">{u.projects}</td>
@@ -264,7 +280,7 @@ function UsersPage() {
             ))}
             {data && !data.length && (
               <tr>
-                <td colSpan={5} className="muted">
+                <td colSpan={6} className="muted">
                   Không có tài khoản phù hợp.
                 </td>
               </tr>
@@ -324,7 +340,9 @@ function UserPage() {
           <h1 className="user-cell">
             <Avatar name={data.user.name} color={data.user.color} />
             {data.user.name}
-            <span className="muted">{data.user.email}</span>
+            <span className="muted">
+              {data.user.username !== data.user.email ? `${data.user.username}, ${data.user.email}` : data.user.email}
+            </span>
           </h1>
         )}
       </header>

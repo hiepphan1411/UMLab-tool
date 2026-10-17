@@ -56,15 +56,15 @@ Kế hoạch gốc (README, phases/) thiết kế UMLab là web app React + Nest
 
 ## 3. Collection MongoDB (database `umlab`)
 
-| Collection         | Trường chính                                                                                                                          | Index                               |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
-| `users`            | `_id`, `email` (chữ thường), `name`, `passwordHash` (argon2id), `tokenVersion`, `color`, `createdAt`                                  | `email` unique                      |
-| `login_attempts`   | `_id` = email, `count`, `firstAt`                                                                                                     | TTL `firstAt` 60 s                  |
-| `projects`         | `_id`, `ownerId`, `name`, `description`, `color`, `icon`, `members[{userId, role}]`, `memberIds[]`, `stats`, `createdAt`, `updatedAt` | `memberIds`, `updatedAt`            |
-| `project_updates`  | `_id` (ObjectId), `projectId`, `kind` (`u` cập nhật / `s` snapshot), `data` (Binary), `clientId`, `userId`, `createdAt`               | `projectId`                         |
-| `presence`         | `_id` = `projectId:clientId`, `projectId`, `userId`, `name`, `color`, `diagramId`, `cursor`, `selection`, `dragging`, `updatedAt`     | `projectId`, TTL `updatedAt` 60 s   |
-| `diagram_versions` | `_id`, `projectId`, `diagramId`, `label`, `content` (JSON nén chuỗi), `userId`, `createdAt`                                           | `{projectId, diagramId, createdAt}` |
-| `assets`           | `_id`, `projectId`, `name`, `mime`, `size`, `data` (Binary), `createdAt`                                                              | `projectId`                         |
+| Collection         | Trường chính                                                                                                                                 | Index                                       |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| `users`            | `_id`, `email` (chữ thường), `username` (chữ thường; thiếu = email), `name`, `passwordHash` (argon2id), `tokenVersion`, `color`, `createdAt` | `email` unique, `username` unique (partial) |
+| `login_attempts`   | `_id` = email, `count`, `firstAt`                                                                                                            | TTL `firstAt` 60 s                          |
+| `projects`         | `_id`, `ownerId`, `name`, `description`, `color`, `icon`, `members[{userId, role}]`, `memberIds[]`, `stats`, `createdAt`, `updatedAt`        | `memberIds`, `updatedAt`                    |
+| `project_updates`  | `_id` (ObjectId), `projectId`, `kind` (`u` cập nhật / `s` snapshot), `data` (Binary), `clientId`, `userId`, `createdAt`                      | `projectId`                                 |
+| `presence`         | `_id` = `projectId:clientId`, `projectId`, `userId`, `name`, `color`, `diagramId`, `cursor`, `selection`, `dragging`, `updatedAt`            | `projectId`, TTL `updatedAt` 60 s           |
+| `diagram_versions` | `_id`, `projectId`, `diagramId`, `label`, `content` (JSON nén chuỗi), `userId`, `createdAt`                                                  | `{projectId, diagramId, createdAt}`         |
+| `assets`           | `_id`, `projectId`, `name`, `mime`, `size`, `data` (Binary), `createdAt`                                                                     | `projectId`                                 |
 
 ## 4. Cấu trúc Y.Doc của một project
 

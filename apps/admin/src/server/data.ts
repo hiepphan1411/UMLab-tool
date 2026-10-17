@@ -27,6 +27,7 @@ export class AdminError extends Error {
 const DAY = 86_400_000;
 const COLORS = ['#2E62E6', '#D9463E', '#1F9D66', '#7C5CC4', '#D98A1C', '#0E8A9B', '#C2417E', '#4A6FA5'];
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const USERNAME = /^\S{3,200}$/;
 
 const col = (db: Db) => ({
   users: db.collection<UserDoc>('users'),
@@ -121,6 +122,7 @@ const row = (u: UserDoc, projects: Map<string, number>, last: Map<string, Date>)
   id: u._id,
   name: u.name,
   email: u.email,
+  username: u.username ?? u.email,
   color: u.color,
   createdAt: u.createdAt.toISOString(),
   projects: projects.get(u._id) ?? 0,
@@ -131,7 +133,13 @@ export async function listUsers(db: Db, q = ''): Promise<UserRow[]> {
   const k = q.trim();
   const esc = k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const filter = k
-    ? { $or: [{ email: { $regex: esc, $options: 'i' } }, { name: { $regex: esc, $options: 'i' } }] }
+    ? {
+        $or: [
+          { email: { $regex: esc, $options: 'i' } },
+          { username: { $regex: esc, $options: 'i' } },
+          { name: { $regex: esc, $options: 'i' } },
+        ],
+      }
     : {};
   const users = await col(db).users.find(filter).sort({ createdAt: -1 }).limit(500).toArray();
   const ids = users.map((u) => u._id);
@@ -222,10 +230,13 @@ export async function userDetail(db: Db, id: string, limit = 200): Promise<UserD
   };
 }
 
-/** Tạo tài khoản (cùng luật & cách băm mật khẩu với app). Không nhập mật khẩu → sinh mật khẩu tạm. */
+/**
+ * Tạo tài khoản (cùng luật & cách băm mật khẩu với app). Không nhập mật khẩu → sinh mật khẩu tạm; không nhập tên đăng
+ * nhập → dùng email.
+ */
 export async function createUser(
   db: Db,
-  input: { name?: unknown; email?: unknown; password?: unknown },
+  input: { name?: unknown; email?: unknown; username?: unknown; password?: unknown },
   by: string,
 ): Promise<{ user: UserRow; tempPassword?: string }> {
   const name = String(input.name ?? '').trim();
@@ -235,17 +246,33 @@ export async function createUser(
   const given = typeof input.password === 'string' && input.password ? input.password : '';
   if (name.length < 2 || name.length > 60) throw new AdminError(400, 'Họ tên cần 2–60 ký tự.');
   if (!EMAIL.test(email)) throw new AdminError(400, 'Email không hợp lệ.');
+  const username =
+    String(input.username ?? '')
+      .trim()
+      .toLowerCase() || email;
+  if (!USERNAME.test(username)) throw new AdminError(400, 'Tên đăng nhập cần ít nhất 3 ký tự, không có khoảng trắng.');
   const password = given || tempPassword();
   const problem = passwordProblem(password);
   if (problem) throw new AdminError(400, problem);
   const c = col(db);
-  if (await c.users.findOne({ email }, { projection: { _id: 1 } }))
-    throw new AdminError(409, 'Email này đã có tài khoản.');
+  // App đăng nhập bằng email hoặc tên đăng nhập → hai giá trị mới không được trùng giá trị nào của tài khoản khác
+  const taken = await c.users.findOne(
+    { $or: [{ email }, { username: email }, { email: username }, { username }] },
+    { projection: { email: 1, username: 1 } },
+  );
+  if (taken)
+    throw new AdminError(
+      409,
+      taken.email === email || taken.username === email
+        ? 'Email này đã có tài khoản.'
+        : 'Tên đăng nhập này đã được dùng.',
+    );
   let h = 0;
   for (const ch of email) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
   const doc: UserDoc = {
     _id: `u_${randomBytes(6).toString('hex')}`,
     email,
+    username,
     name,
     passwordHash: await hashPassword(password),
     tokenVersion: 0,
@@ -255,7 +282,8 @@ export async function createUser(
   try {
     await c.users.insertOne(doc);
   } catch (e) {
-    if ((e as { code?: number }).code === 11000) throw new AdminError(409, 'Email này đã có tài khoản.');
+    if ((e as { code?: number }).code === 11000)
+      throw new AdminError(409, 'Email hoặc tên đăng nhập này đã có tài khoản.');
     throw e;
   }
   await c.audit.insertOne({

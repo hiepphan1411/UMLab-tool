@@ -12,9 +12,10 @@ files:
 extraMetadata:
   main: out/main/index.js
 asar: true
+# electron cài ở node_modules gốc (npm workspaces) nên electron-builder không tự dò được phiên bản; giữ khớp package-lock
+electronVersion: 38.8.6
 npmRebuild: false
 nodeGypRebuild: false
-includeSubNodeModules: false
 win:
   icon: build/icon.png
   target:

@@ -76,14 +76,14 @@ describe('auth.service (P01)', () => {
     const { auth } = authMod;
     auth.logout();
     for (let i = 0; i < 5; i++)
-      expect((await err(auth.login({ email: 'an@example.com', password: 'sai', remember: false }))).message).toBe(
-        'Email hoặc mật khẩu không đúng',
+      expect((await err(auth.login({ login: 'an@example.com', password: 'sai', remember: false }))).message).toBe(
+        'Tài khoản hoặc mật khẩu không đúng',
       );
-    expect((await err(auth.login({ email: 'an@example.com', password: 'Matkhau123', remember: false }))).code).toBe(
+    expect((await err(auth.login({ login: 'an@example.com', password: 'Matkhau123', remember: false }))).code).toBe(
       'RATE_LIMITED',
     );
     await db.database.attempts().deleteMany({});
-    const u = await auth.login({ email: 'an@example.com', password: 'Matkhau123', remember: true });
+    const u = await auth.login({ login: 'an@example.com', password: 'Matkhau123', remember: true });
     expect(u.name).toBe('An');
   });
 
@@ -100,14 +100,24 @@ describe('auth.service (P01)', () => {
 
   it('đổi mật khẩu giữ phiên máy này, mật khẩu cũ không dùng được nữa', async () => {
     const { auth } = authMod;
-    await auth.login({ email: 'an@example.com', password: 'Matkhau123', remember: false });
+    await auth.login({ login: 'an@example.com', password: 'Matkhau123', remember: false });
     await auth.changePassword({ currentPassword: 'Matkhau123', newPassword: 'Moi12345' });
     expect((await auth.require()).email).toBe('an@example.com');
     auth.logout();
-    expect((await err(auth.login({ email: 'an@example.com', password: 'Matkhau123', remember: false }))).code).toBe(
+    expect((await err(auth.login({ login: 'an@example.com', password: 'Matkhau123', remember: false }))).code).toBe(
       'UNAUTHORIZED',
     );
-    await auth.login({ email: 'an@example.com', password: 'Moi12345', remember: false });
+    await auth.login({ login: 'an@example.com', password: 'Moi12345', remember: false });
+  });
+
+  it('đăng nhập bằng tên đăng nhập (không phân biệt hoa thường) hoặc email', async () => {
+    const { auth } = authMod;
+    auth.logout();
+    await db.database.users().updateOne({ email: 'an@example.com' }, { $set: { username: 'an.nguyen' } });
+    const u = await auth.login({ login: ' An.Nguyen ', password: 'Moi12345', remember: false });
+    expect(u).toMatchObject({ email: 'an@example.com', username: 'an.nguyen' });
+    auth.logout();
+    await auth.login({ login: 'an@example.com', password: 'Moi12345', remember: false });
   });
 });
 
@@ -118,7 +128,7 @@ describe('projects.service + sync.service (P02/P03)', () => {
   it('A tạo project kèm dữ liệu ban đầu; B không truy cập được (FORBIDDEN)', async () => {
     const { auth } = authMod;
     const { projects } = projMod;
-    await auth.login({ email: 'an@example.com', password: 'Moi12345', remember: false });
+    await auth.login({ login: 'an@example.com', password: 'Moi12345', remember: false });
     const d = new Y.Doc();
     d.getMap('folders').set('f1', { id: 'f1', parentId: null, name: 'Phân tích', order: 0 });
     const p = await projects.create({ name: 'UniPark+', initialUpdate: Y.encodeStateAsUpdate(d) });
@@ -138,13 +148,13 @@ describe('projects.service + sync.service (P02/P03)', () => {
     const { auth } = authMod;
     const { projects } = projMod;
     auth.logout();
-    await auth.login({ email: 'an@example.com', password: 'Moi12345', remember: false });
+    await auth.login({ login: 'an@example.com', password: 'Moi12345', remember: false });
     expect((await err(projects.addMember(pid, 'khongco@example.com', 'editor'))).code).toBe('NOT_FOUND');
     const p = await projects.addMember(pid, 'BINH@example.com', 'viewer');
     expect(p.members.map((m) => m.name)).toEqual(['An', 'Bình']);
 
     auth.logout();
-    await auth.login({ email: 'binh@example.com', password: 'Matkhau123', remember: false });
+    await auth.login({ login: 'binh@example.com', password: 'Matkhau123', remember: false });
     const opened = await syncMod.sync.openProject(pid);
     const doc = new Y.Doc();
     opened.updates.forEach((u) => Y.applyUpdate(doc, u));
@@ -156,10 +166,10 @@ describe('projects.service + sync.service (P02/P03)', () => {
     syncMod.sync.close(pid);
 
     auth.logout();
-    await auth.login({ email: 'an@example.com', password: 'Moi12345', remember: false });
+    await auth.login({ login: 'an@example.com', password: 'Moi12345', remember: false });
     await projects.setMemberRole(pid, bId, 'editor');
     auth.logout();
-    await auth.login({ email: 'binh@example.com', password: 'Matkhau123', remember: false });
+    await auth.login({ login: 'binh@example.com', password: 'Matkhau123', remember: false });
     await syncMod.sync.push(pid, Y.encodeStateAsUpdate(d2));
     expect(await db.database.updates().countDocuments({ projectId: pid })).toBe(2);
   });
@@ -248,7 +258,7 @@ describe('projects.service + sync.service (P02/P03)', () => {
     const { projects } = projMod;
     expect((await err(projects.remove(pid))).code).toBe('FORBIDDEN');
     auth.logout();
-    await auth.login({ email: 'an@example.com', password: 'Moi12345', remember: false });
+    await auth.login({ login: 'an@example.com', password: 'Moi12345', remember: false });
     await projects.remove(pid);
     expect(await db.database.updates().countDocuments({ projectId: pid })).toBe(0);
     expect((await err(projects.get(pid))).code).toBe('NOT_FOUND');
@@ -359,7 +369,7 @@ describe('lịch sử phiên bản + đặt lại mật khẩu (P13)', () => {
     expect(await db.database.versions().countDocuments({ projectId: p.id })).toBe(50);
     await projects.addMember(p.id, 'binh@example.com', 'viewer');
     auth.logout();
-    await auth.login({ email: 'binh@example.com', password: 'Matkhau123', remember: false });
+    await auth.login({ login: 'binh@example.com', password: 'Matkhau123', remember: false });
     expect(await versions.list(p.id, 'd1')).toHaveLength(50);
     expect((await err(versions.save(p.id, 'd1', 'x', '{}'))).code).toBe('FORBIDDEN');
   });
@@ -368,7 +378,7 @@ describe('lịch sử phiên bản + đặt lại mật khẩu (P13)', () => {
     const { auth } = authMod;
     const { resetPassword, tempPassword, passwordProblem } = await import('../../../../scripts/reset-password.mjs');
     auth.logout();
-    await auth.login({ email: 'vy@example.com', password: 'Matkhau123', remember: false });
+    await auth.login({ login: 'vy@example.com', password: 'Matkhau123', remember: false });
     await auth.watching;
     sent.length = 0;
     const before = (await db.database.users().findOne({ email: 'vy@example.com' }))!.tokenVersion;
@@ -384,10 +394,10 @@ describe('lịch sử phiên bản + đặt lại mật khẩu (P13)', () => {
     // máy đang đăng nhập bị đăng xuất qua change stream
     await waitFor(() => sent.some((s) => s.channel === IPC.authEndedEvt));
     expect(auth.userId).toBeNull();
-    expect((await err(auth.login({ email: 'vy@example.com', password: 'Matkhau123', remember: false }))).code).toBe(
+    expect((await err(auth.login({ login: 'vy@example.com', password: 'Matkhau123', remember: false }))).code).toBe(
       'UNAUTHORIZED',
     );
-    expect((await auth.login({ email: 'vy@example.com', password: tmp, remember: false })).email).toBe(
+    expect((await auth.login({ login: 'vy@example.com', password: tmp, remember: false })).email).toBe(
       'vy@example.com',
     );
   });

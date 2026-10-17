@@ -82,7 +82,7 @@ test('Quản trị: đăng nhập → tổng quan (tài khoản, sơ đồ) → 
   await page.getByRole('button', { name: 'Tạo tài khoản' }).click();
   const dlg = page.getByRole('dialog');
   await dlg.getByLabel('Họ tên').fill('Trần Bình');
-  await dlg.getByLabel('Email').fill('binh@umlab.vn');
+  await dlg.getByLabel('Email', { exact: true }).fill('binh@umlab.vn');
   await dlg.getByRole('button', { name: 'Tạo tài khoản' }).click();
   await expect(dlg.getByTestId('temp-password')).toHaveText(/^[A-Za-z0-9]{12}$/);
   await dlg.getByRole('button', { name: 'Xong' }).click();

@@ -21,7 +21,7 @@ export const api = {
   logout: () => req<{ ok: true }>('POST', '/api/logout'),
   overview: () => req<Overview>('GET', '/api/overview'),
   users: (q = '') => req<UserRow[]>('GET', `/api/users?q=${encodeURIComponent(q)}`),
-  createUser: (input: { name: string; email: string; password: string }) =>
+  createUser: (input: { name: string; email: string; username: string; password: string }) =>
     req<{ user: UserRow; tempPassword?: string }>('POST', '/api/users', input),
   user: (id: string) => req<UserDetail>('GET', `/api/users/${encodeURIComponent(id)}`),
   resetPassword: (id: string) =>

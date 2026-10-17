@@ -7,6 +7,10 @@ import { Button, Checkbox, Field, Input, Logo } from '@/ui';
 import { AuthLayout } from './auth-layout';
 import { useSession } from './session';
 
+// Tạm ẩn lối "Tạo tài khoản" ở màn đăng nhập: tài khoản do quản trị tạo (trang quản trị → Tài khoản).
+// Route /register vẫn giữ, bật lại chỉ cần đổi cờ này.
+const SHOW_SIGNUP_LINK = false;
+
 export function PasswordInput({
   value,
   onChange,
@@ -51,7 +55,7 @@ export function LoginPage() {
   const conn = useConn((s) => s.status);
   const [params] = useSearchParams();
   const nav = useNavigate();
-  const [email, setEmail] = useState('');
+  const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -63,10 +67,10 @@ export function LoginPage() {
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
-    if (!email.trim() || !password) return setError('Hãy nhập email và mật khẩu');
+    if (!login.trim() || !password) return setError('Hãy nhập email/tên đăng nhập và mật khẩu');
     setBusy(true);
     try {
-      const u = await call(umlab.auth.login({ email, password, remember }));
+      const u = await call(umlab.auth.login({ login, password, remember }));
       setUser(u);
       nav(next, { replace: true });
     } catch (err) {
@@ -87,16 +91,18 @@ export function LoginPage() {
         </p>
       )}
       <form className="grid gap-4" onSubmit={submit} noValidate>
-        <Field label="Email">
+        <Field label="Email hoặc tên đăng nhập">
           <Input
             id="login-email"
             size2="lg"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            autoComplete="email"
+            type="text"
+            value={login}
+            onChange={(e) => setLogin(e.target.value)}
+            autoComplete="username"
+            autoCapitalize="none"
+            spellCheck={false}
             autoFocus
-            placeholder="ban@truong.edu.vn"
+            placeholder="ban@truong.edu.vn hoặc tên đăng nhập"
           />
         </Field>
         <Field label="Mật khẩu">
@@ -126,15 +132,17 @@ export function LoginPage() {
           </p>
         )}
       </form>
-      <p className="mt-6 text-muted">
-        Chưa có tài khoản?{' '}
-        <Link
-          to={`/register${params.get('next') ? '?next=' + encodeURIComponent(next) : ''}`}
-          className="font-semibold text-accent"
-        >
-          Tạo tài khoản
-        </Link>
-      </p>
+      {SHOW_SIGNUP_LINK && (
+        <p className="mt-6 text-muted">
+          Chưa có tài khoản?{' '}
+          <Link
+            to={`/register${params.get('next') ? '?next=' + encodeURIComponent(next) : ''}`}
+            className="font-semibold text-accent"
+          >
+            Tạo tài khoản
+          </Link>
+        </p>
+      )}
     </AuthLayout>
   );
 }

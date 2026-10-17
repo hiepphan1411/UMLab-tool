@@ -87,5 +87,6 @@ npm run admin:build && npm run admin:start   # bản build
   request ghi cần header `X-UMLab-Admin` (chống CSRF).
 - **Chỉ nghe trên máy này** (`127.0.0.1`) theo mặc định. Muốn mở trong mạng LAN: `UMLAB_ADMIN_HOST=0.0.0.0` — khi đó
   đặt `UMLAB_ADMIN_SECRET` cố định và chỉ mở sau tường lửa / VPN (trang không có HTTPS riêng).
+- **Đưa lên Internet (Vercel):** xem `docs/DEPLOY-ADMIN-VERCEL.md`.
 - Lịch sử đăng nhập / đổi mật khẩu / tạo-xoá project được app desktop ghi vào collection `audit_log` từ bản này trở đi;
   hoạt động chỉnh sửa trước đó vẫn xem được (lấy từ `project_updates`).

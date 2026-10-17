@@ -6,6 +6,8 @@ import { hostOf, loadSettings } from './config';
 export interface UserDoc {
   _id: string;
   email: string;
+  /** Tên đăng nhập (chữ thường). Tài khoản cũ chưa có → dùng email. Đăng nhập nhận cả hai. */
+  username?: string;
   name: string;
   passwordHash: string;
   tokenVersion: number;
@@ -229,6 +231,9 @@ class Database {
   private async ensureIndexes(db: Db): Promise<void> {
     await Promise.all([
       db.collection('users').createIndex({ email: 1 }, { unique: true }),
+      db
+        .collection('users')
+        .createIndex({ username: 1 }, { unique: true, partialFilterExpression: { username: { $type: 'string' } } }),
       db.collection('login_attempts').createIndex({ firstAt: 1 }, { expireAfterSeconds: 60 }),
       db.collection('projects').createIndex({ memberIds: 1, updatedAt: -1 }),
       db.collection('project_updates').createIndex({ projectId: 1, _id: 1 }),

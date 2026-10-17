@@ -180,10 +180,28 @@ describe('trang quản trị — số liệu & tài khoản', () => {
     });
     expect(created.status).toBe(201);
     expect(created.data.user.email).toBe('binh@umlab.vn');
+    expect(created.data.user.username).toBe('binh@umlab.vn');
     const tmp = created.data.tempPassword!;
     const doc = await db.collection('users').findOne({ email: 'binh@umlab.vn' });
     expect(await argon2Verify({ password: tmp, hash: doc!.passwordHash as string })).toBe(true);
     expect((await call('POST', '/api/users', { name: 'Trần Bình', email: 'binh@umlab.vn' })).status).toBe(409);
+
+    // tên đăng nhập riêng; không được trùng email / tên đăng nhập của tài khoản khác
+    const lan = await call<{ user: UserRow }>('POST', '/api/users', {
+      name: 'Lê Lan',
+      email: 'lan@umlab.vn',
+      username: ' Lan.Le ',
+      password: 'Matkhau123',
+    });
+    expect(lan.status).toBe(201);
+    expect(lan.data.user.username).toBe('lan.le');
+    expect((await call<UserRow[]>('GET', '/api/users?q=lan.le')).data.map((u) => u.email)).toEqual(['lan@umlab.vn']);
+    const dup = (username: string, email = 'khac@umlab.vn') =>
+      call('POST', '/api/users', { name: 'Trùng', email, username, password: 'Matkhau123' });
+    expect((await dup('lan.le')).status).toBe(409);
+    expect((await dup('an@umlab.vn')).status).toBe(409);
+    expect((await dup('', 'lan.le')).status).toBe(400);
+    expect((await dup('co khoang')).status).toBe(400);
 
     const an = await call<UserDetail>('GET', '/api/users/u_an');
     expect(an.data.projects.map((p) => [p.name, p.role])).toEqual([

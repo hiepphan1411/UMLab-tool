@@ -21,7 +21,8 @@
     "reset-password": "node scripts/reset-password.mjs",
     "admin": "npm run dev -w @umlab/admin",
     "admin:build": "npm run build -w @umlab/admin",
-    "admin:start": "npm run start -w @umlab/admin"
+    "admin:start": "npm run start -w @umlab/admin",
+    "admin:vercel": "npm run build:vercel -w @umlab/admin"
   },
   "engines": {
     "node": ">=20.19.0"

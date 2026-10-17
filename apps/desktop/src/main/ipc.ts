@@ -89,7 +89,7 @@ export function registerIpc(isDev: boolean): void {
   handle(IPC.authRegister, (input: { name: string; email: string; password: string }) =>
     wrap(() => auth.register(input)),
   );
-  handle(IPC.authLogin, (input: { email: string; password: string; remember: boolean }) =>
+  handle(IPC.authLogin, (input: { login: string; password: string; remember: boolean }) =>
     wrap(() => auth.login(input)),
   );
   handle(IPC.authLogout, async () => {

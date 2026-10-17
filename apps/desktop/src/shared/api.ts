@@ -10,6 +10,7 @@ export interface PublicUser {
   id: string;
   name: string;
   email: string;
+  username: string;
   color: string;
   createdAt: string;
 }
@@ -172,7 +173,8 @@ export interface UmlabApi {
   auth: {
     session(): Promise<PublicUser | null>;
     register(input: { name: string; email: string; password: string }): Promise<Result<PublicUser>>;
-    login(input: { email: string; password: string; remember: boolean }): Promise<Result<PublicUser>>;
+    /** `login`: email hoặc tên đăng nhập. */
+    login(input: { login: string; password: string; remember: boolean }): Promise<Result<PublicUser>>;
     logout(): Promise<void>;
     logoutAll(): Promise<Result<void>>;
     updateProfile(input: { name: string; color?: string }): Promise<Result<PublicUser>>;

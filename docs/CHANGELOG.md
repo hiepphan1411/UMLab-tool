@@ -2,6 +2,24 @@
 
 Mỗi phase hoàn thành thêm một mục: `## P0x — tên phase (ngày)` + danh sách thay đổi chính.
 
+## Triển khai trang quản trị lên Vercel, sửa đóng gói .exe (2026-10-17)
+
+- **Vercel:** `npm run admin:vercel` build theo Build Output API → `.vercel/output` (giao diện tĩnh + một function
+  `/api/*` bọc `createApi`, bundle bằng esbuild). `vercel.json` ở gốc repo; entry `apps/admin/src/server/vercel.ts` giữ
+  kết nối MongoDB giữa các request, bắt buộc có `UMLAB_ADMIN_SECRET`. Cookie phiên thêm `Secure` khi chạy qua HTTPS.
+  Hướng dẫn: `docs/DEPLOY-ADMIN-VERCEL.md`.
+- **Đóng gói:** bỏ khoá `includeSubNodeModules` (electron-builder 26 không còn nhận), ghi `electronVersion` vì Electron
+  cài ở `node_modules` gốc của workspaces.
+
+## Đăng nhập bằng email hoặc tên đăng nhập (2026-10-17)
+
+- **App:** ô đăng nhập nhận **email hoặc tên đăng nhập**, không ép định dạng email, không phân biệt hoa thường. Tạm ẩn
+  dòng “Chưa có tài khoản? Tạo tài khoản” (cờ `SHOW_SIGNUP_LINK` trong `login-page.tsx`; route `/register` vẫn còn).
+- **Dữ liệu:** `users.username` (chữ thường, unique partial). Tài khoản cũ chưa có `username` vẫn đăng nhập bằng email;
+  đăng ký trong app đặt `username` = email. Thông báo sai: “Tài khoản hoặc mật khẩu không đúng”.
+- **Trang quản trị:** form tạo tài khoản có thêm **Tên đăng nhập** (để trống = dùng email); chặn trùng chéo giữa email và
+  tên đăng nhập của tài khoản khác. Danh sách có cột Tên đăng nhập, tìm được theo tên đăng nhập.
+
 ## Logo mới, màn hình chờ, xuất mẫu Doc, thẻ project (2026-10-17)
 
 - **Logo mới** (bình thí nghiệm + “UM” dạng mạch): bản ngang (thanh trên), bản đứng kèm “SYSTEMS & FLOWS” (đăng nhập /

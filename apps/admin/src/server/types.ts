@@ -4,6 +4,8 @@ import type { Binary, ObjectId } from 'mongodb';
 export interface UserDoc {
   _id: string;
   email: string;
+  /** Tài khoản cũ chưa có → dùng email. */
+  username?: string;
   name: string;
   passwordHash: string;
   tokenVersion: number;
@@ -75,6 +77,7 @@ export interface UserRow {
   id: string;
   name: string;
   email: string;
+  username: string;
   color: string;
   createdAt: string;
   projects: number;

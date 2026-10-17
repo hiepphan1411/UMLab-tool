@@ -19,7 +19,7 @@ test('P01: chưa đăng nhập bị chuyển /login; đăng ký → đăng xuấ
 
   // Sai mật khẩu
   await login(page, email, 'saimatkhau1');
-  await expect(page.getByRole('alert')).toHaveText('Email hoặc mật khẩu không đúng');
+  await expect(page.getByRole('alert')).toHaveText('Tài khoản hoặc mật khẩu không đúng');
 
   // Đúng mật khẩu, có ghi nhớ
   await page.locator('#login-password').fill('Matkhau123');
@@ -43,7 +43,7 @@ test('P01: sai mật khẩu 6 lần → bị chặn 1 phút', async () => {
   await page.getByRole('menuitem', { name: 'Đăng xuất', exact: true }).click();
   for (let i = 0; i < 5; i++) {
     await login(page, email, 'saimatkhau' + i);
-    await expect(page.getByRole('alert')).toHaveText('Email hoặc mật khẩu không đúng');
+    await expect(page.getByRole('alert')).toHaveText('Tài khoản hoặc mật khẩu không đúng');
   }
   await login(page, email, 'Matkhau123');
   await expect(page.getByRole('alert')).toHaveText('Bạn thử quá nhiều lần, chờ 1 phút');

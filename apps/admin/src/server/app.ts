@@ -36,8 +36,9 @@ async function readJson(req: IncomingMessage): Promise<Record<string, unknown>> 
   }
 }
 
-const cookie = (value: string, maxAge: number) =>
-  `${COOKIE}=${encodeURIComponent(value)}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${maxAge}`;
+// Secure khi chạy sau HTTPS (Vercel đặt x-forwarded-proto); chạy http://127.0.0.1 thì trình duyệt sẽ bỏ cookie Secure
+const cookie = (value: string, maxAge: number, secure: boolean) =>
+  `${COOKIE}=${encodeURIComponent(value)}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${maxAge}${secure ? '; Secure' : ''}`;
 
 /** Trả về handler; handler trả về false nếu không phải request /api (để phục vụ client). */
 export function createApi(db: Db, cfg: AdminConfig) {
@@ -45,6 +46,7 @@ export function createApi(db: Db, cfg: AdminConfig) {
     const url = new URL(req.url ?? '/', 'http://localhost');
     if (!url.pathname.startsWith('/api/')) return false;
     const method = req.method ?? 'GET';
+    const secure = req.headers['x-forwarded-proto'] === 'https';
     try {
       if (method === 'POST' && req.headers['x-umlab-admin'] !== '1')
         throw new AdminError(403, 'Thiếu header X-UMLab-Admin.');
@@ -63,11 +65,11 @@ export function createApi(db: Db, cfg: AdminConfig) {
         } catch (e) {
           throw new AdminError(401, (e as Error).message);
         }
-        send(res, 200, { user: name }, { 'Set-Cookie': cookie(issue(cfg, name), 8 * 3600) });
+        send(res, 200, { user: name }, { 'Set-Cookie': cookie(issue(cfg, name), 8 * 3600, secure) });
         return true;
       }
       if (path === '/api/logout' && method === 'POST') {
-        send(res, 200, { ok: true }, { 'Set-Cookie': cookie('', 0) });
+        send(res, 200, { ok: true }, { 'Set-Cookie': cookie('', 0, secure) });
         return true;
       }
       if (!who) throw new AdminError(401, 'Cần đăng nhập quản trị.');

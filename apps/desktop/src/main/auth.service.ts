@@ -30,6 +30,9 @@ export const passwordSchema = z
 
 const emailSchema = z.string().trim().toLowerCase().email('Email không hợp lệ').max(200);
 
+// Đăng nhập bằng email hoặc tên đăng nhập → không ép định dạng email.
+const loginSchema = z.string().trim().toLowerCase().min(1, 'Hãy nhập email hoặc tên đăng nhập').max(200);
+
 const nameSchema = z.string().trim().min(1, 'Hãy nhập họ tên').max(80, 'Tên quá dài');
 
 function parse<T>(schema: z.ZodType<T>, value: unknown): T {
@@ -59,7 +62,14 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
 }
 
 export function toPublic(u: UserDoc): PublicUser {
-  return { id: u._id, name: u.name, email: u.email, color: u.color, createdAt: u.createdAt.toISOString() };
+  return {
+    id: u._id,
+    name: u.name,
+    email: u.email,
+    username: u.username ?? u.email,
+    color: u.color,
+    createdAt: u.createdAt.toISOString(),
+  };
 }
 
 class AuthService {
@@ -187,11 +197,15 @@ class AuthService {
     const name = parse(nameSchema, input.name);
     const email = parse(emailSchema, input.email);
     const password = parse(passwordSchema, input.password);
-    const exists = await database.users().findOne({ email }, { projection: { _id: 1 } });
+    // email cũng không được trùng tên đăng nhập của người khác (đăng nhập tìm theo cả hai)
+    const exists = await database
+      .users()
+      .findOne({ $or: [{ email }, { username: email }] }, { projection: { _id: 1 } });
     if (exists) fail('CONFLICT', 'Email này đã có tài khoản. Hãy đăng nhập.');
     const doc: UserDoc = {
       _id: newId('u'),
       email,
+      username: email,
       name,
       passwordHash: await hashPassword(password),
       tokenVersion: 0,
@@ -209,33 +223,33 @@ class AuthService {
     return toPublic(doc);
   }
 
-  private async checkRate(email: string): Promise<void> {
-    const a = await database.attempts().findOne({ _id: email });
+  private async checkRate(key: string): Promise<void> {
+    const a = await database.attempts().findOne({ _id: key });
     if (a && a.count >= MAX_ATTEMPTS && Date.now() - a.firstAt.getTime() < WINDOW_MS)
       fail('RATE_LIMITED', 'Bạn thử quá nhiều lần, chờ 1 phút');
   }
 
-  private async recordFailure(email: string): Promise<void> {
+  private async recordFailure(key: string): Promise<void> {
     const now = new Date();
-    const a = await database.attempts().findOne({ _id: email });
+    const a = await database.attempts().findOne({ _id: key });
     if (!a || now.getTime() - a.firstAt.getTime() >= WINDOW_MS) {
-      await database.attempts().replaceOne({ _id: email }, { count: 1, firstAt: now }, { upsert: true });
+      await database.attempts().replaceOne({ _id: key }, { count: 1, firstAt: now }, { upsert: true });
     } else {
-      await database.attempts().updateOne({ _id: email }, { $inc: { count: 1 } });
+      await database.attempts().updateOne({ _id: key }, { $inc: { count: 1 } });
     }
   }
 
-  async login(input: { email: string; password: string; remember: boolean }): Promise<PublicUser> {
-    const email = parse(emailSchema, input.email);
+  async login(input: { login: string; password: string; remember: boolean }): Promise<PublicUser> {
+    const login = parse(loginSchema, input.login);
     if (typeof input.password !== 'string' || !input.password) fail('VALIDATION', 'Hãy nhập mật khẩu');
-    await this.checkRate(email);
-    const u = await database.users().findOne({ email });
+    await this.checkRate(login);
+    const u = await database.users().findOne({ $or: [{ username: login }, { email: login }] });
     const ok = !!u && (await verifyPassword(input.password, u.passwordHash));
     if (!ok || !u) {
-      await this.recordFailure(email);
-      fail('UNAUTHORIZED', 'Email hoặc mật khẩu không đúng');
+      await this.recordFailure(login);
+      fail('UNAUTHORIZED', 'Tài khoản hoặc mật khẩu không đúng');
     }
-    await database.attempts().deleteOne({ _id: email });
+    await database.attempts().deleteOne({ _id: login });
     this.setSession(u!, !!input.remember);
     audit(u!._id, 'login');
     return toPublic(u!);
@@ -282,6 +296,7 @@ class AuthService {
     await database.users().insertOne({
       _id: newId('u'),
       email,
+      username: email,
       name: 'Tài khoản demo',
       passwordHash: await hashPassword('Demo1234'),
       tokenVersion: 0,
