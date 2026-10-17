@@ -285,32 +285,34 @@ function ConnInspector({ engine, conn }: { engine: Engine; conn: Connector }) {
             onCommit={(name) => engine.apply((tx) => tx.setModel(model.id, { name }))}
           />
         )}
-        <div>
-          <span className="lbl">Kiểu nối</span>
-          <Segmented
-            value={routing}
-            onChange={(v) =>
-              engine.apply((tx) =>
-                tx.setConn(conn.id, (c) => ({
-                  ...c,
-                  routing: v === 'manual' ? 'manual' : v,
-                  waypoints: v === 'manual' ? c.waypoints : [],
-                })),
-              )
-            }
-            options={[
-              { value: 'orthogonal', label: 'Vuông', title: 'Vuông góc' },
-              { value: 'smart', label: 'Thông minh', title: 'Vuông góc, né các khối' },
-              { value: 'straight', label: 'Thẳng' },
-              { value: 'curved', label: 'Cong' },
-            ]}
-          />
-          {routing === 'manual' && (
-            <p className="mt-1 text-[11.5px] text-muted">
-              Đang chỉnh tay {conn.waypoints.length} điểm uốn. Chọn kiểu khác để bỏ.
-            </p>
-          )}
-        </div>
+        {!def?.route && (
+          <div>
+            <span className="lbl">Kiểu nối</span>
+            <Segmented
+              value={routing}
+              onChange={(v) =>
+                engine.apply((tx) =>
+                  tx.setConn(conn.id, (c) => ({
+                    ...c,
+                    routing: v === 'manual' ? 'manual' : v,
+                    waypoints: v === 'manual' ? c.waypoints : [],
+                  })),
+                )
+              }
+              options={[
+                { value: 'orthogonal', label: 'Vuông', title: 'Vuông góc' },
+                { value: 'smart', label: 'Thông minh', title: 'Vuông góc, né các khối' },
+                { value: 'straight', label: 'Thẳng' },
+                { value: 'curved', label: 'Cong' },
+              ]}
+            />
+            {routing === 'manual' && (
+              <p className="mt-1 text-[11.5px] text-muted">
+                Đang chỉnh tay {conn.waypoints.length} điểm uốn. Chọn kiểu khác để bỏ.
+              </p>
+            )}
+          </div>
+        )}
         <div className="row2">
           <div>
             <span className="lbl">Màu</span>

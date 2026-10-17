@@ -4,6 +4,7 @@ import type { ZodTypeAny } from 'zod';
 import type * as Y from 'yjs';
 import type { Connector, DiagramMeta, ModelElement, Routing, Style, View } from '@umlab/core';
 import type { Box, Pt } from './geometry';
+import type { RouteEnv, Routed } from './route';
 import type { Engine } from './engine';
 
 export interface EngineLookup {
@@ -35,6 +36,9 @@ export interface Tx {
   view(id: string): View | undefined;
   conn(id: string): Connector | undefined;
   model(id: string): ModelElement | undefined;
+  /** Mọi hình / đường nối của sơ đồ ở trạng thái mới nhất trong giao dịch (lookup.views() là bản trước giao dịch). */
+  allViews(): View[];
+  allConns(): Connector[];
   addView(v: View): void;
   setView(id: string, patch: Partial<View> | ((v: View) => View)): void;
   setViewProps(id: string, patch: Record<string, unknown>): void;
@@ -156,6 +160,8 @@ export interface ShapeDef<P = Record<string, unknown>> {
   onCreate?: (tx: Tx, view: View) => void;
   /** Bám viền hình khác (pin, parameter node, expansion node). */
   attach?: { to: string[] };
+  /** Chỉ kéo được theo trục x (lifeline Sequence). */
+  moveAxis?: 'x';
   /** Menu chuột phải riêng. */
   contextMenu?: (
     view: View,
@@ -280,6 +286,17 @@ export interface ConnectorDef {
   freeEnds?: boolean;
   /** Nhãn phụ thuộc phần tử khác (Extend lấy tên extension point của use case gốc) → vẽ lại khi mô hình đổi. */
   live?: boolean;
+  /** Đường đi do bố cục riêng của loại sơ đồ tính (message Sequence) — không có waypoint / tay nắm đoạn. */
+  route?: (c: Connector, env: RouteEnv) => Routed | null;
+  /** Đầu mút lưu toạ độ y (thời gian) thay cho cạnh: khi vẽ / nối lại ghi `y` của điểm bấm. */
+  timeline?: boolean;
+  /** Kéo thân đường nối (message: kéo lên/xuống đổi thứ tự; Shift + kéo chèn khoảng trống). */
+  bodyDrag?: {
+    preview: (c: Connector, dy: number, lookup: EngineLookup) => Map<string, Partial<Connector>>;
+    commit: (tx: Tx, c: Connector, dy: number, mods: { shift: boolean }) => void;
+  };
+  /** Nhấp đúp lên đường nối (thay cho bẻ khúc). */
+  onDoubleClick?: (c: Connector, e: Engine) => void;
 }
 
 export interface PaletteItem {
@@ -406,3 +423,15 @@ export function accepts(parent: ShapeDef | undefined, childType: string): boolea
 }
 
 export type { Pt };
+
+// ---------- chuẩn hoá bố cục theo loại sơ đồ ----------
+/** Gọi cuối mỗi giao dịch của engine (cùng giao dịch → cùng một bước Undo), vd. Sequence: căn lifeline, hạ hộp đầu
+ * khi Create, kéo dài lifeline theo message. */
+export type Normalizer = (tx: Tx) => void;
+const normalizers = new Map<string, Normalizer>();
+export function registerNormalizer(diagramType: string, fn: Normalizer): void {
+  normalizers.set(diagramType, fn);
+}
+export function getNormalizer(diagramType: string): Normalizer | undefined {
+  return normalizers.get(diagramType);
+}

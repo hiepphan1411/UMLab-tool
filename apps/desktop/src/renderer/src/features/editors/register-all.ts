@@ -9,3 +9,4 @@ import './usecase-spec';
 import './class';
 import './erd';
 import './activity';
+import './sequence';

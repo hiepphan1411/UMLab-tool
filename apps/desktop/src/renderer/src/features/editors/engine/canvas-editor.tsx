@@ -118,6 +118,10 @@ export function CanvasEditor(props: EditorProps & { options?: CanvasEditorOption
     [session, diagram.id, diagram.type, readOnly, user?.id],
   );
   useEffect(() => () => engine.destroy(), [engine]);
+  const stopUndo = props.undo.stop;
+  useEffect(() => {
+    engine.undoBoundary = stopUndo;
+  }, [engine, stopUndo]);
   const api = useRef<CanvasApi | null>(null);
   const [left, setLeft] = useState<LeftTab>('palette');
   const [exporting, setExporting] = useState(false);

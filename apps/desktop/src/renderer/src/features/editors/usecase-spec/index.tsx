@@ -29,6 +29,7 @@ import {
   updateFlow,
   updateStep,
   validateSpec,
+  connsMap,
   viewsMap,
   writeSpec,
   ImportError,
@@ -41,11 +42,12 @@ import {
 import { umlab } from '@/lib/api';
 import { cn } from '@/lib/cn';
 import { slug } from '@/lib/format';
-import { Button, Segmented, Select, confirmDialog, openMenuAt, toast, useTooltip, type MenuEntry } from '@/ui';
+import { Button, Segmented, Select, confirmDialog, openMenuAt, toast, type MenuEntry } from '@/ui';
 import { ImageAttachments } from '../../media/image-attachments';
 import { LOCAL } from '../../workspace/session';
 import { registerDiagramTemplates, registerEditor, type EditorProps } from '../editor-registry';
 import { ACTIVITY_GENERATOR } from '../activity';
+import { SEQUENCE_GENERATOR } from '../sequence';
 import { generateNew, generatedFrom, takeFocus, useFocusRequest, type GeneratorDef } from '../generated';
 import { registerThumbnail } from '../thumbnails';
 import { exportSpecMarkdown, exportSpecsDocx } from './exporters';
@@ -334,17 +336,6 @@ const SECTIONS: [string, string][] = [
   ['data', 'Màn hình & dữ liệu'],
 ];
 
-function DisabledGen({ label }: { label: string }) {
-  const tip = useTooltip('Có ở bản cập nhật sau');
-  return (
-    <span className="inline-flex" {...tip}>
-      <Button size="sm" variant="outline" icon={<Workflow />} disabled>
-        {label}
-      </Button>
-    </span>
-  );
-}
-
 /** Sinh / mở sơ đồ sinh từ đặc tả (Activity, Sequence). */
 function GenButton({ doc, specId, g, readOnly }: { doc: Y.Doc; specId: string; g: GeneratorDef; readOnly: boolean }) {
   const nav = useNavigate();
@@ -424,7 +415,9 @@ export function SpecEditor({ session, diagram, readOnly, setActions }: EditorPro
   /** Menu ⋯ của bước: Xem trên các sơ đồ sinh ra có hình của bước này. */
   const stepMenu = (st: Step): MenuEntry[] =>
     generatedFrom(doc, diagram.id)
-      .filter((d) => [...viewsMap(doc, d.id).values()].some((v) => v.props.sourceStepId === st.id))
+      .filter((d) =>
+        [...viewsMap(doc, d.id).values(), ...connsMap(doc, d.id).values()].some((v) => v.props.sourceStepId === st.id),
+      )
       .map((d) => ({
         label: `Xem trên “${d.name}”`,
         onSelect: () => {
@@ -520,7 +513,7 @@ export function SpecEditor({ session, diagram, readOnly, setActions }: EditorPro
       extra: (
         <>
           <GenButton doc={doc} specId={diagram.id} g={ACTIVITY_GENERATOR} readOnly={readOnly} />
-          <DisabledGen label="Sinh Sequence" />
+          <GenButton doc={doc} specId={diagram.id} g={SEQUENCE_GENERATOR} readOnly={readOnly} />
           <Button
             size="sm"
             variant="outline"

@@ -100,6 +100,8 @@ export interface OverlayProps {
   penCursor?: Pt | null;
   shapeHandles?: ShapeHandle[];
   waypoints: (id: string) => { x: number; y: number }[];
+  /** Đường nối có bố cục riêng (không kéo đoạn). */
+  fixedRoute?: (id: string) => boolean;
 }
 
 /** Lớp phủ trên canvas: chọn, tay nắm, chấm nối, đường gióng, khung chọn, xem trước nối, người khác. */
@@ -368,8 +370,8 @@ export function Overlay(p: OverlayProps) {
         />,
       ),
     );
-    // tay nắm giữa đoạn (kéo để dời cả đoạn) — chỉ với đường gấp khúc vuông góc
-    if (!r.curved)
+    // tay nắm giữa đoạn (kéo để dời cả đoạn) — chỉ với đường gấp khúc vuông góc, không phải đường do bố cục tính
+    if (!r.curved && !p.fixedRoute?.(id))
       for (let i = 1; i < r.pts.length; i++) {
         const [x1, y1] = r.pts[i - 1];
         const [x2, y2] = r.pts[i];

@@ -14,6 +14,7 @@ import {
   type Pt,
 } from './geometry';
 import { smartRoute } from './smart-route';
+import { getConnector, type EngineLookup } from './registry';
 
 export interface EndInfo {
   pt: Pt;
@@ -32,6 +33,8 @@ export interface RouteEnv {
   outline: (viewId: string) => 'rect' | 'ellipse' | 'diamond' | 'none' | undefined;
   /** Hộp các hình khác (để định tuyến thông minh né). */
   obstacles?: (exclude: string[]) => Box[];
+  /** Cho ConnectorDef.route (bố cục riêng cần đọc các hình / đường nối khác). */
+  lookup?: EngineLookup;
 }
 
 function resolve(e: Endpoint, other: Pt | null, env: RouteEnv): EndInfo | null {
@@ -140,6 +143,8 @@ function orthoJoin(src: EndInfo, inner: Pt[], tgt: EndInfo): Pt[] {
 
 /** Điểm của đường nối (đã gồm 2 đầu). null nếu thiếu hình nguồn/đích. */
 export function routeConnector(c: Connector, env: RouteEnv): Routed | null {
+  const custom = getConnector(c.kind)?.route;
+  if (custom) return custom(c, env);
   const rs = roughPoint(c.source, env);
   const rt = roughPoint(c.target, env);
   if (!rs || !rt) return null;

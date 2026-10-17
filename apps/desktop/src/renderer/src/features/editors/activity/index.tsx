@@ -1,16 +1,11 @@
 // Activity Diagram (`activity`) — docs/phases/P10-activity.md, docs/spec/notation-activity.md.
-import { FileText } from 'lucide-react';
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useStore } from 'zustand';
 import { activityDiagram, layoutActivity, modelMap, normSpec, specToActivity, type UseCaseSpec } from '@umlab/core';
+import { useNavigate } from 'react-router-dom';
 import uc03 from '@fixtures/uc03-spec.umlab.json';
-import { Button } from '@/ui';
 import { registerDiagramTemplates, registerEditor } from '../editor-registry';
 import { CanvasEditor } from '../engine/canvas-editor';
-import type { Engine } from '../engine/engine';
 import { registerPalette, registerRules } from '../engine/registry';
-import { GeneratedBanner, generatedFrom, takeFocus, useFocusRequest, type GeneratorDef } from '../generated';
+import { FocusStep, GeneratedBanner, StepLink, generatedFrom, type GeneratorDef } from '../generated';
 import { COMMON_PALETTE_GROUPS } from '../shapes/common';
 import './nodes';
 import './pins';
@@ -131,46 +126,6 @@ registerDiagramTemplates('activity', [
     },
   },
 ]);
-
-/** Chọn các hình sinh từ bước `stepId` (đi từ đặc tả sang). */
-function FocusStep({ e }: { e: Engine }) {
-  const req = useStore(useFocusRequest, (s) => s.req);
-  useEffect(() => {
-    const stepId = takeFocus(e.diagramId);
-    if (!stepId) return;
-    const ids = e.lookup
-      .views()
-      .filter((v) => v.props.sourceStepId === stepId)
-      .map((v) => v.id);
-    if (ids.length) e.select(ids);
-  }, [req, e]);
-  return null;
-}
-
-/** Inspector phụ: hình sinh từ bước đặc tả → mở đặc tả tại bước đó. */
-function StepLink({ e }: { e: Engine }) {
-  const nav = useNavigate();
-  const sel = useStore(e.store, (s) => s.sel);
-  const gf = e.meta?.generatedFrom;
-  if (sel.size !== 1 || !gf) return null;
-  const v = e.lookup.view([...sel][0]);
-  const stepId = typeof v?.props.sourceStepId === 'string' ? v.props.sourceStepId : null;
-  if (!stepId) return null;
-  return (
-    <div className="pgroup">
-      <Button
-        variant="outline"
-        icon={<FileText />}
-        onClick={() => {
-          useFocusRequest.getState().set({ diagramId: gf.sourceDiagramId, stepId });
-          nav(`/p/${e.session.projectId}/d/${gf.sourceDiagramId}`);
-        }}
-      >
-        Xem bước trong đặc tả
-      </Button>
-    </div>
-  );
-}
 
 function ActivityEditor(p: Parameters<typeof CanvasEditor>[0]) {
   const nav = useNavigate();

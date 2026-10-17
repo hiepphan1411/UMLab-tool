@@ -73,7 +73,8 @@ type Drag =
   | { mode: 'ink'; type: string }
   | { mode: 'pen'; i: number; sx: number; sy: number }
   | { mode: 'shandle'; id: string; key: string }
-  | { mode: 'catalog'; fromId: string };
+  | { mode: 'catalog'; fromId: string }
+  | { mode: 'connBody'; connId: string; sy: number; moved: boolean };
 
 export interface CanvasApi {
   toWorld(cx: number, cy: number): Pt;
@@ -447,6 +448,13 @@ export function Canvas({
     const cEl = t.closest('[data-conn]');
     if (cEl && !viewHit) {
       const id = cEl.getAttribute('data-conn')!;
+      const bd = getConnector(engine.lookup.conn(id)?.kind ?? '')?.bodyDrag;
+      if (bd) {
+        // message: kéo lên/xuống (Shift = chèn khoảng trống)
+        if (!st.selConns.has(id) || st.selConns.size > 1) engine.select([], [id]);
+        drag.current = { mode: 'connBody', connId: id, sy: wy, moved: false };
+        return;
+      }
       if (ev.shiftKey) {
         const n = new Set(st.selConns);
         if (n.has(id)) n.delete(id);
@@ -537,6 +545,8 @@ export function Canvas({
         : snapMove(d.box, dx, dy, others, 6 / st.zoom, st.grid ? GRID : null);
       dx = snap.dx;
       dy = snap.dy;
+      // lifeline Sequence: chỉ kéo ngang
+      if (d.ids.every((id) => getShape(engine.lookup.view(id)?.shape ?? '')?.moveAxis === 'x')) dy = 0;
       const preview = new Map<string, Box>();
       for (const [id, b] of d.start) {
         const def = getShape(engine.lookup.view(id)!.shape);
@@ -664,6 +674,16 @@ export function Canvas({
       wrap.current?.classList.toggle('not-allowed', !!invalid);
       return;
     }
+    if (d.mode === 'connBody') {
+      const c = engine.lookup.conn(d.connId);
+      const bd = c && getConnector(c.kind)?.bodyDrag;
+      if (!c || !bd) return;
+      const dy = r1(wy - d.sy);
+      if (!d.moved && Math.abs(dy) * st.zoom < CLICK_PX) return;
+      d.moved = true;
+      engine.set({ connPreview: bd.preview(c, dy, engine.lookup) });
+      return;
+    }
     if (d.mode === 'waypoint') {
       const c = engine.lookup.conn(d.connId)!;
       const r = routes.get(c.id);
@@ -699,7 +719,9 @@ export function Canvas({
       const other = d.end === 'source' ? c.target.viewId : c.source.viewId;
       const t = viewAtPoint(wx, wy);
       let end: Connector['source'];
-      if (t && (t.id !== other || getConnector(c.kind)?.selfLoop)) {
+      if (getConnector(c.kind)?.timeline)
+        end = t ? { viewId: t.id, y: r1(wy) } : { viewId: null, x: r1(wx), y: r1(wy) };
+      else if (t && (t.id !== other || getConnector(c.kind)?.selfLoop)) {
         const tb = engine.box(t.id)!;
         const ns = nearestSide(tb, wx, wy);
         // kéo trên chính hình đang nối → trượt dọc cạnh (luôn khoá cạnh + vị trí); hình khác: khoá khi thả sát mép
@@ -840,14 +862,20 @@ export function Canvas({
       const def = getConnector(c.kind);
       // đường thẳng / cong: đầu mút tự bám viền hướng về đầu kia (không khoá cạnh) để không cắt qua hình
       const auto = def?.defaultRouting === 'straight' || def?.defaultRouting === 'curved';
-      const src = c.sourceId
-        ? auto
-          ? { viewId: c.sourceId }
-          : { viewId: c.sourceId, side: c.side as Side, t: c.t }
+      const src: Connector['source'] = c.sourceId
+        ? def?.timeline
+          ? { viewId: c.sourceId, y: r1(c.sourcePt[1]) }
+          : auto
+            ? { viewId: c.sourceId }
+            : { viewId: c.sourceId, side: c.side as Side, t: c.t }
         : { viewId: null, x: c.sourcePt[0], y: c.sourcePt[1] };
       let tgt: Connector['target'] | null = null;
       if (c.targetId)
-        tgt = auto ? { viewId: c.targetId } : { viewId: c.targetId, side: c.targetSide as Side, t: c.targetT };
+        tgt = def?.timeline
+          ? { viewId: c.targetId, y: r1(wy) }
+          : auto
+            ? { viewId: c.targetId }
+            : { viewId: c.targetId, side: c.targetSide as Side, t: c.targetT };
       else if (def?.freeEnds && Math.hypot(wx - c.sourcePt[0], wy - c.sourcePt[1]) > 10)
         tgt = { viewId: null, x: wx, y: wy };
       if (!tgt) return;
@@ -858,6 +886,14 @@ export function Canvas({
       createConnector(engine, c.kind, src, tgt, presetOf(engine, c.kind));
       if (warn) toast('⚠ ' + warn, { ms: 4000 });
       if (!st.sticky) engine.set({ tool: 'tool:select' });
+      return;
+    }
+    if (d.mode === 'connBody') {
+      engine.set({ ...clear, connPreview: new Map() });
+      const c = engine.lookup.conn(d.connId);
+      const bd = c && getConnector(c.kind)?.bodyDrag;
+      const dy = r1(wy - d.sy);
+      if (d.moved && c && bd && dy) engine.apply((tx) => bd.commit(tx, c, dy, { shift: ev.shiftKey }));
       return;
     }
     if (d.mode === 'waypoint' || d.mode === 'segment' || d.mode === 'label' || d.mode === 'reconnect') {
@@ -925,6 +961,12 @@ export function Canvas({
     const v = viewAtEvent(t);
     if (cEl && !v && !ro) {
       const c = engine.lookup.conn(cEl.getAttribute('data-conn'))!;
+      const cdef = getConnector(c.kind);
+      if (cdef?.onDoubleClick || cdef?.route) {
+        engine.select([], [c.id]);
+        cdef.onDoubleClick?.(c, engine);
+        return true;
+      }
       const r = routes.get(c.id);
       if (!r || r.curved) return true;
       const i = nearestSegment([wx, wy], r.pts);
@@ -1170,6 +1212,7 @@ export function Canvas({
                 y: number;
               }[]
             }
+            fixedRoute={(id) => !!getConnector(engine.lookup.conn(id)?.kind ?? '')?.route}
           />
           {catB && !drag.current && (
             <g

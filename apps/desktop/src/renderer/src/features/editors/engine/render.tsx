@@ -105,6 +105,7 @@ export const ShapeView = memo(function ShapeView({
 
 export function makeRouteEnv(lookup: EngineLookup, boxOf?: (id: string) => Box | null, smart = true): RouteEnv {
   return {
+    lookup,
     box: (id) =>
       boxOf?.(id) ??
       (() => {

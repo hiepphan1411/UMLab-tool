@@ -15,7 +15,7 @@ import {
 import { LOCAL, type ProjectSession } from '../../workspace/session';
 import type { Box, Guide } from './geometry';
 import { buildCtx } from './render';
-import { getShape, type EngineLookup, type PenPoint, type Tx } from './registry';
+import { getNormalizer, getShape, type EngineLookup, type PenPoint, type Tx } from './registry';
 
 export type ToolId = string;
 
@@ -95,6 +95,8 @@ export class Engine {
     }
   >();
   private childIndex: Map<string, View[]> | null = null;
+  /** Ngắt gộp của Y.UndoManager: mỗi lần apply là một bước Undo riêng (thao tác liên tiếp nhanh không bị gộp). */
+  undoBoundary: (() => void) | null = null;
 
   constructor(
     readonly session: ProjectSession,
@@ -263,6 +265,7 @@ export class Engine {
   /** Thực hiện thay đổi trong một transaction (một bước undo, gửi đồng bộ một lần). */
   apply(fn: (tx: Tx) => void): void {
     if (this.readOnly) return;
+    this.undoBoundary?.();
     const vm = viewsMap(this.doc, this.diagramId);
     const cm = connsMap(this.doc, this.diagramId);
     const mm = modelMap(this.doc);
@@ -282,6 +285,8 @@ export class Engine {
       view: (id) => vm.get(id),
       conn: (id) => cm.get(id),
       model: (id) => mm.get(id),
+      allViews: () => [...vm.values()],
+      allConns: () => [...cm.values()],
       addView: (v) => {
         vm.set(v.id, v);
         touchedViews.add(v.id);
@@ -334,6 +339,7 @@ export class Engine {
     };
     this.doc.transact(() => {
       fn(tx);
+      getNormalizer(this.diagramType)?.(tx);
       this.autoMeasure(vm, lookup, touchedViews, touchedModels);
       this.touch();
     }, LOCAL);

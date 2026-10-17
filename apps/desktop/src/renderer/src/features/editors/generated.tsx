@@ -1,6 +1,8 @@
 // Sơ đồ sinh từ đặc tả use case (docs/spec/generators.md mục 0): tạo, sinh lại (Ghi đè — Undo được / Tạo phiên bản
 // mới), banner "Sinh từ đặc tả…", bỏ liên kết, liên kết 2 chiều bước đặc tả ↔ hình (props.sourceStepId).
-import { Link2Off, RefreshCw } from 'lucide-react';
+import { FileText, Link2Off, RefreshCw } from 'lucide-react';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useStore } from 'zustand';
 import { create } from 'zustand';
 import type * as Y from 'yjs';
@@ -172,6 +174,51 @@ export function GeneratedBanner({ e, g, open }: { e: Engine; g: GeneratorDef; op
           </Button>
         </>
       )}
+    </div>
+  );
+}
+
+/** Chọn các hình / đường nối sinh từ bước `stepId` (đi từ đặc tả sang). */
+export function FocusStep({ e }: { e: Engine }) {
+  const req = useStore(useFocusRequest, (s) => s.req);
+  useEffect(() => {
+    const stepId = takeFocus(e.diagramId);
+    if (!stepId) return;
+    const ids = e.lookup
+      .views()
+      .filter((v) => v.props.sourceStepId === stepId)
+      .map((v) => v.id);
+    const conns = e.lookup
+      .conns()
+      .filter((c) => c.props.sourceStepId === stepId)
+      .map((c) => c.id);
+    if (ids.length || conns.length) e.select(ids, conns);
+  }, [req, e]);
+  return null;
+}
+
+/** Inspector phụ: hình / message sinh từ bước đặc tả → mở đặc tả tại bước đó. */
+export function StepLink({ e }: { e: Engine }) {
+  const nav = useNavigate();
+  const sel = useStore(e.store, (s) => s.sel);
+  const selConns = useStore(e.store, (s) => s.selConns);
+  const gf = e.meta?.generatedFrom;
+  if (sel.size + selConns.size !== 1 || !gf) return null;
+  const x = sel.size ? e.lookup.view([...sel][0]) : e.lookup.conn([...selConns][0]);
+  const stepId = typeof x?.props.sourceStepId === 'string' ? x.props.sourceStepId : null;
+  if (!stepId) return null;
+  return (
+    <div className="pgroup">
+      <Button
+        variant="outline"
+        icon={<FileText />}
+        onClick={() => {
+          useFocusRequest.getState().set({ diagramId: gf.sourceDiagramId, stepId });
+          nav(`/p/${e.session.projectId}/d/${gf.sourceDiagramId}`);
+        }}
+      >
+        Xem bước trong đặc tả
+      </Button>
     </div>
   );
 }

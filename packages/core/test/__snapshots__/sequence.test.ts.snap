@@ -1,0 +1,68 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Sinh Sequence từ đặc tả (generators.md mục 2) > UC03: alt [thẻ không hợp lệ], alt [biển số không khớp], CheckInXeController, entity đã khai báo 1`] = `
+{
+  "lifelines": [
+    "actor:Sinh viên",
+    "actor:Bảo vệ",
+    "boundary:Màn hình cổng vào",
+    "control:CheckInXeController",
+    "entity:TheRFID",
+    "entity:Xe",
+    "entity:GoiThang",
+    "entity:ViDienTu",
+    "entity:PhienGuiXe",
+    "lifeline:AI Service",
+  ],
+  "lines": [
+    "Sinh viên -sync-> Màn hình cổng vào: quetThe(maThe)",
+    "Màn hình cổng vào -sync-> CheckInXeController: xuLyQuetThe()",
+    "CheckInXeController -sync-> TheRFID: kiemTra(maThe)",
+    "TheRFID -reply-> CheckInXeController: the",
+    "alt",
+    " [thẻ không hợp lệ]",
+    "   CheckInXeController -reply-> Màn hình cổng vào: Hiển thị "Thẻ không hợp lệ"",
+    "   Màn hình cổng vào -reply-> Sinh viên: ",
+    " [else]",
+    "   CheckInXeController -sync-> AI Service: nhanDang(anh)",
+    "   AI Service -reply-> CheckInXeController: bienSo",
+    "   CheckInXeController -sync-> Xe: timTheoBienSo(bienSo)",
+    "   alt",
+    "    [biển số không khớp]",
+    "      CheckInXeController -sync-> Màn hình cổng vào: hienThi("Thông báo bảo vệ kiểm tra")",
+    "      Bảo vệ -sync-> Màn hình cổng vào: Xác nhận thủ công",
+    "    [else]",
+    "   CheckInXeController -sync-> GoiThang: Kiểm tra gói tháng hoặc số dư ví",
+    "   alt",
+    "    [không đủ số dư]",
+    "      CheckInXeController -reply-> Màn hình cổng vào: Thông báo nạp tiền",
+    "      Màn hình cổng vào -reply-> Sinh viên: ",
+    "    [else]",
+    "      CheckInXeController -create-> PhienGuiXe: tao()",
+    "      Sinh viên -sync-> Màn hình cổng vào: Đưa xe vào bãi",
+  ],
+}
+`;
+
+exports[`Sinh Sequence từ đặc tả (generators.md mục 2) > chỉ luồng chính, có bước lặp và gọi use case khác → loop + ref; kết thúc thành công có reply về actor 1`] = `
+{
+  "lifelines": [
+    "actor:Sinh viên",
+    "boundary:Màn hình ví",
+    "control:NapTienController",
+    "lifeline:VNPay",
+  ],
+  "lines": [
+    "Sinh viên -sync-> Màn hình ví: Chọn nạp tiền",
+    "ref Đăng nhập",
+    "Màn hình ví -sync-> NapTienController: xuLyChonNapTien()",
+    "loop",
+    " [until thành công hoặc quá 3 lần]",
+    "   NapTienController -sync-> VNPay: thanhToan(soTien)",
+    "   VNPay -reply-> NapTienController: ketQua",
+    "NapTienController -self-> NapTienController: Cộng số dư",
+    "NapTienController -reply-> Màn hình ví: Số dư đã tăng",
+    "Màn hình ví -reply-> Sinh viên: ",
+  ],
+}
+`;

@@ -34,3 +34,5 @@ export * from './orm/sync';
 export * from './orm/write';
 export * from './media/attachment';
 export * from './generators/spec-to-activity';
+export * from './sequence/layout';
+export * from './generators/spec-to-sequence';
