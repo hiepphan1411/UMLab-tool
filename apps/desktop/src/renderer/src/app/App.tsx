@@ -9,6 +9,7 @@ import { WorkspacePage } from '@/features/workspace/workspace-page';
 import { EditorPage } from '@/features/workspace/editor-page';
 import { useConn } from '@/lib/conn';
 import { UiKitPage } from '@/pages/ui-kit-page';
+import { HelpPage, useHelpShortcut } from '@/pages/help-page';
 import { DialogHost, FullScreenSpinner, MenuHost, ToastHost, TooltipHost } from '@/ui';
 
 const queryClient = new QueryClient({
@@ -25,6 +26,7 @@ function RequireAuth({ children }: { children: ReactNode }) {
 }
 
 function Boot() {
+  useHelpShortcut();
   useEffect(() => {
     const a = useConn.getState().init();
     const b = useSession.getState().init();
@@ -44,6 +46,7 @@ export function App() {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/help" element={<HelpPage />} />
           {import.meta.env.DEV && <Route path="/_ui" element={<UiKitPage />} />}
           <Route
             path="/projects"

@@ -6,16 +6,18 @@
   --panel-2: #f5f6f8;
   --line: #e2e5ea;
   --text: #1b2130;
-  --muted: #687085;
+  --muted: #5f6779;
   --accent: #2e62e6;
   --accent-soft: #e7eefd;
-  --danger: #d14343;
+  /* chữ trên nền accent / danger (tương phản ≥ 4.5:1) */
+  --on-accent: #ffffff;
+  --danger: #c03030;
   --canvas: #e8eaee;
   --dot: #c8cdd5;
   --sel: #2e62e6;
   --guide: #f2447e;
-  --ok: #1f9d66;
-  --warn: #d98a1c;
+  --ok: #16794c;
+  --warn: #9a5a08;
   --shadow: 0 12px 32px rgba(15, 20, 30, 0.18);
   --overlay: rgba(15, 18, 26, 0.45);
   --font-ui: 'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -39,6 +41,7 @@
     --muted: #939bad;
     --accent: #6b94ff;
     --accent-soft: #22325a;
+    --on-accent: #0b1220;
     --danger: #f07070;
     --canvas: #111317;
     --dot: #2a2f3a;
@@ -65,6 +68,7 @@
   --muted: #939bad;
   --accent: #6b94ff;
   --accent-soft: #22325a;
+  --on-accent: #0b1220;
   --danger: #f07070;
   --canvas: #111317;
   --dot: #2a2f3a;

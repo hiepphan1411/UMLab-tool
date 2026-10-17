@@ -151,7 +151,7 @@ export function ProjectSidebar(p: Props) {
   );
 
   return (
-    <aside className="flex min-h-0 flex-col border-r border-line bg-panel" style={{ width: prefs.sideWidth }}>
+    <aside className="ws-side flex min-h-0 flex-col border-r border-line bg-panel" style={{ width: prefs.sideWidth }}>
       <div className="flex items-center gap-1 px-2.5 pt-2.5 pb-2">
         <Segmented
           className="flex-1"

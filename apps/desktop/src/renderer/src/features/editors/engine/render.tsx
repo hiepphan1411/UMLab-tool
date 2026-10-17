@@ -117,17 +117,21 @@ export function makeRouteEnv(lookup: EngineLookup, boxOf?: (id: string) => Box |
       return v ? getShape(v.shape)?.outline : undefined;
     },
     obstacles: smart
-      ? (exclude) =>
-          lookup
-            .views()
-            .filter(
-              (v) =>
-                !v.hidden &&
-                !exclude.includes(v.id) &&
-                !getShape(v.shape)?.container &&
-                !exclude.includes(v.parentId ?? ''),
-            )
-            .map((v) => boxOf?.(v.id) ?? { x: v.x, y: v.y, w: v.w, h: v.h })
+      ? (() => {
+          // danh sách vật cản tính một lần cho cả lượt định tuyến
+          let base: { id: string; parentId: string; box: Box }[] | null = null;
+          return (exclude: string[]) => {
+            base ??= lookup
+              .views()
+              .filter((v) => !v.hidden && !getShape(v.shape)?.container)
+              .map((v) => ({
+                id: v.id,
+                parentId: v.parentId ?? '',
+                box: boxOf?.(v.id) ?? { x: v.x, y: v.y, w: v.w, h: v.h },
+              }));
+            return base.filter((o) => !exclude.includes(o.id) && !exclude.includes(o.parentId)).map((o) => o.box);
+          };
+        })()
       : undefined,
   };
 }

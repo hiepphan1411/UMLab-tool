@@ -341,3 +341,54 @@ describe('local-first (lưu trên máy trước, đồng bộ MongoDB sau)', () 
     sync.close(p.id);
   });
 });
+
+describe('lịch sử phiên bản + đặt lại mật khẩu (P13)', () => {
+  it('lưu phiên bản: giữ 50 bản mới nhất, người xem đọc được nhưng không lưu được', async () => {
+    const { auth } = authMod;
+    const { projects } = projMod;
+    const { versions } = await import('./versions.service');
+    auth.logout();
+    await auth.register({ name: 'Vy', email: 'vy@example.com', password: 'Matkhau123' });
+    const p = await projects.create({ name: 'Lịch sử' });
+    for (let i = 0; i < 52; i++) await versions.save(p.id, 'd1', `v${i}`, JSON.stringify({ i }));
+    const list = await versions.list(p.id, 'd1');
+    expect(list).toHaveLength(50);
+    expect(list[0].label).toBe('v51');
+    expect(list[49].label).toBe('v2');
+    expect(JSON.parse(await versions.get(list[0].id))).toEqual({ i: 51 });
+    expect(await db.database.versions().countDocuments({ projectId: p.id })).toBe(50);
+    await projects.addMember(p.id, 'binh@example.com', 'viewer');
+    auth.logout();
+    await auth.login({ email: 'binh@example.com', password: 'Matkhau123', remember: false });
+    expect(await versions.list(p.id, 'd1')).toHaveLength(50);
+    expect((await err(versions.save(p.id, 'd1', 'x', '{}'))).code).toBe('FORBIDDEN');
+  });
+
+  it('scripts/reset-password: mật khẩu mới dùng được, mật khẩu cũ không, phiên cũ bị thu hồi', async () => {
+    const { auth } = authMod;
+    const { resetPassword, tempPassword, passwordProblem } = await import('../../../../scripts/reset-password.mjs');
+    auth.logout();
+    await auth.login({ email: 'vy@example.com', password: 'Matkhau123', remember: false });
+    await auth.watching;
+    sent.length = 0;
+    const before = (await db.database.users().findOne({ email: 'vy@example.com' }))!.tokenVersion;
+    const tmp = tempPassword();
+    expect(passwordProblem(tmp)).toBeNull();
+    const { MongoClient } = await import('mongodb');
+    const client = new MongoClient(rs.getUri());
+    await client.connect();
+    expect(await resetPassword(client.db('umlab_test'), 'VY@example.com', tmp)).toBe(true);
+    expect(await resetPassword(client.db('umlab_test'), 'khongco@example.com', tmp)).toBe(false);
+    await client.close();
+    expect((await db.database.users().findOne({ email: 'vy@example.com' }))!.tokenVersion).toBe(before + 1);
+    // máy đang đăng nhập bị đăng xuất qua change stream
+    await waitFor(() => sent.some((s) => s.channel === IPC.authEndedEvt));
+    expect(auth.userId).toBeNull();
+    expect((await err(auth.login({ email: 'vy@example.com', password: 'Matkhau123', remember: false }))).code).toBe(
+      'UNAUTHORIZED',
+    );
+    expect((await auth.login({ email: 'vy@example.com', password: tmp, remember: false })).email).toBe(
+      'vy@example.com',
+    );
+  });
+});

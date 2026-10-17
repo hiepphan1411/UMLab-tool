@@ -116,13 +116,21 @@ select {
 .ibtn:focus-visible,
 .field:focus-visible,
 .tile:focus-visible,
-.seg button:focus-visible {
+.seg button:focus-visible,
+.pal-item:focus-visible,
+.menu-item:focus-visible,
+.tree-row:focus-visible,
+.linklike:focus-visible,
+.chip:focus-visible,
+.trace-ok:focus-visible,
+[role='tree']:focus-visible,
+[role='option']:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
 .btn.primary {
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
 }
 .btn.primary:hover:not(:disabled) {
   background: var(--accent);
@@ -133,7 +141,7 @@ select {
 }
 .btn.danger {
   background: var(--danger);
-  color: #fff;
+  color: var(--on-accent);
 }
 .btn.danger:hover:not(:disabled) {
   background: var(--danger);
@@ -573,7 +581,7 @@ select.field {
 }
 .tip.error {
   background: var(--danger);
-  color: #fff;
+  color: var(--on-accent);
 }
 .toast-stack {
   position: fixed;
@@ -601,7 +609,7 @@ select.field {
 }
 .toast.error {
   background: var(--danger);
-  color: #fff;
+  color: var(--on-accent);
 }
 .toast button {
   font-weight: 600;
@@ -1200,7 +1208,7 @@ select.field {
 .gp-pre button.on {
   background: var(--accent);
   border-color: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
 }
 .gp-items {
   display: grid;
@@ -1833,4 +1841,133 @@ main:has(> .gen-banner) > .canvas-wrap {
 }
 .trace-ok:hover {
   outline: 1.5px solid var(--accent);
+}
+
+/* ---------- Responsive (P13): tablet / điện thoại ---------- */
+.narrow-only {
+  display: none;
+}
+@media (max-width: 1180px) {
+  .editor-grid {
+    grid-template-columns: 44px auto minmax(0, 1fr) 248px;
+  }
+  .editor-left {
+    width: 212px;
+  }
+}
+@media (max-width: 1024px) {
+  /* thanh trên: nút chỉ còn icon */
+  .topbar .btn.outline,
+  .topbar .btn.primary {
+    font-size: 0;
+    gap: 0;
+    padding-inline: 8px;
+  }
+  .ws-side {
+    width: 220px !important;
+  }
+}
+@media (max-width: 900px) {
+  /* tablet: Inspector thành ngăn trượt bên phải, bật bằng nút “Thuộc tính” */
+  .narrow-only {
+    display: grid;
+  }
+  .editor-grid {
+    position: relative;
+    grid-template-columns: 44px auto minmax(0, 1fr);
+  }
+  .editor-right {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(300px, 86vw);
+    z-index: 30;
+    box-shadow: var(--shadow);
+    display: none;
+  }
+  .editor-grid.right-open .editor-right {
+    display: flex;
+  }
+  .ws-side {
+    display: none !important;
+  }
+}
+@media (max-width: 640px) {
+  /* điện thoại: xem + chỉnh nhẹ — bảng trái là ngăn trượt, mở bằng tab */
+  .editor-grid {
+    grid-template-columns: 44px minmax(0, 1fr);
+  }
+  .editor-left {
+    display: none;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 44px;
+    z-index: 30;
+    width: min(260px, 80vw);
+    box-shadow: var(--shadow);
+  }
+  .editor-grid.left-open .editor-left {
+    display: flex;
+  }
+  .topbar .sep {
+    display: none;
+  }
+}
+
+/* ---------- Trang trợ giúp (P13) ---------- */
+.chip.on {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.help-notation {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 14px 22px;
+}
+.help-notation h4 {
+  margin-bottom: 4px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.help-md {
+  display: grid;
+  gap: 8px;
+  line-height: 1.55;
+}
+.help-md h2 {
+  margin-top: 10px;
+  font-size: 17px;
+  font-weight: 700;
+}
+.help-md h3,
+.help-md h4 {
+  margin-top: 6px;
+  font-weight: 600;
+}
+.help-md ul {
+  padding-left: 20px;
+  list-style: disc;
+}
+.help-md code {
+  padding: 0 4px;
+  border-radius: 4px;
+  background: var(--panel-2);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+.help-md pre {
+  overflow: auto;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  white-space: pre;
 }

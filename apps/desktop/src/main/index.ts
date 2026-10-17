@@ -22,8 +22,8 @@ function createWindow(): BrowserWindow {
   const win = new BrowserWindow({
     width: 1440,
     height: 900,
-    minWidth: 960,
-    minHeight: 600,
+    minWidth: 600,
+    minHeight: 480,
     show: false,
     title: 'UMLab',
     backgroundColor: dark ? '#15171C' : '#EEF0F3',

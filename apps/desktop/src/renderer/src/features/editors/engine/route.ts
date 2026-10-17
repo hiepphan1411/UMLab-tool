@@ -170,8 +170,17 @@ export function routeConnector(c: Connector, env: RouteEnv): Routed | null {
   const s1 = src.side ?? 'right';
   const s2 = tgt.side ?? 'left';
   const exclude = [c.source.viewId, c.target.viewId].filter(Boolean) as string[];
+  // chỉ các hình trong hành lang quanh hai đầu mút (A* trên toàn sơ đồ lớn quá chậm)
+  const corridor = () => {
+    const M = 160;
+    const x1 = Math.min(src.pt[0], tgt.pt[0]) - M;
+    const y1 = Math.min(src.pt[1], tgt.pt[1]) - M;
+    const x2 = Math.max(src.pt[0], tgt.pt[0]) + M;
+    const y2 = Math.max(src.pt[1], tgt.pt[1]) + M;
+    return env.obstacles!(exclude).filter((o) => o.x < x2 && o.x + o.w > x1 && o.y < y2 && o.y + o.h > y1);
+  };
   if (c.routing === 'smart' && env.obstacles) {
-    const smart = smartRoute(src.pt, s1, tgt.pt, s2, env.obstacles(exclude));
+    const smart = smartRoute(src.pt, s1, tgt.pt, s2, corridor());
     if (smart) return { pts: smart, src, tgt, curved: false };
   }
   const ortho = autoOrtho(src.pt, s1, tgt.pt, s2);
@@ -189,7 +198,7 @@ export function routeConnector(c: Connector, env: RouteEnv): Routed | null {
       .obstacles(exclude)
       .filter((o) => o.x < bx.x + bx.w && bx.x < o.x + o.w && o.y < bx.y + bx.h && bx.y < o.y + o.h);
     if (near.length && pathHits(ortho, near)) {
-      const smart = smartRoute(src.pt, s1, tgt.pt, s2, env.obstacles(exclude));
+      const smart = smartRoute(src.pt, s1, tgt.pt, s2, corridor());
       if (smart) return { pts: smart, src, tgt, curved: false };
     }
   }

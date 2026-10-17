@@ -57,6 +57,18 @@ function flatten(
   return out;
 }
 
+const ROW_H = 28;
+/** Từ số hàng này trở lên chỉ render các hàng trong khung nhìn (cây thư mục lớn). */
+export const VIRTUAL_MIN_ROWS = 300;
+
+const scrollParentOf = (el: HTMLElement | null): HTMLElement | null => {
+  for (let e = el?.parentElement; e; e = e.parentElement) {
+    const o = getComputedStyle(e).overflowY;
+    if (o === 'auto' || o === 'scroll') return e;
+  }
+  return null;
+};
+
 /** Cây có chọn nhiều, bàn phím (↑↓←→ Enter F2 Delete), kéo thả trước/sau/vào trong, đổi tên tại chỗ. */
 export function Tree(p: TreeProps) {
   const { nodes, expanded, selected, indent = 14 } = p;
@@ -64,6 +76,43 @@ export function Tree(p: TreeProps) {
   const [focus, setFocus] = useState<string | null>(null);
   const anchor = useRef<string | null>(null);
   const box = useRef<HTMLDivElement>(null);
+  // ---------- cuộn ảo ----------
+  const virtual = rows.length >= VIRTUAL_MIN_ROWS;
+  const [win, setWin] = useState({ start: 0, end: 80 });
+  const geom = () => {
+    const sp = scrollParentOf(box.current);
+    if (!sp || !box.current) return null;
+    const off = box.current.getBoundingClientRect().top - sp.getBoundingClientRect().top + sp.scrollTop;
+    return { sp, off };
+  };
+  useEffect(() => {
+    if (!virtual) return;
+    const g = geom();
+    if (!g) return;
+    const update = () => {
+      const start = Math.max(0, Math.floor((g.sp.scrollTop - g.off) / ROW_H) - 15);
+      const end = start + Math.ceil(g.sp.clientHeight / ROW_H) + 30;
+      setWin((w) => (w.start === start && w.end === end ? w : { start, end }));
+    };
+    update();
+    g.sp.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    return () => {
+      g.sp.removeEventListener('scroll', update);
+      window.removeEventListener('resize', update);
+    };
+  }, [virtual, rows.length]);
+  const shown = virtual ? rows.slice(win.start, win.end) : rows;
+  const scrollToRow = (j: number, id: string) => {
+    const g = virtual ? geom() : null;
+    if (!g) {
+      box.current?.querySelector(`[data-tid="${CSS.escape(id)}"]`)?.scrollIntoView({ block: 'nearest' });
+      return;
+    }
+    const top = g.off + j * ROW_H;
+    if (top < g.sp.scrollTop) g.sp.scrollTop = top;
+    else if (top + ROW_H > g.sp.scrollTop + g.sp.clientHeight) g.sp.scrollTop = top + ROW_H - g.sp.clientHeight;
+  };
   const [drag, setDrag] = useState<{
     ids: string[];
     label: string;
@@ -104,12 +153,13 @@ export function Tree(p: TreeProps) {
     const i = index(focus);
     const cur = rows[i];
     const go = (j: number) => {
-      const r = rows[Math.max(0, Math.min(rows.length - 1, j))];
+      const k = Math.max(0, Math.min(rows.length - 1, j));
+      const r = rows[k];
       if (!r) return;
       setFocus(r.node.id);
       anchor.current = r.node.id;
       p.onSelect(new Set([r.node.id]), r.node.id);
-      box.current?.querySelector(`[data-tid="${CSS.escape(r.node.id)}"]`)?.scrollIntoView({ block: 'nearest' });
+      scrollToRow(k, r.node.id);
     };
     if (e.key === 'ArrowDown') {
       e.preventDefault();
@@ -207,7 +257,8 @@ export function Tree(p: TreeProps) {
       }}
     >
       {!rows.length && p.emptyText}
-      {rows.map(({ node, depth }) => {
+      {virtual && <div style={{ height: win.start * ROW_H }} aria-hidden />}
+      {shown.map(({ node, depth }) => {
         const open = expanded.has(node.id);
         const isDropIn = drag?.target === node.id && drag.pos === 'inside';
         return (
@@ -298,6 +349,7 @@ export function Tree(p: TreeProps) {
           </div>
         );
       })}
+      {virtual && <div style={{ height: Math.max(0, rows.length - win.end) * ROW_H }} aria-hidden />}
       {drag &&
         createPortal(
           <div

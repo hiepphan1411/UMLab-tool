@@ -198,24 +198,83 @@ export function Canvas({
   }, [engine]);
 
   // ---------- đường nối đã định tuyến ----------
+  // Khi đang kéo (có preview) chỉ tính lại đường nối gắn với hình đang dời / đang sửa; đường khác giữ kết quả lần trước
+  // (né hình mới tính lại đầy đủ khi thả) — sơ đồ lớn vẫn kéo mượt.
+  const routeCache = useRef<{
+    conns: EngineState['conns'];
+    views: EngineState['views'];
+    routes: Map<string, Routed>;
+  } | null>(null);
   const routes = useMemo(() => {
     const env = makeRouteEnv(engine.lookup, (id) => {
       const v = s.views.get(id);
       if (!v || v.hidden) return null;
       return s.preview.get(id) ?? { x: v.x, y: v.y, w: v.w, h: v.h };
     });
+    const prev = routeCache.current;
+    const dragging = s.preview.size > 0 || s.connPreview.size > 0;
+    const reuse = dragging && prev && prev.conns === s.conns && prev.views === s.views;
+    // dữ liệu vừa đổi (thả chuột, người khác sửa…): chỉ tính lại đường nối có đầu mút đổi hoặc nằm gần hình vừa đổi
+    let changed: Box[] | null = null;
+    if (!dragging && prev && prev.views !== s.views) {
+      changed = [];
+      for (const [id, v] of s.views) {
+        const o = prev.views.get(id);
+        if (o !== v) {
+          changed.push({ x: v.x, y: v.y, w: v.w, h: v.h });
+          if (o) changed.push({ x: o.x, y: o.y, w: o.w, h: o.h });
+        }
+      }
+      for (const [id, o] of prev.views) if (!s.views.has(id)) changed.push({ x: o.x, y: o.y, w: o.w, h: o.h });
+      if (changed.length > 200) changed = null; // thay đổi lớn → tính lại hết
+    } else if (!dragging && prev && prev.views === s.views) changed = [];
+    const touched = (c: Connector) =>
+      (c.source.viewId && s.views.get(c.source.viewId) !== prev?.views.get(c.source.viewId)) ||
+      (c.target.viewId && s.views.get(c.target.viewId) !== prev?.views.get(c.target.viewId));
     const out = new Map<string, Routed>();
     for (const c of s.conns.values()) {
       const pc = s.connPreview.get(c.id);
+      const old = prev?.routes.get(c.id);
+      const custom = !!getConnector(c.kind)?.route;
+      if (old && !pc && !custom) {
+        if (reuse && !s.preview.has(c.source.viewId ?? '') && !s.preview.has(c.target.viewId ?? '')) {
+          out.set(c.id, old);
+          continue;
+        }
+        if (changed && prev!.conns.get(c.id) === c && !touched(c)) {
+          const xs = old.pts.map((p) => p[0]);
+          const ys = old.pts.map((p) => p[1]);
+          const bb = { x: Math.min(...xs) - 20, y: Math.min(...ys) - 20, w: 0, h: 0 };
+          bb.w = Math.max(...xs) + 20 - bb.x;
+          bb.h = Math.max(...ys) + 20 - bb.y;
+          if (!changed.some((b) => intersects(b, bb))) {
+            out.set(c.id, old);
+            continue;
+          }
+        }
+      }
       const r = routeConnector(pc ? { ...c, ...pc } : c, env);
       if (r) out.set(c.id, r);
     }
+    if (!reuse) routeCache.current = { conns: s.conns, views: s.views, routes: out };
     return out;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [s.views, s.conns, s.preview, s.connPreview]);
 
-  const lineJumps = engine.meta?.canvas?.lineJumps !== false;
-  const allPts = useMemo(() => (lineJumps ? [...routes.values()].map((r) => r.pts) : null), [routes, lineJumps]);
+  // cầu nhảy tính giao cắt giữa mọi cặp đường → tắt tạm khi đang kéo (vẽ lại khi thả), để memo ConnectorView giữ được
+  const lineJumps = engine.meta?.canvas?.lineJumps !== false && !s.preview.size && !s.connPreview.size;
+  // mảng đường khác cho từng đường nối — ổn định giữa các lần render (hover, con trỏ…) để memo ConnectorView giữ được
+  const jumpsOf = useMemo(() => {
+    if (!lineJumps) return null;
+    const all = [...routes.values()].map((r) => r.pts);
+    const m = new Map<string, Pt[][]>();
+    for (const [id, r] of routes)
+      m.set(
+        id,
+        all.filter((x) => x !== r.pts),
+      );
+    return m;
+  }, [routes, lineJumps]);
 
   // ---------- culling ----------
   const viewport: Box = { x: -s.tx / s.zoom, y: -s.ty / s.zoom, w: size.w / s.zoom, h: size.h / s.zoom };
@@ -1203,7 +1262,7 @@ export function Canvas({
                 lookup={engine.lookup}
                 bg={bg}
                 model={c.modelId ? st.model.get(c.modelId) : null}
-                jumps={allPts ? allPts.filter((x) => x !== r.pts) : undefined}
+                jumps={jumpsOf?.get(c.id)}
                 version={getConnector(c.kind)?.live ? st.version : 0}
               />
             );

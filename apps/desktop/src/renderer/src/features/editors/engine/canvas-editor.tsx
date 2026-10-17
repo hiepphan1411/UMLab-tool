@@ -11,6 +11,7 @@ import {
   Maximize,
   Minus,
   Network,
+  PanelRight,
   Plus,
   Scissors,
   Shapes,
@@ -597,6 +598,8 @@ export function CanvasEditor(props: EditorProps & { options?: CanvasEditorOption
     });
   };
 
+  const [narrowLeft, setNarrowLeft] = useState(false);
+  const [narrowRight, setNarrowRight] = useState(false);
   const tabs: [LeftTab, ReactNode, string][] = [
     ['palette', <Shapes key="p" />, 'Palette'],
     ...(options?.leftTabs ?? []).map((t): [LeftTab, ReactNode, string] => [t.id, t.icon, t.label]),
@@ -606,10 +609,19 @@ export function CanvasEditor(props: EditorProps & { options?: CanvasEditorOption
   ];
 
   return (
-    <div className="editor-grid">
+    <div className={cn('editor-grid', narrowLeft && 'left-open', narrowRight && 'right-open')}>
       <nav className="editor-tabs" aria-label="Bảng bên trái">
         {tabs.map(([k, icon, label]) => (
-          <IconButton key={k} label={label} active={left === k} onClick={() => setLeft(k)}>
+          <IconButton
+            key={k}
+            label={label}
+            active={left === k}
+            onClick={() => {
+              // màn hẹp: bảng trái là ngăn trượt — bấm lại tab đang mở để đóng
+              setNarrowLeft(left === k ? !narrowLeft : true);
+              setLeft(k);
+            }}
+          >
             {icon}
           </IconButton>
         ))}
@@ -674,6 +686,15 @@ export function CanvasEditor(props: EditorProps & { options?: CanvasEditorOption
           <span className="sep" style={{ height: 16 }} />
           <IconButton label="Lưới & bắt dính" size="sm" active={grid} onClick={() => engine.set({ grid: !grid })}>
             <Grid3x3 />
+          </IconButton>
+          <IconButton
+            label="Thuộc tính"
+            size="sm"
+            className="narrow-only"
+            active={narrowRight}
+            onClick={() => setNarrowRight(!narrowRight)}
+          >
+            <PanelRight />
           </IconButton>
           {!readOnly && (
             <IconButton

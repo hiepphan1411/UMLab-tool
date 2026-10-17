@@ -210,7 +210,27 @@ export function Palette({ engine }: { engine: Engine }) {
           {collapsed ? <ChevronsRight /> : <ChevronsLeft />}
         </button>
       </div>
-      <div className="scroll px-1.5 pb-3">
+      <div
+        className="scroll px-1.5 pb-3"
+        role="toolbar"
+        aria-orientation="vertical"
+        aria-label="Công cụ"
+        onKeyDown={(e) => {
+          // ↑↓ Home End: chuyển giữa các công cụ (Enter / Space chọn — mặc định của nút)
+          if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(e.key)) return;
+          const items = [...e.currentTarget.querySelectorAll<HTMLButtonElement>('.pal-item:not(:disabled)')];
+          if (!items.length) return;
+          e.preventDefault();
+          const i = items.indexOf(document.activeElement as HTMLButtonElement);
+          const j =
+            e.key === 'Home'
+              ? 0
+              : e.key === 'End'
+                ? items.length - 1
+                : Math.max(0, Math.min(items.length - 1, i + (e.key === 'ArrowDown' ? 1 : -1)));
+          items[j].focus();
+        }}
+      >
         {filtered
           ? filtered.map((it) => (
               <ToolButton

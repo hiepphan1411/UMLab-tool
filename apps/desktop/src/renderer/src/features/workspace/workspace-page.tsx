@@ -37,7 +37,7 @@ import { LOCAL, useProjectSession, useSessionState, useYVersion, type ProjectSes
 import { ProjectSidebar } from './sidebar';
 import { TraceMatrix } from './trace-matrix';
 import { useWorkspacePrefs } from './ui-state';
-import '../editors/register-all';
+import { useEditorsLoaded } from '../editors/register-all';
 
 export function ProjectError({ error, code }: { error: string; code?: string }) {
   return (
@@ -136,6 +136,9 @@ function Workspace({ session: s }: { session: ProjectSession }) {
     s.doc,
     (n) => n === 'folders' || n === 'diagrams' || n.startsWith('views:') || n.startsWith('conns:'),
   );
+  // ảnh thu nhỏ cần hình của từng loại sơ đồ → nạp editor các loại có trong project, vẽ lại khi nạp xong
+  const types = useMemo(() => [...new Set([...diagramsMap(s.doc).values()].map((d) => d.type))], [s, version]); // eslint-disable-line react-hooks/exhaustive-deps
+  const loadedTypes = useEditorsLoaded(types);
   const [prefs, setPrefs] = useWorkspacePrefs(s.projectId);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [newDiagram, setNewDiagram] = useState<{ type: DiagramType; folder: string | null } | null>(null);
@@ -279,7 +282,7 @@ function Workspace({ session: s }: { session: ProjectSession }) {
         ) : (
           <DashboardMain
             session={s}
-            version={version}
+            version={version * 32 + loadedTypes}
             prefs={prefs}
             setPrefs={setPrefs}
             selected={selected}

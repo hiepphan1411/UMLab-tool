@@ -4,6 +4,7 @@ import { DiagramIcon } from '@/lib/icons';
 import { cn } from '@/lib/cn';
 import { Button, Dialog, Input, toast } from '@/ui';
 import { getDiagramTemplates } from '../editors/editor-registry';
+import { useEditorReady } from '../editors/register-all';
 import { FolderBrowser } from './folder-browser';
 import { LOCAL, type ProjectSession } from './session';
 
@@ -27,7 +28,8 @@ export function NewDiagramDialog({
   const [folder, setFolder] = useState<string>(folderId ?? '');
   const [tpl, setTpl] = useState('');
   const [busy, setBusy] = useState(false);
-  const tpls = type ? getDiagramTemplates(type) : [];
+  const tplReady = useEditorReady(type);
+  const tpls = type && tplReady ? getDiagramTemplates(type) : [];
   useEffect(() => {
     if (!type) return;
     const base = DIAGRAM_TYPE_BY_ID[type]?.label ?? 'Playground';
@@ -39,7 +41,7 @@ export function NewDiagramDialog({
     );
     setFolder(folderId ?? '');
     setTpl(getDiagramTemplates(type)[0]?.id ?? '');
-  }, [type, folderId, session]);
+  }, [type, folderId, session, tplReady]);
   if (!type) return null;
   const info = DIAGRAM_TYPE_BY_ID[type] ?? { label: 'Playground' };
   const submit = async () => {

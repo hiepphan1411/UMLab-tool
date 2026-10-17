@@ -24,11 +24,12 @@ import { Spacer, TopBar } from '../shell/top-bar';
 import { EditorContext, getEditor, type EditorActions, type EditorProps } from '../editors/editor-registry';
 import { PresenceAvatars } from './presence';
 import { SearchDialog, useSearchShortcut } from './search-dialog';
+import { HistoryIcon, VersionHistoryDialog, useAutoSnapshot } from './version-history';
 import { ProjectError } from './workspace-page';
 import { LOCAL, useProjectSession, useSessionState, useYVersion, type ProjectSession } from './session';
 import { pushRecent } from './ui-state';
 import { useUndo } from './use-undo';
-import '../editors/register-all';
+import { useEditorReady } from '../editors/register-all';
 
 export function EditorPage() {
   const { projectId, diagramId } = useParams();
@@ -130,6 +131,16 @@ function Placeholder({ diagram }: EditorProps) {
   );
 }
 
+function EditorLoading() {
+  return (
+    <div className="grid h-full place-items-center text-muted">
+      <span className="flex items-center gap-2">
+        <Loader2 className="animate-spin" size={16} /> Đang nạp editor…
+      </span>
+    </div>
+  );
+}
+
 function DiagramEditor({ session: s, diagramId }: { session: ProjectSession; diagramId: string }) {
   const nav = useNavigate();
   const user = useSession((x) => x.user);
@@ -141,6 +152,9 @@ function DiagramEditor({ session: s, diagramId }: { session: ProjectSession; dia
   const readOnly = !s.canEdit;
   const [search, setSearch] = useState(false);
   useSearchShortcut(useCallback(() => setSearch(true), []));
+  const ready = useEditorReady(diagram?.type);
+  const [history, setHistory] = useState(false);
+  useAutoSnapshot(s, diagramId, !readOnly && !!diagram);
 
   useEffect(() => {
     if (user) pushRecent(user.id, s.projectId, diagramId);
@@ -185,7 +199,7 @@ function DiagramEditor({ session: s, diagramId }: { session: ProjectSession; dia
       </div>
     );
 
-  const Editor = getEditor(diagram.type) ?? Placeholder;
+  const Editor = (ready && getEditor(diagram.type)) || (ready ? Placeholder : EditorLoading);
   const props: EditorProps = { session: s, diagram, undo, readOnly, setActions };
   return (
     <EditorContext.Provider value={props}>
@@ -212,6 +226,9 @@ function DiagramEditor({ session: s, diagramId }: { session: ProjectSession; dia
           {actions.extra}
           <Spacer />
           <PresenceAvatars session={s} peers={peers} diagramId={diagram.id} />
+          <IconButton label="Lịch sử phiên bản" onClick={() => setHistory(true)}>
+            <HistoryIcon />
+          </IconButton>
           <IconButton label="Tìm trong project" shortcut="Ctrl+K" onClick={() => setSearch(true)}>
             <Search />
           </IconButton>
@@ -248,6 +265,14 @@ function DiagramEditor({ session: s, diagramId }: { session: ProjectSession; dia
           <Editor {...props} />
         </div>
         {search && <SearchDialog session={s} onClose={() => setSearch(false)} />}
+        {history && (
+          <VersionHistoryDialog
+            session={s}
+            diagramId={diagram.id}
+            readOnly={readOnly}
+            onClose={() => setHistory(false)}
+          />
+        )}
       </div>
     </EditorContext.Provider>
   );

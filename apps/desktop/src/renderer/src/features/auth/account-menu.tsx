@@ -1,4 +1,4 @@
-import { Database, KeyRound, LogOut, MonitorSmartphone, Palette, UserRound } from 'lucide-react';
+import { CircleHelp, Database, KeyRound, LogOut, MonitorSmartphone, Palette, UserRound } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { call, errorText, umlab } from '@/lib/api';
@@ -159,6 +159,7 @@ export function AccountMenu() {
     { label: 'Đổi mật khẩu', icon: <KeyRound />, onSelect: () => setDlg('password') },
     { label: 'Giao diện', icon: <Palette />, children: [themeItem('auto'), themeItem('light'), themeItem('dark')] },
     { label: 'Kết nối cơ sở dữ liệu', icon: <Database />, onSelect: () => setDlg('conn') },
+    { label: 'Trợ giúp & phím tắt', icon: <CircleHelp />, shortcut: 'F1', onSelect: () => nav('/help') },
     { type: 'sep' },
     {
       label: 'Đăng xuất',
