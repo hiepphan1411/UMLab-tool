@@ -19,6 +19,7 @@ export * from './spec/model';
 export * from './spec/flow';
 export * from './spec/render';
 export * from './spec/docx';
+export * from './spec/report';
 export * from './spec/doc';
 export * from './uml/unipark-class';
 export * from './erd/model';

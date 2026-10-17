@@ -80,7 +80,7 @@ export function RegisterPage() {
 
   return (
     <AuthLayout>
-      <Logo height={44} className="mb-8" />
+      <Logo variant="tagline" height={128} className="mb-6" />
       <h1 className="text-[22px] font-semibold tracking-tight">Tạo tài khoản</h1>
       <p className="mt-1 mb-6 text-muted">Một tài khoản dùng chung cho mọi máy cài UMLab của nhóm.</p>
       <form className="grid gap-4" onSubmit={submit} noValidate>

@@ -28,6 +28,12 @@
   --uml-ic-fill: #e7eefd;
   --uml-ic-line: #64748b;
   --uml-ic-bg: #ffffff;
+  /* giấy xuất (mẫu Doc, ảnh xuất): luôn trắng ở mọi theme */
+  --paper: #ffffff;
+  --paper-ink: #000000;
+  /* chữ / bóng trên nền màu tự chọn (ô icon project): cố định ở mọi theme */
+  --on-color: #ffffff;
+  --shade: #000000;
   color-scheme: light;
 }
 

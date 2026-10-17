@@ -15,6 +15,10 @@ import {
   removeStep,
   specContext,
   specsDocx,
+  specReportDocx,
+  specReportHtml,
+  specReportRows,
+  specReportText,
   specToMarkdown,
   updateFlow,
   validateSpec,
@@ -142,6 +146,43 @@ describe('Đặc tả use case — lưu & xuất', () => {
     expect(xml).toContain('D9D9D9');
     expect(xml).toContain('Times New Roman');
     expect(xml).toContain('w:val="26"');
+  });
+
+  it('Mẫu Doc: bảng Mục | Mô tả, luồng chia cột Actor | System, bước rẽ 4a / 2a / 5a', async () => {
+    const { doc } = setup();
+    const ctx = specContext(doc, UC03);
+    const rows = specReportRows(UC03, ctx);
+    expect(rows[0]).toEqual({ kind: 'header' });
+    expect(rows).toContainEqual({ kind: 'field', label: 'Tên use case', lines: ['Check-in xe vào bãi'] });
+    expect(rows).toContainEqual({ kind: 'field', label: 'Actor phụ', lines: ['Bảo vệ, Thiết bị cổng'] });
+    expect(rows).toContainEqual({
+      kind: 'field',
+      label: 'Pre-condition (Tiền điều kiện)',
+      lines: ['- Sinh viên đã đăng ký xe và thẻ RFID', '- Thiết bị cổng đang hoạt động'],
+    });
+    const steps = rows.filter((r) => r.kind === 'step').map((r) => (r.kind === 'step' ? [r.side, r.text] : []));
+    expect(steps[0]).toEqual(['actor', '1. Quét thẻ RFID tại cổng vào.']);
+    expect(steps[1][0]).toBe('system');
+    // A1 rẽ ở bước 4 → 4a; E1 ở bước 2 → 2a; E2 ở bước 5 → 5a; bước kết thúc ghi ở cột System
+    expect(steps).toContainEqual(['actor', '4a. Biển số khác xe đăng ký']);
+    expect(steps).toContainEqual(['system', '4a.1. Thông báo bảo vệ kiểm tra.']);
+    expect(steps).toContainEqual(['actor', '4a.2. Xác nhận thủ công.']);
+    expect(steps).toContainEqual(['system', '4a.3. Tiếp tục bước 5']);
+    expect(steps).toContainEqual(['actor', '2a. Thẻ không tồn tại trong hệ thống']);
+    expect(steps).toContainEqual(['system', '5a.2. Kết thúc use case (thất bại)']);
+
+    const bytes = await specReportDocx([{ spec: UC03, ctx }]);
+    const xml = await (await JSZip.loadAsync(bytes)).file('word/document.xml')!.async('string');
+    expect(xml).toContain('<w:gridCol w:w="4380"/><w:gridCol w:w="4342"/>');
+    expect(xml).toContain('<w:gridSpan w:val="2"/>');
+    expect(xml).toContain('Alternate Flows (Luồng sự kiện thay thế):');
+    expect(xml).toContain('w:line="360"');
+    expect(xml).toContain('Times New Roman');
+
+    const html = specReportHtml({ ...UC03, description: 'a < b & "c"' }, ctx);
+    expect(html).toContain('a &lt; b &amp; &quot;c&quot;');
+    expect(html).toContain('colspan="2"');
+    expect(specReportText(UC03, ctx).split('\n')[0]).toBe('Mục\tMô tả');
   });
 
   it('ảnh màn hình dán vào đặc tả: giữ khi chuẩn hoá, nhúng vào DOCX, có trong Markdown', async () => {

@@ -66,24 +66,39 @@ export function useProjects() {
   return useQuery({ queryKey: ['projects'], queryFn: () => call(umlab.projects.list()) });
 }
 
-function TypeChips({ p }: { p: ProjectSummary }) {
-  const entries = DIAGRAM_TYPE_INFO.filter((t) => p.stats.diagramCountByType?.[t.type]);
-  if (!entries.length) return <span className="text-muted">Chưa có sơ đồ</span>;
+/** Ô icon project: nền chuyển sắc theo màu project, icon trắng, viền sáng mảnh + bóng cùng tông. */
+function ProjectBadge({ p, size }: { p: ProjectSummary; size: number }) {
+  const Icon = projectIcon(p.icon);
   return (
-    <div className="flex flex-wrap gap-1">
+    <span
+      className="project-badge"
+      style={{ width: size, height: size, borderRadius: Math.round(size * 0.28), ['--pc' as string]: p.color }}
+    >
+      <Icon size={Math.round(size * 0.48)} strokeWidth={2} />
+    </span>
+  );
+}
+
+/** Thống kê sơ đồ theo loại: mỗi loại một ô (icon + tên + số), tổng ở đầu. */
+function TypeStats({ p, compact }: { p: ProjectSummary; compact?: boolean }) {
+  const entries = DIAGRAM_TYPE_INFO.filter((t) => p.stats.diagramCountByType?.[t.type]);
+  if (!entries.length) return compact ? <span className="text-muted">Chưa có sơ đồ</span> : null;
+  return (
+    <div className="type-stats" data-compact={compact || undefined}>
       {entries.map((t) => (
-        <TypeChip key={t.type} type={t.type} label={t.short} n={p.stats.diagramCountByType[t.type]} />
+        <TypeChip key={t.type} type={t.type} label={t.short} n={p.stats.diagramCountByType[t.type]} compact={compact} />
       ))}
     </div>
   );
 }
 
-function TypeChip({ type, label, n }: { type: DiagramType; label: string; n: number }) {
-  const tip = useTooltip(`${n} ${label}`);
+function TypeChip({ type, label, n, compact }: { type: DiagramType; label: string; n: number; compact?: boolean }) {
+  const tip = useTooltip(compact ? `${n} ${label}` : '');
   return (
-    <span className="pill" style={{ background: 'var(--panel-2)', color: 'var(--text)', fontWeight: 500 }} {...tip}>
-      <DiagramIcon type={type} size={12} colored />
-      {n}
+    <span className="type-stat" data-type={type} {...(compact ? tip : {})}>
+      <DiagramIcon type={type} size={14} colored />
+      {!compact && <span className="type-stat-label">{label}</span>}
+      <b className="pill">{n}</b>
     </span>
   );
 }
@@ -298,7 +313,7 @@ export function ProjectsPage() {
           ) : !data?.length ? (
             <div className="card">
               <EmptyState
-                icon={<img src="./brand/umlab-icon.svg" width={64} height={64} alt="" style={{ opacity: 0.9 }} />}
+                icon={<Logo variant="icon" height={72} />}
                 title="Chưa có project nào"
                 text="Project gom các sơ đồ Use Case, đặc tả, Activity, Sequence, Class, ERD, kiến trúc và Gantt của một hệ thống."
               >
@@ -315,7 +330,6 @@ export function ProjectsPage() {
           ) : pref.view === 'grid' ? (
             <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(270px, 1fr))' }}>
               {list.map((p) => {
-                const Icon = projectIcon(p.icon);
                 return (
                   <div
                     key={p.id}
@@ -328,12 +342,7 @@ export function ProjectsPage() {
                     onContextMenu={(e) => openContextMenu(e, menu(p))}
                   >
                     <div className="flex items-start gap-3">
-                      <span
-                        className="grid h-10 w-10 flex-none place-items-center rounded-[10px] text-white"
-                        style={{ background: p.color }}
-                      >
-                        <Icon size={20} />
-                      </span>
+                      <ProjectBadge p={p} size={42} />
                       <div className="min-w-0 flex-1">
                         <div className="truncate text-[14px] font-semibold">{p.name}</div>
                         <div className="mt-0.5 text-[11.5px] text-muted" title={dateTime(p.updatedAt)}>
@@ -365,11 +374,15 @@ export function ProjectsPage() {
                     <p className="line-clamp-2 min-h-[2.9em] text-muted" style={{ lineHeight: 1.45 }}>
                       {p.description || 'Không có mô tả'}
                     </p>
-                    <div className="mt-auto flex items-center gap-2">
-                      <div className="min-w-0 flex-1">
-                        <TypeChips p={p} />
+                    <div className="mt-auto grid gap-2 border-t border-line pt-3">
+                      <div className="flex items-center gap-2 text-[11.5px] text-muted">
+                        <span className="font-medium">
+                          {p.stats.diagramCount ? `${p.stats.diagramCount} sơ đồ` : 'Chưa có sơ đồ'}
+                        </span>
+                        <Spacer />
+                        <Members p={p} />
                       </div>
-                      <Members p={p} />
+                      <TypeStats p={p} />
                     </div>
                   </div>
                 );
@@ -392,7 +405,6 @@ export function ProjectsPage() {
                 </thead>
                 <tbody>
                   {list.map((p) => {
-                    const Icon = projectIcon(p.icon);
                     return (
                       <tr
                         key={p.id}
@@ -403,12 +415,7 @@ export function ProjectsPage() {
                       >
                         <td className="px-4 py-2.5">
                           <div className="flex items-center gap-2.5">
-                            <span
-                              className="grid h-7 w-7 flex-none place-items-center rounded-md text-white"
-                              style={{ background: p.color }}
-                            >
-                              <Icon size={15} />
-                            </span>
+                            <ProjectBadge p={p} size={30} />
                             <div className="min-w-0">
                               <div className="truncate font-semibold">{p.name}</div>
                               <div className="truncate text-muted">{p.description}</div>
@@ -416,7 +423,7 @@ export function ProjectsPage() {
                           </div>
                         </td>
                         <td className="px-2">
-                          <TypeChips p={p} />
+                          <TypeStats p={p} compact />
                         </td>
                         <td className="px-2">
                           <span className="flex items-center gap-1.5 text-muted">

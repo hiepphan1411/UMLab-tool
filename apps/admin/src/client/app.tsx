@@ -424,8 +424,9 @@ function Login({ configured, onIn }: { configured: boolean; onIn: (u: string) =>
   return (
     <main className="login">
       <form className="card grid" onSubmit={(e) => void submit(e)} aria-label="Đăng nhập quản trị">
-        <h1>
-          <span className="logo">UMLab</span> Quản trị
+        <h1 className="login-title">
+          <BrandLogo height={36} />
+          <span>Quản trị</span>
         </h1>
         {!configured && (
           <p className="notice">
@@ -456,12 +457,22 @@ function Login({ configured, onIn }: { configured: boolean; onIn: (u: string) =>
   );
 }
 
+/** Logo UMLab: bản sáng / tối theo theme hệ thống. */
+function BrandLogo({ height }: { height: number }) {
+  return (
+    <picture>
+      <source srcSet="./umlab-logo-dark.svg" media="(prefers-color-scheme: dark)" />
+      <img src="./umlab-logo.svg" alt="UMLab" style={{ height, display: 'block' }} />
+    </picture>
+  );
+}
+
 function Shell({ user, onOut }: { user: string; onOut: () => void }) {
   return (
     <div className="shell">
       <aside className="side">
         <div className="brand">
-          <span className="logo">UMLab</span>
+          <BrandLogo height={26} />
           <span className="muted small">Quản trị</span>
         </div>
         <nav aria-label="Điều hướng">

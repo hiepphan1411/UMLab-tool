@@ -346,6 +346,8 @@ class ProjectsService {
       return;
     }
     await database.projects().updateOne({ _id: id }, { $set: { stats: clean, updatedAt: new Date() } });
+    // trang chủ làm mới ngay, không chờ change stream (hoặc vòng poll khi không có change stream)
+    this.notify();
   }
 
   async addMember(id: string, email: string, role: Role): Promise<ProjectSummary> {

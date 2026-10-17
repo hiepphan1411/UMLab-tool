@@ -158,7 +158,12 @@ export class ProjectSession {
     window.removeEventListener('beforeunload', this.flushNow);
     this.offs.forEach((f) => f());
     this.doc.off('update', this.onLocalUpdate);
-    if (this.statsTimer) clearTimeout(this.statsTimer);
+    // thống kê đang chờ gửi (vừa thêm / xoá sơ đồ rồi rời project) → gửi ngay, không bỏ
+    if (this.statsTimer) {
+      clearTimeout(this.statsTimer);
+      this.statsTimer = null;
+      void umlab.projects.setStats(this.projectId, computeStats(this.doc)).catch(() => {});
+    }
     // để lần flush cuối kịp gửi trước khi huỷ doc
     setTimeout(() => this.doc.destroy(), 1000);
     await umlab.sync.close(this.projectId);

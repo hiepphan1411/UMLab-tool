@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="138 1 329 329" role="img" aria-label="UMLab"><title>UMLab</title><defs>
+<linearGradient id="uduL" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0B5C8A"/><stop offset="100%" stop-color="#129CB3"/></linearGradient>
+<linearGradient id="udmG" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#10B1B1"/><stop offset="100%" stop-color="#0A7C99"/></linearGradient>
+<linearGradient id="udlq" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#14B8A6"/><stop offset="100%" stop-color="#0284C7"/></linearGradient>
+<linearGradient id="udtD" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#EEF3F9"/><stop offset="100%" stop-color="#D3DEEA"/></linearGradient>
+<linearGradient id="udtT" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#0D94B2"/><stop offset="100%" stop-color="#11A8B9"/></linearGradient>
+<clipPath id="udfc"><path d="M370 85L410 85L410 110L435 170L458 225A16 16 0 0 1 444 248L336 248A16 16 0 0 1 322 225L345 170L370 110Z"/></clipPath>
+</defs><g class="mark">
+<g clip-path="url(#udfc)"><path class="liquid" d="M310 170Q355 155 390 175T470 170L470 260L310 260Z" fill="url(#udlq)" opacity=".85"/></g>
+<path d="M362 82H418" stroke="#DCE7F2" stroke-width="10" stroke-linecap="round" fill="none"/>
+<path d="M372 85V112L347 172L325 225A16 16 0 0 0 339 248H441A16 16 0 0 0 455 225L433 172L408 112V85" fill="none" stroke="#DCE7F2" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M400 125H415M405 145H422" stroke="#DCE7F2" stroke-width="6" stroke-linecap="round"/>
+<path d="M148 128V195A45 45 0 0 0 238 195V128H208V195A15 15 0 0 1 178 195V128Z" fill="url(#uduL)"/>
+<path d="M148 195A45 45 0 0 0 238 195L238 210A45 45 0 0 1 148 210Z" fill="#094A72" opacity=".4"/>
+<path d="M238 195V128L280 198L322 128V248H294V175L280 198L266 175V248H238Z" fill="url(#udmG)"/>
+<path d="M280 148V106H222A16 16 0 0 0 206 122V132" fill="none" stroke="#0D94B2" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+<circle class="n1" cx="206" cy="138" r="11" fill="#0D94B2" stroke="#1D2027" stroke-width="4"/>
+<path d="M312 178H392" stroke="#0D94B2" stroke-width="10" stroke-linecap="round"/>
+<circle class="n2" cx="394" cy="178" r="11" fill="#0D94B2" stroke="#1D2027" stroke-width="4"/>
+<path d="M312 218H398" stroke="#1597B8" stroke-width="10" stroke-linecap="round"/>
+<circle class="n3" cx="400" cy="218" r="11" fill="#1597B8" stroke="#1D2027" stroke-width="4"/>
+</g></svg>

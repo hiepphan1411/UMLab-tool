@@ -8,13 +8,14 @@ export function Logo({
   height = 28,
   className,
 }: {
-  variant?: 'full' | 'icon';
+  /** full: icon + chữ (thanh trên) · tagline: dạng đứng kèm "SYSTEMS & FLOWS" (đăng nhập) · icon: chỉ biểu tượng. */
+  variant?: 'full' | 'tagline' | 'icon';
   height?: number;
   className?: string;
 }) {
   const dark = useTheme((s) => s.dark);
-  const src =
-    variant === 'icon' ? './brand/umlab-icon.svg' : dark ? './brand/umlab-logo-dark.svg' : './brand/umlab-logo.svg';
+  const name = variant === 'icon' ? 'umlab-icon' : variant === 'tagline' ? 'umlab-logo-tagline' : 'umlab-logo';
+  const src = `./brand/${name}${dark ? '-dark' : ''}.svg`;
   return (
     <img
       src={src}

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 480" width="100%" height="100%">
+  <!-- Logo gốc (chữ dùng font hệ thống). Các tệp umlab-*.svg cạnh đây sinh từ tệp này bằng scripts/brand-logo.py:
+       chữ đã chuyển thành path (Be Vietnam Pro) để hiển thị giống nhau trên mọi máy. -->
+  <defs>
+    <linearGradient id="uLeftGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0B5C8A" /><stop offset="100%" stop-color="#129CB3" /></linearGradient>
+    <linearGradient id="mGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#10B1B1" /><stop offset="100%" stop-color="#0A7C99" /></linearGradient>
+    <linearGradient id="liquidGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#14B8A6" /><stop offset="100%" stop-color="#0284C7" /></linearGradient>
+    <linearGradient id="textDarkGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#0A3656" /><stop offset="100%" stop-color="#072B46" /></linearGradient>
+    <linearGradient id="textTealGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#0D94B2" /><stop offset="100%" stop-color="#11A8B9" /></linearGradient>
+    <clipPath id="flaskClip"><path d="M 370 85 L 410 85 L 410 110 L 435 170 L 458 225 A 16 16 0 0 1 444 248 L 336 248 A 16 16 0 0 1 322 225 L 345 170 L 370 110 Z" /></clipPath>
+  </defs>
+  <g transform="translate(10, 10)">
+    <g id="logo-mark">
+      <path clip-path="url(#flaskClip)" d="M 310 170 Q 355 155 390 175 T 470 170 L 470 260 L 310 260 Z" fill="url(#liquidGrad)" opacity="0.85" />
+      <path d="M 362 82 H 418" stroke="#0A3656" stroke-width="10" stroke-linecap="round" fill="none" />
+      <path d="M 372 85 V 112 L 347 172 L 325 225 A 16 16 0 0 0 339 248 H 441 A 16 16 0 0 0 455 225 L 433 172 L 408 112 V 85" fill="none" stroke="#0A3656" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" />
+      <line x1="400" y1="125" x2="415" y2="125" stroke="#0A3656" stroke-width="6" stroke-linecap="round" />
+      <line x1="405" y1="145" x2="422" y2="145" stroke="#0A3656" stroke-width="6" stroke-linecap="round" />
+      <path d="M 148 128 V 195 A 45 45 0 0 0 238 195 V 128 H 208 V 195 A 15 15 0 0 1 178 195 V 128 Z" fill="url(#uLeftGrad)" />
+      <path d="M 148 195 A 45 45 0 0 0 238 195 L 238 210 A 45 45 0 0 1 148 210 Z" fill="#094A72" opacity="0.4" />
+      <path d="M 238 195 V 128 L 280 198 L 322 128 V 248 H 294 V 175 L 280 198 L 266 175 V 248 H 238 Z" fill="url(#mGrad)" />
+      <path d="M 280 148 V 106 H 222 A 16 16 0 0 0 206 122 V 132" fill="none" stroke="#0D94B2" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" />
+      <circle cx="206" cy="138" r="11" fill="#0D94B2" stroke="#FFFFFF" stroke-width="4" />
+      <path d="M 312 178 H 392" fill="none" stroke="#0D94B2" stroke-width="10" stroke-linecap="round" />
+      <circle cx="394" cy="178" r="11" fill="#0D94B2" stroke="#FFFFFF" stroke-width="4" />
+      <path d="M 312 218 H 398" fill="none" stroke="#095D7E" stroke-width="10" stroke-linecap="round" />
+      <circle cx="400" cy="218" r="11" fill="#095D7E" stroke="#FFFFFF" stroke-width="4" />
+    </g>
+    <g id="brand-text">
+      <text x="135" y="355" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif" font-weight="900" font-size="88" letter-spacing="-1.5" fill="url(#textDarkGrad)">UM</text>
+      <text x="290" y="355" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif" font-weight="400" font-size="88" letter-spacing="-1" fill="url(#textTealGrad)">Lab</text>
+      <text x="290" y="398" text-anchor="middle" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif" font-weight="800" font-size="22" letter-spacing="5" fill="#0A3656">SYSTEMS &amp; FLOWS</text>
+    </g>
+  </g>
+</svg>

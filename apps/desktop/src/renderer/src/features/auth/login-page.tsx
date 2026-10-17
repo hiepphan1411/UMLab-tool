@@ -78,7 +78,7 @@ export function LoginPage() {
 
   return (
     <AuthLayout>
-      <Logo height={44} className="mb-8" />
+      <Logo variant="tagline" height={128} className="mb-6" />
       <h1 className="text-[22px] font-semibold tracking-tight">Đăng nhập</h1>
       <p className="mt-1 mb-6 text-muted">Chào mừng trở lại. Đăng nhập để mở các project của bạn.</p>
       {endedReason && (

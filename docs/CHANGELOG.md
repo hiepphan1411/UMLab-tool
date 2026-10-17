@@ -2,6 +2,25 @@
 
 Mỗi phase hoàn thành thêm một mục: `## P0x — tên phase (ngày)` + danh sách thay đổi chính.
 
+## Logo mới, màn hình chờ, xuất mẫu Doc, thẻ project (2026-10-17)
+
+- **Logo mới** (bình thí nghiệm + “UM” dạng mạch): bản ngang (thanh trên), bản đứng kèm “SYSTEMS & FLOWS” (đăng nhập /
+  đăng ký), chỉ icon; mỗi bản có biến thể nền tối. Chữ trong logo đã chuyển thành path (Be Vietnam Pro) nên giống nhau trên
+  mọi máy. Icon ứng dụng `.exe` (`build/icon.png`), favicon và trang quản trị dùng logo mới. Nguồn:
+  `docs/assets/brand/umlab-logo-source.svg`, sinh lại bằng `scripts/brand-logo.py`.
+- **Màn hình chờ khi mở app** (bản cài): cửa sổ nhỏ không viền với logo, chất lỏng dâng + gợn sóng trong bình, nút mạch
+  nhấp nháy, thanh tải; đóng khi cửa sổ chính sẵn sàng (tối thiểu ~1,2 s). Theo theme sáng / tối, tắt hiệu ứng khi hệ thống
+  bật “giảm chuyển động”. Dev / E2E bỏ qua (bật thử bằng `UMLAB_SPLASH=1`).
+- **Đặc tả use case → “Xuất mẫu Doc”**: bảng theo mẫu báo cáo (Mục | Mô tả; Basic flow chia cột Actor | System; luồng
+  thay thế / ngoại lệ đánh số `3a`, `3a.1`…, bước cuối “Tiếp tục bước n / Quay lại bước n / Kết thúc use case”), Times New
+  Roman 13, giãn dòng 1,5, viền đen. Có xem trước; **Sao chép** (HTML — dán vào Word giữ nguyên bảng; nơi khác nhận văn bản
+  thuần) hoặc **Tải .docx**. Core: `specReportRows / specReportDocx / specReportHtml / specReportText`.
+- **Thẻ project:** ô icon chuyển sắc theo màu project; phần sơ đồ ghi tổng số và mỗi loại một ô (icon + tên loại + số),
+  chế độ danh sách giữ dạng gọn. **Sửa:** thêm / xoá sơ đồ rồi rời project ngay (trong 2,5 s) thì số liệu trên thẻ không
+  cập nhật — thống kê đang chờ giờ được gửi ngay khi đóng project, trang chủ làm mới ngay sau khi lưu thống kê.
+- Test: core “Mẫu Doc” (hàng, nhãn 4a/2a/5a, DOCX, HTML escape); Playwright `brand-docx.spec.ts` (màn hình chờ; xuất mẫu
+  Doc: xem trước, clipboard HTML, tải .docx; thống kê trên thẻ project).
+
 ## Sửa lỗi vẽ bị treo, bỏ nối cong, icon một màu, trang quản trị (2026-10-17)
 
 - **Sửa lỗi “vẽ không thấy thay đổi, phải thoát ra vào lại”** (chế độ `npm run dev`): `React.StrictMode` chạy effect

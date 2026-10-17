@@ -1,6 +1,6 @@
 // Đặc tả Use Case (`usecase-spec`) — docs/phases/P07-usecase-spec.md, docs/spec/usecase-spec-template.md.
 // Không có canvas: dữ liệu ở `data:<id>` (mỗi trường cấp 1 một khoá), logic nằm ở core/spec.
-import { AlertCircle, AlertTriangle, FileDown, FileText, Info, Plus, Trash2, Workflow, X } from 'lucide-react';
+import { AlertCircle, AlertTriangle, FileDown, FileText, Info, Plus, Table2, Trash2, Workflow, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useStore } from 'zustand';
@@ -52,6 +52,7 @@ import { generateNew, generatedFrom, takeFocus, useFocusRequest, type GeneratorD
 import { registerThumbnail } from '../thumbnails';
 import { exportSpecMarkdown, exportSpecsDocx } from './exporters';
 import { FlowTable, type Option } from './flow-table';
+import { openSpecReport } from './report-dialog';
 
 /** Origin của ghi tự động (include/extend rút từ sơ đồ) — không đưa vào undo. */
 const DERIVED = 'derived';
@@ -514,6 +515,9 @@ export function SpecEditor({ session, diagram, readOnly, setActions }: EditorPro
         <>
           <GenButton doc={doc} specId={diagram.id} g={ACTIVITY_GENERATOR} readOnly={readOnly} />
           <GenButton doc={doc} specId={diagram.id} g={SEQUENCE_GENERATOR} readOnly={readOnly} />
+          <Button size="sm" variant="outline" icon={<Table2 />} onClick={() => openSpecReport(doc, diagram.id)}>
+            Xuất mẫu Doc
+          </Button>
           <Button
             size="sm"
             variant="outline"

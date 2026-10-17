@@ -17,7 +17,45 @@ if (process.env.UMLAB_PROFILE) {
   app.quit();
 }
 
-function createWindow(): BrowserWindow {
+/** Màn hình chờ (logo + hiệu ứng load) khi chạy bản cài; dev / e2e bỏ qua trừ khi đặt UMLAB_SPLASH=1. */
+function createSplash(): BrowserWindow | null {
+  const want = process.env.UMLAB_SPLASH ? process.env.UMLAB_SPLASH === '1' : app.isPackaged;
+  if (!want) return null;
+  const splash = new BrowserWindow({
+    width: 380,
+    height: 340,
+    frame: false,
+    transparent: true,
+    resizable: false,
+    maximizable: false,
+    fullscreenable: false,
+    show: false,
+    center: true,
+    title: 'UMLab',
+    icon: join(__dirname, '../../build/icon.png'),
+    webPreferences: { sandbox: true, contextIsolation: true, nodeIntegration: false },
+  });
+  splash.once('ready-to-show', () => splash.show());
+  const devUrl = process.env.ELECTRON_RENDERER_URL;
+  if (isDev && devUrl) void splash.loadURL(devUrl + '/splash.html');
+  else void splash.loadFile(join(__dirname, '../renderer/splash.html'));
+  return splash;
+}
+
+/** Hiện cửa sổ chính, đóng màn hình chờ (giữ màn hình chờ tối thiểu ~1,2 s để hiệu ứng không chớp tắt). */
+function revealAfterSplash(win: BrowserWindow, splash: BrowserWindow | null, since: number): void {
+  if (!splash || splash.isDestroyed()) return win.show();
+  setTimeout(
+    () => {
+      if (!win.isDestroyed()) win.show();
+      if (!splash.isDestroyed()) splash.destroy();
+    },
+    Math.max(0, 1200 - (Date.now() - since)),
+  );
+}
+
+function createWindow(splash: BrowserWindow | null = null): BrowserWindow {
+  const since = Date.now();
   const dark = nativeTheme.shouldUseDarkColors;
   const win = new BrowserWindow({
     width: 1440,
@@ -41,7 +79,7 @@ function createWindow(): BrowserWindow {
       spellcheck: false,
     },
   });
-  win.once('ready-to-show', () => win.show());
+  win.once('ready-to-show', () => revealAfterSplash(win, splash, since));
   win.webContents.setWindowOpenHandler(({ url }) => {
     if (/^https?:\/\//.test(url)) void shell.openExternal(url);
     return { action: 'deny' };
@@ -66,11 +104,12 @@ app.on('second-instance', () => {
 app.whenReady().then(async () => {
   app.setAppUserModelId('vn.umlab.desktop');
   if (!isDev) Menu.setApplicationMenu(null);
+  const splash = createSplash();
   registerIpc(isDev);
   auth.restore();
   sync.init();
   presence.init();
-  createWindow();
+  createWindow(splash);
   await database.start();
   if (isDev && database.ready && !process.env.UMLAB_NO_SEED) {
     await auth.seedDemo().catch((e) => console.warn('[umlab] seed', e));
