@@ -55,6 +55,7 @@ import {
   modelUsages,
   nudge,
   paste,
+  runAfterCreate,
   toggleFlag,
   viewCtx,
   zOrder,
@@ -539,25 +540,28 @@ export function CanvasEditor(props: EditorProps & { options?: CanvasEditorOption
           icon: <UmlIcon name={sd.icon} size={15} />,
           onSelect: () => {
             let newId = '';
+            let connId = '';
             engine.apply((tx) => {
               const v = createViewTx(tx, engine, it.shape!, at[0] - sd.defaultSize.w / 2, at[1] - sd.defaultSize.h / 2);
               if (!v) return;
               newId = v.id;
               const a = { viewId: fromId };
               const b = { viewId: v.id };
-              createConnectorTx(
-                tx,
-                engine,
-                it.connector,
-                it.reverse ? b : a,
-                it.reverse ? a : b,
-                engine.presets.get(it.connector) ?? {},
-              );
+              connId =
+                createConnectorTx(
+                  tx,
+                  engine,
+                  it.connector,
+                  it.reverse ? b : a,
+                  it.reverse ? a : b,
+                  engine.presets.get(it.connector) ?? {},
+                )?.id ?? '';
             });
             if (newId) {
               engine.select([newId]);
               requestAnimationFrame(() => api.current?.editText(newId));
             }
+            if (connId) runAfterCreate(engine, connId);
           },
         });
       }

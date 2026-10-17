@@ -186,8 +186,17 @@ export function createConnector(
   e.apply((tx) => {
     id = createConnectorTx(tx, e, kind, source, target, o)?.id ?? null;
   });
-  if (id) e.select([], [id]);
+  if (id) {
+    e.select([], [id]);
+    runAfterCreate(e, id);
+  }
   return id;
+}
+
+/** Gọi ConnectorDef.afterCreate (ngoài giao dịch) cho đường nối vừa tạo. */
+export function runAfterCreate(e: Engine, connId: string): void {
+  const c = e.lookup.conn(connId);
+  if (c) getConnector(c.kind)?.afterCreate?.(e, c);
 }
 
 /** Nới container (autoGrow) để bao trọn con, lan lên các cấp cha. */
@@ -244,6 +253,7 @@ export function deleteSelection(e: Engine): void {
   const { sel, selConns, views } = e.state;
   if (!sel.size && !selConns.size) return;
   const ids = e.descendants([...sel].filter((id) => !views.get(id)?.locked));
+  const gone: [Connector, ModelElement | null][] = [];
   e.apply((tx) => {
     for (const c of e.lookup.conns()) {
       if (
@@ -251,6 +261,7 @@ export function deleteSelection(e: Engine): void {
         (c.source.viewId && ids.has(c.source.viewId)) ||
         (c.target.viewId && ids.has(c.target.viewId))
       ) {
+        gone.push([c, c.modelId ? (tx.model(c.modelId) ?? null) : null]);
         getConnector(c.kind)?.onDelete?.(tx, c);
         tx.deleteConn(c.id);
       }
@@ -258,6 +269,7 @@ export function deleteSelection(e: Engine): void {
     for (const id of ids) tx.deleteView(id);
   });
   e.clearSelection();
+  for (const [c, m] of gone) getConnector(c.kind)?.afterDelete?.(e, c, m);
 }
 
 /** Nơi một phần tử mô hình xuất hiện: [{diagram, viewIds}] trên toàn project. */

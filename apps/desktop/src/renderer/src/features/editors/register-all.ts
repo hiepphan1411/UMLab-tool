@@ -7,3 +7,4 @@ import './gantt';
 import './usecase';
 import './usecase-spec';
 import './class';
+import './erd';

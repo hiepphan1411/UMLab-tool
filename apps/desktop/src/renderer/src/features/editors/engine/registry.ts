@@ -272,6 +272,10 @@ export interface ConnectorDef {
   }>;
   onCreate?: (tx: Tx, c: Connector, src: ViewCtx, tgt: ViewCtx) => void;
   onDelete?: (tx: Tx, c: Connector) => void;
+  /** Sau khi người dùng tạo đường nối (ngoài giao dịch) — hỏi thêm (vd. tạo bảng trung gian cho N-N). */
+  afterCreate?: (e: Engine, c: Connector) => void;
+  /** Sau khi xoá đường nối (ngoài giao dịch); `model` là phần tử mô hình trước khi xoá. */
+  afterDelete?: (e: Engine, c: Connector, model: ModelElement | null) => void;
   /** Đầu mút có thể là điểm tự do (Line, found/lost message). */
   freeEnds?: boolean;
   /** Nhãn phụ thuộc phần tử khác (Extend lấy tên extension point của use case gốc) → vẽ lại khi mô hình đổi. */

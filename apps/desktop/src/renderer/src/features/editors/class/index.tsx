@@ -1,8 +1,10 @@
 // Class Diagram (`class`) — docs/phases/P08-class.md, docs/spec/notation-class.md.
 import { Database } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { emptyAttribute, uid, type Attribute } from '@umlab/core';
-import { Button, useTooltip, type MenuEntry } from '@/ui';
+import { Button, type MenuEntry } from '@/ui';
 import { registerDiagramTemplates, registerEditor } from '../editor-registry';
+import { openOrmDialog } from '../erd/orm-dialog';
 import { CanvasEditor } from '../engine/canvas-editor';
 import type { Engine } from '../engine/engine';
 import { createConnectorTx } from '../engine/ops';
@@ -188,6 +190,15 @@ function extraMenu(e: Engine, t: { viewId?: string; connId?: string }): MenuEntr
         );
     }
   }
+  const picked = selectedClassIds(e);
+  if (t.viewId && picked.length && !e.readOnly)
+    out.push(
+      {
+        label: `Parse ORM ${picked.length} class đã chọn → ERD`,
+        onSelect: () => void openOrmDialog(e.doc, e.diagramId, picked),
+      },
+      { type: 'sep' },
+    );
   if (t.connId) {
     const c = e.lookup.conn(t.connId);
     if (c?.modelId && e.lookup.model(c.modelId)?.kind === 'uml.association' && !e.readOnly)
@@ -196,14 +207,30 @@ function extraMenu(e: Engine, t: { viewId?: string; connId?: string }): MenuEntr
   return out;
 }
 
-function OrmButton() {
-  const tip = useTooltip('Có ở bản cập nhật sau (P09)');
+/** Class đang chọn trên canvas (để Parse ORM vùng chọn). */
+const selectedClassIds = (e: Engine) =>
+  [...e.state.sel]
+    .map((id) => e.lookup.view(id))
+    .filter((v) => v && CLASSIFIER_SHAPES.has(v.shape) && v.modelId)
+    .map((v) => v!.modelId!);
+
+function OrmButton({ e }: { e: Engine }) {
+  const nav = useNavigate();
   return (
-    <span className="inline-flex" {...tip}>
-      <Button size="sm" variant="outline" icon={<Database />} disabled>
-        Parse ORM → ERD
-      </Button>
-    </span>
+    <Button
+      size="sm"
+      variant="outline"
+      icon={<Database />}
+      disabled={e.readOnly}
+      title="Sinh / cập nhật ERD từ các class (entity)"
+      onClick={async () => {
+        // nút thanh công cụ: chọn mặc định (class «entity»); vùng chọn dùng menu chuột phải
+        const id = await openOrmDialog(e.doc, e.diagramId);
+        if (id) nav(`/p/${e.session.projectId}/d/${id}`);
+      }}
+    >
+      Parse ORM → ERD
+    </Button>
   );
 }
 
@@ -217,6 +244,6 @@ registerDiagramTemplates('class', [
   },
 ]);
 
-registerEditor('class', (p) => <CanvasEditor {...p} options={{ extraMenu, toolbar: () => <OrmButton /> }} />);
+registerEditor('class', (p) => <CanvasEditor {...p} options={{ extraMenu, toolbar: (e) => <OrmButton e={e} /> }} />);
 
 export { newEnd };

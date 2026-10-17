@@ -42,7 +42,7 @@ test('P08: Class — mẫu UniPark+, thuộc tính đủ trường, gợi ý ki�
   await page.getByRole('button', { name: 'Tạo & mở' }).click();
   await expect(page.locator('[data-shape="cls.class"]')).toHaveCount(9);
   await expect(page.locator('[data-shape="cls.enum"]')).toHaveCount(1);
-  await expect(page.getByRole('button', { name: 'Parse ORM → ERD' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Parse ORM → ERD' })).toBeEnabled();
   await page.getByTestId('canvas').click({ position: { x: 5, y: 5 } });
   await page.keyboard.press('Shift+!');
   await page.waitForTimeout(300);
