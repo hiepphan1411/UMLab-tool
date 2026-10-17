@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState, type PointerEvent as RPointerEven
 import { useStore } from 'zustand';
 import type { Connector, Side, View } from '@umlab/core';
 import { useSessionState } from '../../workspace/session';
-import { useTipStore } from '@/ui';
+import { toast, useTipStore } from '@/ui';
 import type { Engine, EngineState } from './engine';
 import {
   clamp,
@@ -28,6 +28,7 @@ import {
   growParents,
   pointInPoly,
   reparent,
+  viewCtx,
   viewsInBox,
 } from './ops';
 import { Overlay } from './overlay';
@@ -694,7 +695,10 @@ export function Canvas({
       let end: Connector['source'];
       if (t && (t.id !== other || getConnector(c.kind)?.selfLoop)) {
         const ns = nearestSide(engine.box(t.id)!, wx, wy);
-        end = { viewId: t.id, side: ns.side, t: ns.t };
+        end =
+          c.routing === 'straight' || c.routing === 'curved'
+            ? { viewId: t.id }
+            : { viewId: t.id, side: ns.side, t: ns.t };
       } else if (getConnector(c.kind)?.freeEnds) end = { viewId: null, x: wx, y: wy };
       else end = { viewId: null, x: wx, y: wy };
       engine.set({ connPreview: new Map([[c.id, { [d.end]: end } as Partial<Connector>]]) });
@@ -825,15 +829,25 @@ export function Canvas({
       }
       if (c.invalid) return;
       const def = getConnector(c.kind);
+      // đường thẳng / cong: đầu mút tự bám viền hướng về đầu kia (không khoá cạnh) để không cắt qua hình
+      const auto = def?.defaultRouting === 'straight' || def?.defaultRouting === 'curved';
       const src = c.sourceId
-        ? { viewId: c.sourceId, side: c.side as Side, t: c.t }
+        ? auto
+          ? { viewId: c.sourceId }
+          : { viewId: c.sourceId, side: c.side as Side, t: c.t }
         : { viewId: null, x: c.sourcePt[0], y: c.sourcePt[1] };
       let tgt: Connector['target'] | null = null;
-      if (c.targetId) tgt = { viewId: c.targetId, side: c.targetSide as Side, t: c.targetT };
+      if (c.targetId)
+        tgt = auto ? { viewId: c.targetId } : { viewId: c.targetId, side: c.targetSide as Side, t: c.targetT };
       else if (def?.freeEnds && Math.hypot(wx - c.sourcePt[0], wy - c.sourcePt[1]) > 10)
         tgt = { viewId: null, x: wx, y: wy };
       if (!tgt) return;
+      const sv = src.viewId ? engine.lookup.view(src.viewId) : undefined;
+      const tv = tgt.viewId ? engine.lookup.view(tgt.viewId) : undefined;
+      const warn =
+        def?.warn && sv && tv ? def.warn(viewCtx(engine.lookup, sv), viewCtx(engine.lookup, tv), engine.lookup) : null;
       createConnector(engine, c.kind, src, tgt, presetOf(engine, c.kind));
+      if (warn) toast('⚠ ' + warn, { ms: 4000 });
       if (!st.sticky) engine.set({ tool: 'tool:select' });
       return;
     }
@@ -1117,6 +1131,7 @@ export function Canvas({
                 bg={bg}
                 model={c.modelId ? st.model.get(c.modelId) : null}
                 jumps={allPts ? allPts.filter((x) => x !== r.pts) : undefined}
+                version={getConnector(c.kind)?.live ? st.version : 0}
               />
             );
           })}

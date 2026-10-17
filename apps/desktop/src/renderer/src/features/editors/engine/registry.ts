@@ -232,6 +232,8 @@ export interface ComputedLabel {
   /** Có thể kéo (lưu vào connector.labels[role]). */
   draggable?: boolean;
   bold?: boolean;
+  /** Vẽ trong khung Note gấp mép (vd. điều kiện của Extend). */
+  note?: boolean;
 }
 
 export interface ViewCtx {
@@ -270,6 +272,8 @@ export interface ConnectorDef {
   onDelete?: (tx: Tx, c: Connector) => void;
   /** Đầu mút có thể là điểm tự do (Line, found/lost message). */
   freeEnds?: boolean;
+  /** Nhãn phụ thuộc phần tử khác (Extend lấy tên extension point của use case gốc) → vẽ lại khi mô hình đổi. */
+  live?: boolean;
 }
 
 export interface PaletteItem {

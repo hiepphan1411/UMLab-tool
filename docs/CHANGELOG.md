@@ -2,6 +2,20 @@
 
 Mỗi phase hoàn thành thêm một mục: `## P0x — tên phase (ngày)` + danh sách thay đổi chính.
 
+## P06 — Use Case Diagram (2026-10-17)
+
+- Palette đúng thứ tự spec: Cursor ◢ · Use Case · Association · Actor · System · Include · Extend · Dependency · Generalization ◢ (Generalization / Realization) · Collaboration · nhóm chung.
+- **Hình:** Use Case (elip tự giãn theo tên, mã UC in đậm trước tên — bật/tắt, ngăn _extension points_ sửa tại chỗ dạng danh sách, business use case có vạch chéo, icon tài liệu khi đã có đặc tả), Actor (hình người que / chữ nhật «actor» / icon; business actor vạch chéo qua đầu; loại Người dùng · Hệ thống ngoài · Thiết bị), System (container, tên đậm giữa mép trên, chỉ nhận Use Case/Collaboration/Note/Text Box — Actor đặt vào vẫn được nhưng có cảnh báo), Collaboration (elip nét đứt).
+- **Phần tử mô hình** `uml.usecase` (mã `UC01`… tự tăng theo project — `meta.ucCounter`, không trùng cả khi nhập tệp; mô tả, mức ưu tiên, trạng thái, extension points, `specDiagramId`), `uml.actor`, `uml.subject`, `uml.collaboration`.
+- **Đường nối + `allow()`:** Association (tên, multiplicity 2 đầu, navigable; cấm Actor ↔ Actor, cảnh báo Use Case ↔ Use Case), Include «include» (chỉ giữa hai use case, cấm tự include, cảnh báo vòng), Extend «extend» (điều kiện `[…]`, chọn extension point của use case gốc hoặc **Tạo mới**, note “Condition: {…} / extension point: …” gắn trên đường, đổi tên extension point → nhãn cập nhật ngay), Dependency (stereotype tuỳ nhập), Generalization (cùng loại, cấm vòng), Realization (Collaboration → Use Case).
+- **Resource Catalog** cho Use Case, Actor, Collaboration như cột Catalog của spec.
+- **Kiểm tra:** use case/actor chưa nối, vòng include/generalization, extension point không còn tồn tại (sửa nhanh: Bỏ chọn), trùng tên use case trong cùng System, actor nằm trong System (sửa nhanh: Đưa ra ngoài), use case chưa có đặc tả (thông tin, nút **Tạo đặc tả**).
+- **Liên kết đặc tả:** chuột phải Use Case → Tạo đặc tả (tạo sơ đồ `usecase-spec` cùng thư mục, gắn `useCaseId`, mở ngay) / Mở đặc tả; Thêm extension point.
+- **Mẫu** khi tạo mới: Trống / Use case UniPark+ (Sinh viên, Bảo vệ, Quản trị viên, Thiết bị cổng; 10 use case gồm Đăng nhập ⟶ «include» Xác thực OTP, Check-out / Mua gói tháng ⟶ «include» Thanh toán, Nạp ví «extend» Thanh toán tại “Số dư không đủ”…).
+- **Engine (mở rộng chung):** `ConnectorDef.warn` hiện cảnh báo khi nối, connector `live` vẽ lại khi phần tử khác đổi, nhãn đường nối dạng Note (`ComputedLabel.note`), đường thẳng/cong tự bám viền hướng về đầu kia (không khoá cạnh).
+- Icon: `usecase, association, actor, system, include, extend, generalization, realization, collaboration`.
+- Test: `usecase.test.ts` (9 test: allow() của 6 connector, mã UC tự tăng, vòng generalization bị chặn, vòng include báo lỗi trong Kiểm tra, nhãn Extend theo extension point); Playwright `p06-usecase.spec.ts` (mẫu UniPark+ 10 UC + 4 actor; vẽ bằng palette; Include Actor → Use Case bị chặn với tooltip “Include chỉ nối giữa hai use case”; Extend + tạo extension point + đổi tên → nhãn cập nhật; xuất JSON → xoá → nhập lại; Tạo đặc tả → mở sơ đồ đặc tả → quay lại thấy icon tài liệu).
+
 ## P05 — Nhóm hình chung, sơ đồ kiến trúc, Gantt (2026-10-17)
 
 - **Nhóm hình chung** (`features/editors/shapes/common/`, đúng bảng spec/notation-common.md) và `COMMON_PALETTE_GROUPS` (Chú thích · Yêu cầu · Tổ chức & tài liệu · Vẽ tay) để mọi sơ đồ UML ghép vào cuối palette:

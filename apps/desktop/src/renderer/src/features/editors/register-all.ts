@@ -4,3 +4,4 @@ import './playground';
 import './shapes/common';
 import './architecture';
 import './gantt';
+import './usecase';

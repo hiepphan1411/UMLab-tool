@@ -140,6 +140,7 @@ interface LabelPlaced {
   italic?: boolean;
   bold?: boolean;
   draggable?: boolean;
+  note?: boolean;
 }
 
 /** Vị trí nhãn: nhãn giữa theo pos; nhãn đầu mút bám đầu, tự lật bên để không đè đường. */
@@ -175,6 +176,7 @@ export function placeLabels(c: Connector, r: Routed, computed: ComputedLabel[]):
         anchor,
         italic: lab.italic,
         bold: lab.bold,
+        note: lab.note,
         draggable: lab.draggable,
       });
     } else {
@@ -193,6 +195,7 @@ export function placeLabels(c: Connector, r: Routed, computed: ComputedLabel[]):
         anchor: horizontal ? 'middle' : 'start',
         italic: lab.italic,
         bold: lab.bold,
+        note: lab.note,
         draggable: lab.draggable ?? true,
       });
     }
@@ -215,6 +218,7 @@ export const ConnectorView = memo(function ConnectorView({
   forExport,
   model,
   jumps,
+  version,
 }: {
   conn: Connector;
   routed: Routed;
@@ -223,7 +227,10 @@ export const ConnectorView = memo(function ConnectorView({
   forExport?: boolean;
   model: ModelElement | null | undefined;
   jumps?: Pt[][];
+  /** Đổi để vẽ lại (connector `live`). */
+  version?: number;
 }) {
+  void version;
   const def = getConnector(conn.kind);
   const look: ConnLook = connLook(def, conn, model ?? null, lookup);
   const props = conn.props as Record<string, unknown>;
@@ -289,6 +296,43 @@ export const ConnectorView = memo(function ConnectorView({
   const placed = placeLabels(conn, routed, computed);
   const boxed = conn.kind === 'arch.link';
   for (const l of placed) {
+    if (l.note) {
+      const fs = 11.5;
+      const lines = l.text.split('\n');
+      const w = Math.max(...lines.map((t) => textW(t, fs, 400))) + 18;
+      const lh = fs * 1.35;
+      const h = lines.length * lh + 10;
+      // note đặt phía đối diện các nhãn khác: đường ngang → dưới đường; đường dọc → bên trái
+      const st = conn.labels?.find((x) => x.role === l.role);
+      const pos = st?.pos ?? 0.5;
+      const p0 = pointAt(routed.pts, pos);
+      const u = directionAt(routed.pts, pos);
+      const hor = Math.abs(u[0]) >= Math.abs(u[1]);
+      const x = (hor ? p0[0] - w / 2 : p0[0] - w - 14) + (st?.dx ?? 0);
+      const y = (hor ? p0[1] + 12 : p0[1] - h / 2) + (st?.dy ?? 0);
+      const f = 8;
+      nodes.push(
+        <g
+          key={'nt' + l.role}
+          data-label={forExport || !l.draggable ? undefined : l.role}
+          style={forExport ? undefined : { cursor: 'move' }}
+        >
+          <path
+            d={`M${x},${y} H${x + w - f} L${x + w},${y + f} V${y + h} H${x} Z`}
+            fill="#FFF8D6"
+            stroke="#C9B458"
+            strokeWidth={1}
+          />
+          <path d={`M${x + w - f},${y} V${y + f} H${x + w}`} fill="none" stroke="#C9B458" strokeWidth={1} />
+          {lines.map((t, i) => (
+            <text key={i} x={x + 8} y={y + 5 + i * lh + lh * 0.75} fontSize={fs} fill="#1F2937">
+              {t}
+            </text>
+          ))}
+        </g>,
+      );
+      continue;
+    }
     if (boxed) {
       const fs = 12;
       const lines = l.text.split('\n');
