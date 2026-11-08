@@ -26,7 +26,7 @@ export function useWorkspacePrefs(pid: string) {
   useEffect(() => setPrefs(read(pid)), [pid]);
   const update = useCallback(
     (patch: Partial<WorkspacePrefs> | ((p: WorkspacePrefs) => Partial<WorkspacePrefs>)) => {
-      // ghi đĩa ngay (đồng bộ) — component có thể bị huỷ trước khi React chạy updater (vd. mở editor liền sau)
+      // ghi đĩa ngay (đồng bộ) - component có thể bị huỷ trước khi React chạy updater (vd. mở editor liền sau)
       const cur = read(pid);
       const n = { ...cur, ...(typeof patch === 'function' ? patch(cur) : patch) };
       try {

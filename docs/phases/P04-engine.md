@@ -1,4 +1,4 @@
-# P04 — Diagram engine dùng chung
+# P04 - Diagram engine dùng chung
 
 **Mục tiêu:** một engine canvas SVG đủ mạnh để mọi loại sơ đồ chỉ cần khai báo shape/connector. Đặc tả chi tiết: [spec/engine.md](../spec/engine.md).
 
@@ -71,7 +71,7 @@ Làm theo thứ tự, mỗi mục dừng lại cho kiểm:
 
 ```
 Đọc CLAUDE.md, docs/spec/engine.md, docs/phases/P04-engine.md.
-Nguồn tham khảo: docs/reference/unipark-diagram-studio.html — port các hàm autoOrtho, roundedPath, snapMove,
+Nguồn tham khảo: docs/reference/unipark-diagram-studio.html - port các hàm autoOrtho, roundedPath, snapMove,
 layoutText, buildExportSVG, rasterize, openExportImage sang TypeScript module trong features/editors/engine.
 Phiên này làm P04 mục 4.1 → 4.4. Dừng lại sau 4.4, chạy test và báo cáo.
 ```

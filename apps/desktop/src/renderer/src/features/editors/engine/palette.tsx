@@ -216,7 +216,7 @@ export function Palette({ engine }: { engine: Engine }) {
         aria-orientation="vertical"
         aria-label="Công cụ"
         onKeyDown={(e) => {
-          // ↑↓ Home End: chuyển giữa các công cụ (Enter / Space chọn — mặc định của nút)
+          // ↑↓ Home End: chuyển giữa các công cụ (Enter / Space chọn - mặc định của nút)
           if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(e.key)) return;
           const items = [...e.currentTarget.querySelectorAll<HTMLButtonElement>('.pal-item:not(:disabled)')];
           if (!items.length) return;

@@ -1,4 +1,4 @@
-// Inspector riêng của sơ đồ kiến trúc — giữ đúng bố cục Inspector của tool cũ (Tiêu đề, Nội dung, Icon, Màu nhanh…).
+// Inspector riêng của sơ đồ kiến trúc - giữ đúng bố cục Inspector của tool cũ (Tiêu đề, Nội dung, Icon, Màu nhanh…).
 import { AlignCenter, AlignLeft, Plus, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { create } from 'zustand';
@@ -72,7 +72,7 @@ export function GroupInspector({ view, apply, readOnly }: ShapeInspectorProps) {
       <div className="pgroup">
         <div className="pgroup-h">Tiêu đề</div>
         <TextProp
-          label="Tiêu đề — **chữ** để in đậm"
+          label="Tiêu đề - **chữ** để in đậm"
           value={str(p.title)}
           onCommit={(title) => set({ title })}
           readOnly={readOnly}
@@ -174,7 +174,7 @@ export function CardInspector({ view, apply, readOnly, requestTab }: ShapeInspec
       <div className="pgroup">
         <div className="pgroup-h">Nội dung</div>
         <TextProp
-          label="Tiêu đề — dùng **chữ** để in đậm"
+          label="Tiêu đề - dùng **chữ** để in đậm"
           value={str(p.title)}
           onCommit={(title) => set({ title })}
           readOnly={readOnly}

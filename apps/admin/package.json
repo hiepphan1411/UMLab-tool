@@ -2,7 +2,7 @@
   "name": "@umlab/admin",
   "version": "0.1.0",
   "private": true,
-  "description": "UMLab — trang quản trị (dashboard tổng quan, tài khoản, lịch sử tài khoản), chạy cổng 5176",
+  "description": "UMLab - trang quản trị (dashboard tổng quan, tài khoản, lịch sử tài khoản), chạy cổng 5176",
   "type": "module",
   "scripts": {
     "dev": "vite-node src/server/index.ts",

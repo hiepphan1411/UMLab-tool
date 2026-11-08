@@ -1,4 +1,4 @@
-# P12 — Model Explorer, truy vết, tìm kiếm
+# P12 - Model Explorer, truy vết, tìm kiếm
 
 **Mục tiêu:** quản lý phần tử mô hình xuyên suốt project như Model Explorer của VP.
 

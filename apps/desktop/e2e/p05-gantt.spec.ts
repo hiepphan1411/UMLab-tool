@@ -17,7 +17,7 @@ async function stubDialogs(app: ElectronApplication, open: string | null, save: 
 const rows = (page: Page) => page.locator('.g-left [data-gr]');
 const aside = (page: Page) => page.locator('.gantt-grid aside');
 
-test('P05: Gantt — kéo thanh, cập nhật % qua popover, checklist, dán Excel, undo', async () => {
+test('P05: Gantt - kéo thanh, cập nhật % qua popover, checklist, dán Excel, undo', async () => {
   const { app, page } = await launch();
   await register(page, 'Gantt', uniqueEmail('p05g'));
   await stubDialogs(app, FIXTURE, null);

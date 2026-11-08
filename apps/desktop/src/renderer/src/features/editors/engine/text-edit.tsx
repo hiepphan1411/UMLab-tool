@@ -6,7 +6,7 @@ import { DIAGRAM_FONT } from './text';
 /**
  * Ô sửa chữ nổi đúng vị trí vùng chữ (docs/spec/engine.md mục 7).
  * Một dòng: Enter xác nhận, Shift+Enter xuống dòng (nếu multiline), Esc huỷ.
- * Compartment (list): mỗi dòng một mục — Enter thêm dòng, Backspace ở dòng rỗng xoá dòng, Tab / Shift+Tab sang ngăn khác,
+ * Compartment (list): mỗi dòng một mục - Enter thêm dòng, Backspace ở dòng rỗng xoá dòng, Tab / Shift+Tab sang ngăn khác,
  * Ctrl+Enter hoặc bấm ra ngoài để xác nhận.
  */
 export function TextEditor({

@@ -36,7 +36,7 @@ export function PresenceAvatars({
               color={p.color}
               size={26}
               ring="var(--panel)"
-              title={`${p.name} — ${where ? 'đang xem ' + where : 'đang ở dashboard'}`}
+              title={`${p.name} - ${where ? 'đang xem ' + where : 'đang ở dashboard'}`}
             />
           </span>
         );

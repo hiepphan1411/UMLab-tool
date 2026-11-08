@@ -85,7 +85,7 @@ const noteRegion = (header: boolean) => (ctx: RenderCtx) => [
 ];
 
 const textSchema = z.object({
-  text: z.string().describe('Nội dung — **đậm**, *nghiêng*, "- " gạch đầu dòng|textarea'),
+  text: z.string().describe('Nội dung - **đậm**, *nghiêng*, "- " gạch đầu dòng|textarea'),
   fontSize: z.number().describe('Cỡ chữ'),
 });
 

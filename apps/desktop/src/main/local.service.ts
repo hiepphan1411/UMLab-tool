@@ -166,7 +166,7 @@ class LocalStore {
     return Y.encodeStateAsUpdate(this.doc(projectId));
   }
 
-  /** Phần local có mà `remote` (danh sách cập nhật trên DB) chưa có — null nếu không có gì. */
+  /** Phần local có mà `remote` (danh sách cập nhật trên DB) chưa có - null nếu không có gì. */
   missingFrom(projectId: string, remote: Uint8Array[]): Uint8Array | null {
     const r = new Y.Doc();
     for (const u of remote) Y.applyUpdate(r, u);

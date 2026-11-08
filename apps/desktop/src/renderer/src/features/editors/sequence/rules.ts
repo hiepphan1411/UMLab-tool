@@ -21,7 +21,7 @@ export const SEQUENCE_RULES: Rule[] = [
       if (op === 'alt' && ops.length === 1)
         out.push({
           level: 'info',
-          message: 'Fragment alt chỉ có 1 operand — nên dùng opt',
+          message: 'Fragment alt chỉ có 1 operand - nên dùng opt',
           targetId: f.id,
           fix: { label: 'Đổi thành opt', run: (tx) => tx.setViewProps(f.id, { operator: 'opt' }) },
         });

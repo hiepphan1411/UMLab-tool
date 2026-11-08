@@ -34,7 +34,7 @@ async function drag(page: Page, a: readonly [number, number], b: readonly [numbe
   await page.mouse.move(b[0], b[1], { steps: 5 });
 }
 
-test('P06: Use Case — mẫu UniPark+, luật Include, extension point của Extend, đặc tả, xuất/nhập JSON', async () => {
+test('P06: Use Case - mẫu UniPark+, luật Include, extension point của Extend, đặc tả, xuất/nhập JSON', async () => {
   const { app, page } = await launch();
   await register(page, 'Use Case', uniqueEmail('p06'));
   await newProject(page, 'UC');

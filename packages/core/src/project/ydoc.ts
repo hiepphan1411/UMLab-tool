@@ -14,7 +14,7 @@ import type {
 import { clone, isPlainObject, jsonEqual } from '../util/json';
 
 /**
- * Cấu trúc Y.Doc của một project (docs/ARCHITECTURE.md mục 4). Mỗi giá trị là JSON thuần, thay cả object khi sửa —
+ * Cấu trúc Y.Doc của một project (docs/ARCHITECTURE.md mục 4). Mỗi giá trị là JSON thuần, thay cả object khi sửa -
  * xung đột giữa hai người được giải quyết ở mức phần tử (hình, đường nối, phần tử mô hình, thư mục, task Gantt…).
  */
 export const YK = {

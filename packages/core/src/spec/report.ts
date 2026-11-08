@@ -1,4 +1,4 @@
-// "Mẫu Doc" — đặc tả theo mẫu bảng báo cáo hai cột (Mục | Mô tả; luồng chia cột Actor | System, bước rẽ đánh
+// "Mẫu Doc" - đặc tả theo mẫu bảng báo cáo hai cột (Mục | Mô tả; luồng chia cột Actor | System, bước rẽ đánh
 // số kiểu 3a, 3a.1…). Một mô hình hàng dùng chung cho DOCX, HTML (dán vào Word) và văn bản thuần.
 import {
   AlignmentType,
@@ -171,7 +171,7 @@ export async function specReportDocx(items: { spec: UseCaseSpec; ctx: SpecContex
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-/** Bảng HTML với style nội tuyến — dán vào Word giữ viền đen, Times New Roman 13pt, giãn dòng 1,5. */
+/** Bảng HTML với style nội tuyến - dán vào Word giữ viền đen, Times New Roman 13pt, giãn dòng 1,5. */
 export function specReportHtml(spec: UseCaseSpec, ctx: SpecContext): string {
   const font = `font-family:'Times New Roman',serif;font-size:13pt;line-height:150%;color:#000`;
   const cell = `border:0.75pt solid #000;padding:3pt 5pt;vertical-align:top;${font}`;
@@ -210,7 +210,7 @@ export function specReportHtml(spec: UseCaseSpec, ctx: SpecContext): string {
   );
 }
 
-/** Văn bản thuần (tab ngăn cột) — cho nơi dán không nhận HTML. */
+/** Văn bản thuần (tab ngăn cột) - cho nơi dán không nhận HTML. */
 export function specReportText(spec: UseCaseSpec, ctx: SpecContext): string {
   return specReportRows(spec, ctx)
     .map((r) => {

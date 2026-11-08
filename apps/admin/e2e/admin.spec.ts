@@ -96,7 +96,7 @@ test('Quản trị: đăng nhập → tổng quan (tài khoản, sơ đồ) → 
   await page.locator('tr[data-user="an@umlab.vn"]').click();
   await expect(page.getByRole('heading', { name: /Nguyễn An/ })).toBeVisible();
   const history = page.getByRole('list', { name: 'Lịch sử tài khoản' });
-  await expect(history).toContainText('Chỉnh sửa “UniPark+” — 3 thay đổi');
+  await expect(history).toContainText('Chỉnh sửa “UniPark+” - 3 thay đổi');
   await expect(history).toContainText('Tài khoản được tạo');
   page.once('dialog', (d) => void d.accept());
   await page.getByRole('button', { name: 'Đặt lại mật khẩu' }).click();

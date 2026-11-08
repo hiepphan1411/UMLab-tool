@@ -92,7 +92,7 @@ export const DIAGRAM_ICONS: Record<DiagramType, LucideIcon> = {
 };
 
 /** Màu nhấn cho từng loại sơ đồ (thẻ, chip số lượng). */
-/** Màu icon loại sơ đồ — một màu chung (accent của theme) cho mọi loại. */
+/** Màu icon loại sơ đồ - một màu chung (accent của theme) cho mọi loại. */
 export const DIAGRAM_COLOR = 'var(--accent)';
 
 /** Icon loại sơ đồ: hình thu nhỏ đúng ký hiệu của sơ đồ đó (lib/diagram-icons.tsx). */

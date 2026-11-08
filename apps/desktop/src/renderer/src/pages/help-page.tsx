@@ -236,7 +236,7 @@ export function HelpPage() {
               </p>
               <p>
                 <b>Lịch sử phiên bản:</b> mỗi sơ đồ tự lưu một phiên bản khi có thay đổi (cách nhau ít nhất 5 phút, giữ
-                50 bản) — xem và khôi phục ở nút <i>Lịch sử phiên bản</i> trên thanh trên của editor.
+                50 bản) - xem và khôi phục ở nút <i>Lịch sử phiên bản</i> trên thanh trên của editor.
               </p>
               {info && (
                 <p className="text-muted">

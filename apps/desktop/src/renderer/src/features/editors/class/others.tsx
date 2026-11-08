@@ -75,7 +75,7 @@ function AssocClassInspector({ view, apply, lookup, readOnly }: ShapeInspectorPr
           return (v?.modelId && lookup.model(v.modelId)?.name) || '?';
         };
         const m = lookup.model(c.modelId);
-        return { value: c.id, label: `${n(c.source.viewId)} — ${n(c.target.viewId)}${m?.name ? ` (${m.name})` : ''}` };
+        return { value: c.id, label: `${n(c.source.viewId)} - ${n(c.target.viewId)}${m?.name ? ` (${m.name})` : ''}` };
       }),
   ];
   return (
@@ -377,8 +377,8 @@ registerShape<P>({
       );
       y += Math.max(1, lines.length) * R_LH;
     };
-    block('REQUEST', s.req.length ? s.req : ['—'], 'rq');
-    block('RESPONSE', s.res.length ? s.res : ['—'], 'rs');
+    block('REQUEST', s.req.length ? s.req : ['-'], 'rq');
+    block('RESPONSE', s.res.length ? s.res : ['-'], 'rs');
     return <>{out}</>;
   },
   measure: (ctx) => {

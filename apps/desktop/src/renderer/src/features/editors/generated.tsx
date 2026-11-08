@@ -1,4 +1,4 @@
-// Sơ đồ sinh từ đặc tả use case (docs/spec/generators.md mục 0): tạo, sinh lại (Ghi đè — Undo được / Tạo phiên bản
+// Sơ đồ sinh từ đặc tả use case (docs/spec/generators.md mục 0): tạo, sinh lại (Ghi đè - Undo được / Tạo phiên bản
 // mới), banner "Sinh từ đặc tả…", bỏ liên kết, liên kết 2 chiều bước đặc tả ↔ hình (props.sourceStepId).
 import { FileText, Link2Off, RefreshCw } from 'lucide-react';
 import { useEffect } from 'react';
@@ -94,7 +94,7 @@ export function regenerateInto(doc: Y.Doc, diagramId: string, g: GeneratorDef): 
 export async function askRegenerate(doc: Y.Doc, diagramId: string, g: GeneratorDef): Promise<string | null> {
   const choice = await choiceDialog({
     title: 'Sinh lại từ đặc tả',
-    text: 'Ghi đè sẽ thay toàn bộ nội dung sơ đồ (mất chỉnh sửa tay — có thể Undo). Hoặc tạo một sơ đồ phiên bản mới bên cạnh.',
+    text: 'Ghi đè sẽ thay toàn bộ nội dung sơ đồ (mất chỉnh sửa tay - có thể Undo). Hoặc tạo một sơ đồ phiên bản mới bên cạnh.',
     options: [
       { value: 'version', label: 'Tạo phiên bản mới', variant: 'outline' },
       { value: 'overwrite', label: 'Ghi đè', variant: 'primary' },

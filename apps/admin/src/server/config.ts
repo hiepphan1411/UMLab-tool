@@ -13,7 +13,7 @@ export interface AdminConfig {
   host: string;
   /** Tài khoản UMLab được vào trang quản trị (đăng nhập bằng mật khẩu của chính tài khoản đó). */
   adminEmails: string[];
-  /** Mật khẩu quản trị dự phòng — đăng nhập với tên `admin`. */
+  /** Mật khẩu quản trị dự phòng - đăng nhập với tên `admin`. */
   adminPassword: string;
   /** Khoá ký cookie phiên. */
   secret: string;

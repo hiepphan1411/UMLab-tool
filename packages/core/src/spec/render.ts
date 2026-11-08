@@ -96,7 +96,7 @@ function mdSteps(steps: Step[], ctx: SpecContext, prefix = ''): string {
 }
 
 export function specToMarkdown(spec: UseCaseSpec, ctx: SpecContext): string {
-  const actors = (ids: string[]) => ids.map(ctx.actorName).join(', ') || '—';
+  const actors = (ids: string[]) => ids.map(ctx.actorName).join(', ') || '-';
   const flows = (fs: Flow[]) =>
     fs
       .map(
@@ -117,11 +117,11 @@ export function specToMarkdown(spec: UseCaseSpec, ctx: SpecContext): string {
     `| Tên use case | ${mdCell(ctx.name)} |`,
     `| Tác nhân chính | ${mdCell(actors(spec.primaryActors))} |`,
     `| Tác nhân phụ | ${mdCell(actors(spec.secondaryActors))} |`,
-    `| Mô tả | ${mdCell(spec.description || '—')} |`,
+    `| Mô tả | ${mdCell(spec.description || '-')} |`,
     `| Mức độ ưu tiên | ${spec.priority} |`,
-    `| Sự kiện kích hoạt | ${mdCell(spec.trigger || '—')} |`,
-    `| Tiền điều kiện | ${mdCell(list(spec.preconditions) || '—')} |`,
-    `| Hậu điều kiện | ${mdCell(`Thành công: ${spec.postconditions.success.join('; ') || '—'} · Thất bại: ${spec.postconditions.failure.join('; ') || '—'}`)} |`,
+    `| Sự kiện kích hoạt | ${mdCell(spec.trigger || '-')} |`,
+    `| Tiền điều kiện | ${mdCell(list(spec.preconditions) || '-')} |`,
+    `| Hậu điều kiện | ${mdCell(`Thành công: ${spec.postconditions.success.join('; ') || '-'} · Thất bại: ${spec.postconditions.failure.join('; ') || '-'}`)} |`,
   ];
   if (spec.includes.length) parts.push(`| Include | ${mdCell(spec.includes.map(ctx.useCaseLabel).join(', '))} |`);
   if (spec.extends.length) parts.push(`| Extend | ${mdCell(spec.extends.map(ctx.useCaseLabel).join(', '))} |`);

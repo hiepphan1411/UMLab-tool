@@ -1,4 +1,4 @@
-// Nhóm công cụ dùng chung (docs/spec/notation-common.md) — mọi sơ đồ UML ghép COMMON_PALETTE_GROUPS vào cuối palette.
+// Nhóm công cụ dùng chung (docs/spec/notation-common.md) - mọi sơ đồ UML ghép COMMON_PALETTE_GROUPS vào cuối palette.
 import { toast } from '@/ui';
 import { createView, groupSelection } from '../../engine/ops';
 import {

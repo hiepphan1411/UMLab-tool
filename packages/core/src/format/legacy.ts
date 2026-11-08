@@ -5,7 +5,7 @@ import { uid } from '../util/ids';
 import { isPlainObject } from '../util/json';
 import type { Connector, DiagramRecord, ProjectBundle, Routing, Side, View } from './types';
 
-/** Giá trị mặc định của tool cũ (DEFAULTS, EDGE_DEFAULTS) — để chuẩn hoá phần tử thiếu thuộc tính. */
+/** Giá trị mặc định của tool cũ (DEFAULTS, EDGE_DEFAULTS) - để chuẩn hoá phần tử thiếu thuộc tính. */
 export const LEGACY_DEFAULTS = {
   group: {
     title: 'NHÓM',
@@ -243,7 +243,7 @@ export function migrateLegacyUnipark(
   return {
     project: {
       id: '',
-      name: name.replace(/\s*[—-]?\s*Kiến trúc.*$/i, '') || name,
+      name: name.replace(/\s*[--]?\s*Kiến trúc.*$/i, '') || name,
       description: 'Nhập từ UniPark+ Diagram Studio',
       color: '#2E62E6',
       icon: 'car',

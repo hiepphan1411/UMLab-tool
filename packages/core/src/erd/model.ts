@@ -20,7 +20,7 @@ export interface FkRef {
   refColumnId: string;
 }
 
-/** Nguồn sinh (parse ORM): khoá suy ra từ class / thuộc tính / association — xem orm/class-to-erd.ts. */
+/** Nguồn sinh (parse ORM): khoá suy ra từ class / thuộc tính / association - xem orm/class-to-erd.ts. */
 export interface MappedFrom {
   key: string;
   classId?: string;

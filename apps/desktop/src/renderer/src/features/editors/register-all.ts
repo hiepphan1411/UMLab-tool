@@ -1,4 +1,4 @@
-// Đăng ký editor theo loại sơ đồ — nạp theo nhu cầu (code splitting): engine + nhóm hình chung + Model Explorer nạp
+// Đăng ký editor theo loại sơ đồ - nạp theo nhu cầu (code splitting): engine + nhóm hình chung + Model Explorer nạp
 // ngay; mỗi loại sơ đồ là một chunk riêng, nạp khi mở sơ đồ / chọn loại khi tạo / dựng ảnh thu nhỏ.
 import { useEffect, useState } from 'react';
 import './engine';

@@ -1,4 +1,4 @@
-# P13 — Hoàn thiện & triển khai
+# P13 - Hoàn thiện & triển khai
 
 ## Việc cần làm
 

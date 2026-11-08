@@ -89,7 +89,7 @@ test('P03: thư mục lồng 3 cấp → tạo Use Case → đổi tên → kéo
   await app.close();
 });
 
-test('P03: hai máy cùng mở project — tạo/đổi tên sơ đồ thấy ngay ở máy kia, thấy avatar người đang online', async () => {
+test('P03: hai máy cùng mở project - tạo/đổi tên sơ đồ thấy ngay ở máy kia, thấy avatar người đang online', async () => {
   const emailA = uniqueEmail('p03a');
   const emailB = uniqueEmail('p03b');
   const A = await launch();

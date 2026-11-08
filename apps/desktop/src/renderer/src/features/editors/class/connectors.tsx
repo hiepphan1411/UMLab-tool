@@ -166,7 +166,7 @@ function EndEditor({
             value={e.visibility || 'none'}
             onChange={(v) => onChange({ visibility: v === 'none' ? '' : (v as AssocEnd['visibility']) })}
             options={[
-              { value: 'none', label: '—' },
+              { value: 'none', label: '-' },
               { value: '+', label: '+' },
               { value: '-', label: '-' },
               { value: '#', label: '#' },

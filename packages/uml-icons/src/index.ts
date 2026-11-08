@@ -1,4 +1,4 @@
-// Tệp sinh tự động bởi scripts/build.mjs — không sửa tay. Icon gốc ở icons/*.svg (16×16).
+// Tệp sinh tự động bởi scripts/build.mjs - không sửa tay. Icon gốc ở icons/*.svg (16×16).
 export const UML_ICONS: Record<string, string> = {
   "abstraction": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1.25\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M2 13.5 12.5 3\" stroke=\"var(--uml-ic-line,#64748B)\" stroke-dasharray=\"1.8 1.6\"/><path d=\"M8.3 3h4.2v4.2\" stroke=\"var(--uml-ic-line,#64748B)\"/><path d=\"M2.6 6.5 4.3 2.6 6 6.5M3.2 5.1h2.2\" stroke=\"var(--uml-ic-accent,#2E62E6)\" stroke-width=\"1\"/></svg>",
   "accept-event": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 16 16\" fill=\"none\" stroke-width=\"1.25\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M1.5 4h13v8h-13l3-4z\" fill=\"var(--uml-ic-fill,#E7EEFD)\" stroke=\"var(--uml-ic-accent,#2E62E6)\"/></svg>",

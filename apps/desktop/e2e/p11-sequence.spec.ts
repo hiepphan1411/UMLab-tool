@@ -26,7 +26,7 @@ async function tool(page: Page, id: string) {
 }
 const labels = (page: Page) => page.locator('[data-conn] text').allTextContents();
 
-test('P11: vẽ tay chuỗi đăng nhập (5 lifeline, 12 message, alt) — đánh số, activation, kéo đổi thứ tự; Create/Destroy; sinh từ UC03', async () => {
+test('P11: vẽ tay chuỗi đăng nhập (5 lifeline, 12 message, alt) - đánh số, activation, kéo đổi thứ tự; Create/Destroy; sinh từ UC03', async () => {
   const { app, page } = await launch();
   await register(page, 'Sequence', uniqueEmail('p11'));
   await page

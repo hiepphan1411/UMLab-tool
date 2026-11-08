@@ -1,4 +1,4 @@
-// Hình của sơ đồ kiến trúc — port renderEl / renderEdge của tool cũ (group, node, icon, edge).
+// Hình của sơ đồ kiến trúc - port renderEl / renderEdge của tool cũ (group, node, icon, edge).
 // Thuộc tính giữ đúng tên của định dạng cũ để migrate legacy (core/format/legacy.ts) hiển thị y hệt.
 import { registerConnector, registerShape, type RenderCtx, type TextRegion, type Tx } from '../engine/registry';
 import { layoutText, TextLines } from '../engine/text';
@@ -115,7 +115,7 @@ interface CardLayout {
   align: 'left' | 'center';
 }
 
-/** Bố cục thẻ (giống hệt renderEl 'node' của tool cũ) — dùng chung cho vẽ và vùng sửa chữ. */
+/** Bố cục thẻ (giống hệt renderEl 'node' của tool cũ) - dùng chung cho vẽ và vùng sửa chữ. */
 export function cardLayout(v: { x: number; y: number; w: number; h: number }, p: P): CardLayout {
   const layout = str(p.layout, 'left');
   const icons = layout === 'none' ? [] : (((p.icons as CardIcon[]) ?? []).filter((i) => i && i.k) as CardIcon[]);

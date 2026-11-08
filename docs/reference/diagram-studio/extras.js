@@ -1,4 +1,4 @@
-/* UniPark+ Diagram Studio — add-on giao diện (tiêm qua vite.config.diagram.ts, giữ index.html nguyên vẹn).
+/* UniPark+ Diagram Studio - add-on giao diện (tiêm qua vite.config.diagram.ts, giữ index.html nguyên vẹn).
  * - Nhập JSON: hỏi "Thêm vào sơ đồ hiện tại" hay "Thay thế" thay vì luôn ghi đè sơ đồ đang có.
  * - Nút « thu gọn / » mở lại panel trái, nhớ trạng thái trong trình duyệt.
  * - Nút toàn màn hình (như F11), phím tắt F.

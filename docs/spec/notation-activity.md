@@ -1,4 +1,4 @@
-# Activity Diagram — palette & ký hiệu
+# Activity Diagram - palette & ký hiệu
 
 Thứ tự palette (theo hình 3):
 
@@ -28,12 +28,12 @@ Element Group · Note · Anchor · Constraint · Containment
 | → Accept Event Action                       | `act.acceptEvent`     | **Ngũ giác lõm** (khuyết hình chữ V bên trái)                                                                                 | event                                                                                           |
 | → Accept Time Event Action                  | `act.acceptTime`      | **Đồng hồ cát** (2 tam giác đối đỉnh), nhãn bên dưới                                                                          | when (ví dụ `sau 30 giây`)                                                                      |
 | **Decision Node ◢** → Decision Node         | `act.decision`        | **Hình thoi** rỗng nhỏ; nhãn câu hỏi tuỳ chọn cạnh thoi                                                                       | decisionInput (note `«decisionInput»`)                                                          |
-| → Merge Node                                | `act.merge`           | Hình thoi (giống decision, khác ngữ nghĩa: nhiều vào 1 ra)                                                                    | —                                                                                               |
+| → Merge Node                                | `act.merge`           | Hình thoi (giống decision, khác ngữ nghĩa: nhiều vào 1 ra)                                                                    | -                                                                                               |
 | → Fork Node                                 | `act.fork`            | **Thanh đen dày** (ngang hoặc dọc)                                                                                            | orientation                                                                                     |
 | → Join Node                                 | `act.join`            | Thanh đen dày                                                                                                                 | orientation, joinSpec `{joinSpec = …}`                                                          |
-| Initial Node                                | `act.initial`         | **Chấm tròn đặc**                                                                                                             | —                                                                                               |
-| **Activity Final Node ◢** → Activity Final  | `act.final`           | **Mắt bò** (tròn đặc trong vòng tròn)                                                                                         | —                                                                                               |
-| → Flow Final                                | `act.flowFinal`       | Vòng tròn có **dấu ✕** bên trong                                                                                              | —                                                                                               |
+| Initial Node                                | `act.initial`         | **Chấm tròn đặc**                                                                                                             | -                                                                                               |
+| **Activity Final Node ◢** → Activity Final  | `act.final`           | **Mắt bò** (tròn đặc trong vòng tròn)                                                                                         | -                                                                                               |
+| → Flow Final                                | `act.flowFinal`       | Vòng tròn có **dấu ✕** bên trong                                                                                              | -                                                                                               |
 | **Input Pin ◢** → Input Pin                 | `act.inputPin`        | Ô vuông nhỏ **bám viền Action**, tên cạnh ô; mũi tên nhỏ trỏ vào (khi hiện pin dạng mũi tên)                                  | name, type, multiplicity, isControl                                                             |
 | → Output Pin                                | `act.outputPin`       | Ô vuông nhỏ bám viền, mũi tên trỏ ra                                                                                          | như trên                                                                                        |
 | → Value Pin                                 | `act.valuePin`        | Ô vuông bám viền, nhãn giá trị                                                                                                | value                                                                                           |
@@ -43,7 +43,7 @@ Element Group · Note · Anchor · Constraint · Containment
 | → Data Store Node                           | `act.dataStore`       | Chữ nhật + `«datastore»`                                                                                                      | như object                                                                                      |
 | Interruptible Activity Region               | `act.interruptRegion` | **Chữ nhật bo góc nét đứt**, không tên                                                                                        | container                                                                                       |
 | Expansion Region                            | `act.expansionRegion` | **Chữ nhật bo góc nét đứt**, từ khoá góc trên trái `«iterative»`/`«parallel»`/`«stream»`                                      | mode; container                                                                                 |
-| Expansion Node                              | `act.expansionNode`   | **Ô dài chia 3–4 ngăn** bám viền Expansion Region                                                                             | —                                                                                               |
+| Expansion Node                              | `act.expansionNode`   | **Ô dài chia 3–4 ngăn** bám viền Expansion Region                                                                             | -                                                                                               |
 | **Horizontal Swimlane ◢** → Horizontal      | `act.swimlaneH`       | Bảng làn **ngang**: cột tiêu đề bên trái ghi tên làn                                                                          | lanes[] {id, name, represents (actor/class)}, nested                                            |
 | → Vertical                                  | `act.swimlaneV`       | Bảng làn **dọc**: hàng tiêu đề trên cùng                                                                                      | như trên                                                                                        |
 | **Structured Activity Node ◢** → Structured | `act.structured`      | Chữ nhật bo góc nét đứt, `«structured»`                                                                                       | container                                                                                       |
@@ -74,7 +74,7 @@ Element Group · Note · Anchor · Constraint · Containment
 - Không có Initial Node; nhiều Initial Node trong cùng activity (thông tin).
 - Không có Activity Final/Flow Final.
 - Decision: nhánh ra thiếu guard; không có nhánh `[else]` (thông tin); guard trùng nhau.
-- Fork/Join không cân (số nhánh khác nhau) — thông tin.
+- Fork/Join không cân (số nhánh khác nhau) - thông tin.
 - Node không thể tới từ Initial (unreachable).
 - Pin không nằm trên viền Action.
 

@@ -1,4 +1,4 @@
-// Sơ đồ kiến trúc (`architecture`) — port đầy đủ UniPark+ Diagram Studio (docs/phases/P05 mục 5.2).
+// Sơ đồ kiến trúc (`architecture`) - port đầy đủ UniPark+ Diagram Studio (docs/phases/P05 mục 5.2).
 import { Smile } from 'lucide-react';
 import { legacyArchitecture } from '@umlab/core';
 import legacyFixture from '@fixtures/unipark-plus.json';

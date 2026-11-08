@@ -4,17 +4,17 @@ Các công cụ này xuất hiện ở cuối palette của **mọi** sơ đồ 
 
 Quy ước cột: **Ký hiệu** là cách vẽ; **Thuộc tính** là field trong Inspector; **Hành vi** là luật nối, container, tương tác.
 
-## Nhóm A — Chú thích & ràng buộc
+## Nhóm A - Chú thích & ràng buộc
 
 | Công cụ       | Shape/kind           | Ký hiệu                                                                                  | Thuộc tính                                  | Hành vi                                                                                                     |
 | ------------- | -------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | Element Group | `common.group`       | Không có hình riêng khi in; trên canvas hiện khung nét đứt mờ quanh các phần tử khi chọn | name                                        | Gom các phần tử để chọn/di chuyển cùng nhau (Ctrl+G tạo, Ctrl+Shift+G bỏ). Lưu `groupId` trên view.         |
 | Note          | `common.note`        | Hình chữ nhật góc trên phải gấp mép, nền vàng nhạt `#FFF8D6`                             | text (rich: đậm/nghiêng/danh sách), màu nền | Nối với phần tử bằng Anchor.                                                                                |
-| Anchor        | `common.anchor`      | Đường **chấm/nét đứt** mảnh, không mũi tên                                               | —                                           | Chỉ nối Note/Constraint/Rationale/Problem/Callout ↔ bất kỳ phần tử.                                         |
+| Anchor        | `common.anchor`      | Đường **chấm/nét đứt** mảnh, không mũi tên                                               | -                                           | Chỉ nối Note/Constraint/Rationale/Problem/Callout ↔ bất kỳ phần tử.                                         |
 | Constraint    | `common.constraint`  | Chữ trong ngoặc nhọn `{ … }`, không viền (tuỳ chọn viền note)                            | specification (text), language (OCL/Text)   | Nối bằng Anchor tới phần tử bị ràng buộc; có thể nối 2 đường (ví dụ `{xor}` giữa 2 association).            |
-| Containment   | `common.containment` | Đường liền, đầu phía phần tử chứa có **⊕** (circle-plus)                                 | —                                           | Biểu thị phần tử nằm trong không gian tên của phần tử kia (package ⊕— class). Cập nhật `owner` trong model. |
+| Containment   | `common.containment` | Đường liền, đầu phía phần tử chứa có **⊕** (circle-plus)                                 | -                                           | Biểu thị phần tử nằm trong không gian tên của phần tử kia (package ⊕- class). Cập nhật `owner` trong model. |
 
-## Nhóm B — Yêu cầu (SysML)
+## Nhóm B - Yêu cầu (SysML)
 
 | Công cụ   | Shape/kind         | Ký hiệu                                         | Thuộc tính        | Hành vi                                                  |
 | --------- | ------------------ | ----------------------------------------------- | ----------------- | -------------------------------------------------------- |
@@ -22,7 +22,7 @@ Quy ước cột: **Ký hiệu** là cách vẽ; **Thuộc tính** là field tro
 | Rationale | `common.rationale` | Note có nhãn `«rationale»` ở đầu                | text              | Nối bằng Anchor.                                         |
 | Problem   | `common.problem`   | Note có nhãn `«problem»` ở đầu, viền đỏ nhạt    | text, severity    | Nối bằng Anchor.                                         |
 
-## Nhóm C — Tổ chức & tài liệu
+## Nhóm C - Tổ chức & tài liệu
 
 | Công cụ           | Shape/kind               | Ký hiệu                                                                               | Thuộc tính                                                                       | Hành vi                                                                                                                               |
 | ----------------- | ------------------------ | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
@@ -40,7 +40,7 @@ Quy ước cột: **Ký hiệu** là cách vẽ; **Thuộc tính** là field tro
 | Text Box          | `common.textbox`         | Chữ tự do, không viền                                                                 | text (rich), size, weight, align                                                 | Tự giãn chiều cao.                                                                                                                    |
 | Diagram Info      | `common.diagramInfo`     | Bảng 2 cột                                                                            | Tự điền: Project, Sơ đồ, Tác giả, Ngày tạo, Cập nhật, Phiên bản; thêm dòng tuỳ ý | Tự cập nhật khi lưu.                                                                                                                  |
 
-## Nhóm D — Vẽ tay
+## Nhóm D - Vẽ tay
 
 | Công cụ          | Shape/kind             | Ký hiệu                                             | Thuộc tính                  | Hành vi                                                                      |
 | ---------------- | ---------------------- | --------------------------------------------------- | --------------------------- | ---------------------------------------------------------------------------- |

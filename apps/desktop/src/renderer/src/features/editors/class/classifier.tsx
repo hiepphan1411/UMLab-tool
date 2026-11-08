@@ -1,4 +1,4 @@
-// Classifier 3 ngăn (Class, Interface, Enumeration, Data Type, Primitive, Signal) — docs/spec/notation-class.md mục 1.
+// Classifier 3 ngăn (Class, Interface, Enumeration, Data Type, Primitive, Signal) - docs/spec/notation-class.md mục 1.
 // Ngăn tên: «stereotype», tên đậm (nghiêng nếu abstract); ngăn thuộc tính / phương thức (gạch chân nếu static,
 // nghiêng nếu abstract); enumeration có ngăn literals. Template: ô nét đứt góc trên phải. Active: viền kép hai bên.
 import { z } from 'zod';

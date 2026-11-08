@@ -7,7 +7,7 @@ const MAX_STEPS = 200;
 
 /**
  * Undo/redo cho một sơ đồ: Y.UndoManager theo dõi các map của sơ đồ + mô hình dùng chung,
- * chỉ thao tác của chính mình (origin LOCAL) — thay đổi của người khác không bị hoàn tác.
+ * chỉ thao tác của chính mình (origin LOCAL) - thay đổi của người khác không bị hoàn tác.
  * UndoManager tạo trong effect (không phải useMemo): React StrictMode chạy effect mount → cleanup → mount, nếu tạo
  * bằng useMemo thì bản đang dùng đã bị destroy() ở lần cleanup đầu.
  */

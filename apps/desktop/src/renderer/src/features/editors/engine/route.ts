@@ -68,7 +68,7 @@ function roughPoint(e: Endpoint, env: RouteEnv): Pt | null {
   return b ? center(b) : null;
 }
 
-/** Đoạn thẳng có cắt vào (phần trong) hộp không — dùng cho đường vuông góc / thẳng. */
+/** Đoạn thẳng có cắt vào (phần trong) hộp không - dùng cho đường vuông góc / thẳng. */
 export function segHitsBox(a: Pt, b: Pt, o: Box, inset = 3): boolean {
   const x1 = o.x + inset;
   const y1 = o.y + inset;
@@ -105,7 +105,7 @@ const aligned = (a: Pt, b: Pt) => Math.abs(a[0] - b[0]) < 0.5 || Math.abs(a[1] -
 
 /**
  * Đường chỉnh tay có các điểm uốn vuông góc (≥ 2 điểm thẳng hàng từng cặp): nối đầu mút vào điểm uốn đầu/cuối bằng
- * khuỷu vuông góc theo hướng cạnh — trượt đầu mút sang cạnh khác không làm đoạn đầu bị xiên.
+ * khuỷu vuông góc theo hướng cạnh - trượt đầu mút sang cạnh khác không làm đoạn đầu bị xiên.
  */
 function orthoJoin(src: EndInfo, inner: Pt[], tgt: EndInfo): Pt[] {
   const ortho = inner.length >= 2 && inner.every((p, i) => i === 0 || aligned(inner[i - 1], p));
@@ -165,7 +165,7 @@ export function routeConnector(c: Connector, env: RouteEnv): Routed | null {
     return { pts: cleanPts(orthoJoin(src, inner, tgt)), src, tgt, curved: false };
   }
   if (c.routing === 'straight') return { pts: [src.pt, tgt.pt], src, tgt, curved: false };
-  // kiểu nối cong đã bỏ — tệp cũ có routing 'curved' được vẽ như vuông góc
+  // kiểu nối cong đã bỏ - tệp cũ có routing 'curved' được vẽ như vuông góc
   const s1 = src.side ?? 'right';
   const s2 = tgt.side ?? 'left';
   const exclude = [c.source.viewId, c.target.viewId].filter(Boolean) as string[];

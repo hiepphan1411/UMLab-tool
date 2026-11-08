@@ -150,7 +150,7 @@ describe('Y.Doc của project + xuất/nhập JSON', () => {
       }
       expect(re.folders.some((f) => f.id === d.folderId)).toBe(true);
     }
-    // so sánh nội dung sau khi bỏ id (id task Gantt trùng id hình cũ cũng được sinh lại — vẫn nhất quán)
+    // so sánh nội dung sau khi bỏ id (id task Gantt trùng id hình cũ cũng được sinh lại - vẫn nhất quán)
     const noIds = (d: unknown) => JSON.stringify(d, (k, v) => (k === 'id' ? undefined : v));
     const strip = (x: typeof b) =>
       x.diagrams.map((d) =>

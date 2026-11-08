@@ -1,4 +1,4 @@
-# Class Diagram — palette & ký hiệu
+# Class Diagram - palette & ký hiệu
 
 Thứ tự palette (theo hình 2):
 
@@ -73,7 +73,7 @@ Flyout: **Class**, **Interface**, **Enumeration**, **Data Type**, **Primitive Ty
 | Association ◢ → Composition          | `cls.composition`                  | Liền + **thoi đặc** ở phía tổng thể                                                                                | Một phần chỉ thuộc 1 composition (cảnh báo nếu nhiều)                             |
 | Dependency ◢                         | `cls.dependency`                   | Nét đứt + mũi tên mở; flyout chọn stereotype: (không), `«instantiate»`, `«call»`, `«create»`, `«send»`, `«permit»` | Bất kỳ → bất kỳ                                                                   |
 | Abstraction ◢                        | `cls.abstraction`                  | Nét đứt + mũi tên mở; flyout: `«abstraction»`, `«derive»`, `«refine»`, `«trace»`, `«substitute»`                   | Bất kỳ → bất kỳ                                                                   |
-| Containment                          | `common.containment`               | Liền + ⊕ ở phía chứa                                                                                               | Package/Class ⊕— Class (nested class)                                             |
+| Containment                          | `common.containment`               | Liền + ⊕ ở phía chứa                                                                                               | Package/Class ⊕- Class (nested class)                                             |
 
 **Thuộc tính Association (model):**
 

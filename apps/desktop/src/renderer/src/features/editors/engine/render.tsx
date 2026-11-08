@@ -1,4 +1,4 @@
-// Dựng SVG cho hình và đường nối — dùng chung cho canvas, xuất ảnh và ảnh thu nhỏ (một đường vẽ duy nhất).
+// Dựng SVG cho hình và đường nối - dùng chung cho canvas, xuất ảnh và ảnh thu nhỏ (một đường vẽ duy nhất).
 import { memo, type ReactNode } from 'react';
 import type { Connector, ModelElement, View } from '@umlab/core';
 import { directionAt, pointAt, polyLen, roundedPath, jumpPath, type Box, type Pt } from './geometry';
@@ -86,7 +86,7 @@ export const ShapeView = memo(function ShapeView({
   zoom: number;
   forExport?: boolean;
   editing?: string | null;
-  /** Phiên bản dữ liệu liên quan (hình con, phần tử mô hình khác) — đổi để vẽ lại. */
+  /** Phiên bản dữ liệu liên quan (hình con, phần tử mô hình khác) - đổi để vẽ lại. */
   version?: number;
 }) {
   void model;

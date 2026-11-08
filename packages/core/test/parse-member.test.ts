@@ -21,7 +21,7 @@ const op = (s: string) => {
   return r.op;
 };
 
-describe('parseMember — thuộc tính', () => {
+describe('parseMember - thuộc tính', () => {
   it('đủ trường: - bienSo : String [1] {unique}', () => {
     const a = attr('- bienSo : String [1] {unique}');
     expect(a).toMatchObject({
@@ -84,7 +84,7 @@ describe('parseMember — thuộc tính', () => {
   it('dòng rỗng → null', () => expect(parseMember('   ')).toBeNull());
 });
 
-describe('parseMember — phương thức', () => {
+describe('parseMember - phương thức', () => {
   it('+ getTotal() : Decimal', () => {
     const o = op('+ getTotal() : Decimal');
     expect(o).toMatchObject({ visibility: '+', name: 'getTotal', params: [], returnType: 'Decimal' });

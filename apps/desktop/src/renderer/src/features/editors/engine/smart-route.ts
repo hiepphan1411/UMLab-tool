@@ -1,4 +1,4 @@
-// Định tuyến "thông minh" — port A* trên lưới thưa từ add-on smart-edges.js của tool cũ:
+// Định tuyến "thông minh" - port A* trên lưới thưa từ add-on smart-edges.js của tool cũ:
 // đường vuông góc né khối, chạy giữa khe, ít khúc gấp, tránh chạy chồng lên đường khác.
 import type { Side } from '@umlab/core';
 import { cleanPts, type Box, type Pt } from './geometry';

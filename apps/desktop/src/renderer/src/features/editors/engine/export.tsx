@@ -44,7 +44,7 @@ export interface ExportSource {
   /** Nền của sơ đồ (tuỳ chọn "Sơ đồ"). */
   docBackground: string;
   hasSelection: boolean;
-  /** Dựng SVG đầy đủ (có nhúng font) — `bg` null = trong suốt. */
+  /** Dựng SVG đầy đủ (có nhúng font) - `bg` null = trong suốt. */
   build: (o: { range: 'all' | 'sel'; padding: number; bg: string | null }) => { svg: string; W: number; H: number };
 }
 

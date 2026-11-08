@@ -1,4 +1,4 @@
-# UMLab — Kế hoạch xây dựng hệ thống
+# UMLab - Kế hoạch xây dựng hệ thống
 
 > Bộ tài liệu này dùng để giao việc cho **Claude Code** xây UMLab theo từng phase.
 > Mỗi phase là một file trong `phases/`, có danh sách việc, tiêu chí nghiệm thu và một prompt mẫu để dán vào Claude Code.
@@ -169,7 +169,7 @@ model ModelElement {           // phần tử mô hình dùng chung giữa các 
 
 | Phase                                          | Nội dung                                                        | Phụ thuộc | Ước lượng phiên Claude Code |
 | ---------------------------------------------- | --------------------------------------------------------------- | --------- | --------------------------- |
-| [P00](phases/P00-setup.md)                     | Khởi tạo monorepo, design tokens, logo, CI                      | —         | 1                           |
+| [P00](phases/P00-setup.md)                     | Khởi tạo monorepo, design tokens, logo, CI                      | -         | 1                           |
 | [P01](phases/P01-auth.md)                      | Đăng ký, đăng nhập, bảo vệ route                                | P00       | 1–2                         |
 | [P02](phases/P02-projects.md)                  | Trang chủ: quản lý project                                      | P01       | 1                           |
 | [P03](phases/P03-workspace.md)                 | Dashboard project, cây thư mục, xem theo loại, CRUD sơ đồ, JSON | P02       | 2                           |

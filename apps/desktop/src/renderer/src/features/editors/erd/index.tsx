@@ -1,4 +1,4 @@
-// Sơ đồ cơ sở dữ liệu (`erd`) — docs/phases/P09-erd.md, docs/spec/notation-erd.md.
+// Sơ đồ cơ sở dữ liệu (`erd`) - docs/phases/P09-erd.md, docs/spec/notation-erd.md.
 import { FileCode2 } from 'lucide-react';
 import { useStore } from 'zustand';
 import { DIALECTS, diagramsMap, isDialect, type Dialect } from '@umlab/core';

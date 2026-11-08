@@ -1,4 +1,4 @@
-# P06 — Use Case Diagram
+# P06 - Use Case Diagram
 
 **Mục tiêu:** vẽ Use Case Diagram với đủ palette như hình 1 của Visual Paradigm. Đặc tả: [spec/notation-usecase.md](../spec/notation-usecase.md).
 

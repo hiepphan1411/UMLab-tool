@@ -1,5 +1,5 @@
 // Lifeline Sequence (docs/spec/notation-sequence.md mục 2): Lifeline (hộp `name : Type`), Boundary, Control, Entity,
-// Actor — đường nét đứt dọc, activation bar tự tính (state.seqResult), ✕ khi bị Destroy.
+// Actor - đường nét đứt dọc, activation bar tự tính (state.seqResult), ✕ khi bị Destroy.
 import { z } from 'zod';
 import { Checkbox, Select } from '@/ui';
 import { registerShape, type RenderCtx, type ShapeDef, type ShapeInspectorProps, type Tx } from '../engine/registry';

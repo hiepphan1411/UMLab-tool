@@ -16,7 +16,7 @@ const info = (d: AssetDoc): AssetInfo => ({
   createdAt: d.createdAt.toISOString(),
 });
 
-/** Ảnh tải lên cho Image/Screen Capture (P13) — lưu Binary trong collection assets, tối đa 5 MB/ảnh. */
+/** Ảnh tải lên cho Image/Screen Capture (P13) - lưu Binary trong collection assets, tối đa 5 MB/ảnh. */
 class AssetsService {
   async upload(projectId: string, file: { name: string; mime: string; bytes: Uint8Array }): Promise<AssetInfo> {
     await projects.access(projectId, 'editor');

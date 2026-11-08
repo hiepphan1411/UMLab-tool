@@ -1,4 +1,4 @@
-// Editor sơ đồ tư duy (`mindmap`) — editor riêng, không dùng canvas engine. Dữ liệu ở `data:<id>` (core/mindmap/doc.ts).
+// Editor sơ đồ tư duy (`mindmap`) - editor riêng, không dùng canvas engine. Dữ liệu ở `data:<id>` (core/mindmap/doc.ts).
 // Canvas SVG: kéo khung nhìn, Ctrl+lăn chuột để zoom, kéo node để dời cả nhánh, thả lên node khác để đổi cha,
 // bấm node mở drawer kiến thức chi tiết, nút khoá để chuyển sang chế độ chỉ xem.
 import {
@@ -356,7 +356,7 @@ export function MindmapEditor({ session, diagram, readOnly, setActions }: Editor
     if (!g) return;
     const dx = e.clientX - g.sx;
     const dy = e.clientY - g.sy;
-    // chỉ bắt con trỏ khi đã bắt đầu kéo — bắt sớm làm click/double-click mất node đích
+    // chỉ bắt con trỏ khi đã bắt đầu kéo - bắt sớm làm click/double-click mất node đích
     const capture = () => {
       const el = e.currentTarget as HTMLElement;
       if (!el.hasPointerCapture(e.pointerId)) el.setPointerCapture(e.pointerId);
@@ -692,7 +692,7 @@ export function MindmapEditor({ session, diagram, readOnly, setActions }: Editor
           onClick={() => {
             ops.setMeta({ locked: !locked });
             setRenaming(null);
-            toast(locked ? 'Đã mở khoá — có thể chỉnh sửa' : 'Đã khoá — chỉ xem, không chỉnh sửa');
+            toast(locked ? 'Đã mở khoá - có thể chỉnh sửa' : 'Đã khoá - chỉ xem, không chỉnh sửa');
           }}
           title={locked ? 'Mở khoá để chỉnh sửa' : 'Khoá sơ đồ (chỉ xem)'}
         >
@@ -747,7 +747,7 @@ export function MindmapEditor({ session, diagram, readOnly, setActions }: Editor
         />
       )}
 
-      {locked && <div className="mm-lock-badge">Chế độ chỉ xem — bấm “Đã khoá” để chỉnh sửa</div>}
+      {locked && <div className="mm-lock-badge">Chế độ chỉ xem - bấm “Đã khoá” để chỉnh sửa</div>}
 
       {drawer && (
         <MindDrawer
@@ -783,7 +783,7 @@ registerDiagramTemplates('mindmap', [
   {
     id: 'unipark-defense',
     label: 'Kiến thức bảo vệ UniPark+',
-    description: 'Chức năng, kiến trúc, AI giám sát, công thức, kết quả, câu hỏi phản biện — theo báo cáo Nhóm 11',
+    description: 'Chức năng, kiến trúc, AI giám sát, công thức, kết quả, câu hỏi phản biện - theo báo cáo Nhóm 11',
     build: async () => {
       const f = (await import('@fixtures/unipark-mindmap.umlab.json')).default as { diagram: { data: unknown } };
       return { data: normMindmap(f.diagram.data) };

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Đặt lại mật khẩu một tài khoản UMLab (không có máy chủ gửi email — docs/ARCHITECTURE.md, P13).
+// Đặt lại mật khẩu một tài khoản UMLab (không có máy chủ gửi email - docs/ARCHITECTURE.md, P13).
 // Dùng cho chủ project / quản trị có chuỗi kết nối MongoDB:
 //   npm run reset-password -- <email> [mật-khẩu-mới]
 // Không nhập mật khẩu mới → sinh mật khẩu tạm và in ra. Đồng thời tăng tokenVersion (đăng xuất mọi máy của tài khoản)

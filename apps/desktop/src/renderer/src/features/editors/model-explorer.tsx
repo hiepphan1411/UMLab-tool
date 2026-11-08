@@ -98,7 +98,7 @@ function OrphanDialog({ engine, onClose }: { engine: Engine; onClose: () => void
       }
     >
       {!list.length ? (
-        <p className="text-muted">Không có phần tử nào mồ côi — mọi phần tử đều còn xuất hiện trên sơ đồ.</p>
+        <p className="text-muted">Không có phần tử nào mồ côi - mọi phần tử đều còn xuất hiện trên sơ đồ.</p>
       ) : (
         <>
           <p className="mb-2 text-[12.5px] text-muted">
@@ -287,7 +287,7 @@ export function ModelExplorer({ engine }: { engine: Engine }) {
                       role="treeitem"
                       data-model={m.id}
                       draggable={!engine.readOnly}
-                      title={`${modelKindLabel(m.kind)} — ${n ? `xuất hiện ở ${n} sơ đồ` : 'chưa có trên sơ đồ nào'}${engine.readOnly ? '' : ' · kéo vào canvas để thêm'}`}
+                      title={`${modelKindLabel(m.kind)} - ${n ? `xuất hiện ở ${n} sơ đồ` : 'chưa có trên sơ đồ nào'}${engine.readOnly ? '' : ' · kéo vào canvas để thêm'}`}
                       onDragStart={(e) => {
                         e.dataTransfer.setData('text/x-umlab-model', m.id);
                         e.dataTransfer.effectAllowed = 'copy';

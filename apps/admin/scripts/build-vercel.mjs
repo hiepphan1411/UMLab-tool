@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Build trang quản trị cho Vercel theo Build Output API v3 → <gốc repo>/.vercel/output:
 //   static/              giao diện (vite build)
-//   functions/api.func/  API (src/server/vercel.ts, bundle một tệp bằng esbuild — không phụ thuộc node_modules lúc chạy)
+//   functions/api.func/  API (src/server/vercel.ts, bundle một tệp bằng esbuild - không phụ thuộc node_modules lúc chạy)
 // Hướng dẫn triển khai: docs/DEPLOY-ADMIN-VERCEL.md
 import { cpSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -26,7 +26,7 @@ await esbuild({
   platform: 'node',
   format: 'esm',
   target: 'node22',
-  // driver mongodb require() các gói tuỳ chọn trong try/catch — không cài thì bỏ qua, không bundle
+  // driver mongodb require() các gói tuỳ chọn trong try/catch - không cài thì bỏ qua, không bundle
   external: [
     'kerberos',
     'snappy',

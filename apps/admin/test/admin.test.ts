@@ -125,7 +125,7 @@ afterAll(async () => {
   await mongo?.stop();
 });
 
-describe('trang quản trị — đăng nhập', () => {
+describe('trang quản trị - đăng nhập', () => {
   it('chưa đăng nhập bị chặn; POST thiếu header bị chặn (CSRF); sai mật khẩu 401; đúng → cookie HttpOnly', async () => {
     expect((await call('GET', '/api/session')).data).toEqual({ user: null, configured: true });
     expect((await call('GET', '/api/overview')).status).toBe(401);
@@ -147,7 +147,7 @@ describe('trang quản trị — đăng nhập', () => {
   });
 });
 
-describe('trang quản trị — số liệu & tài khoản', () => {
+describe('trang quản trị - số liệu & tài khoản', () => {
   it('tổng quan: số tài khoản, project, sơ đồ theo loại, hoạt động 14 ngày, online', async () => {
     const r = await call<Overview>('GET', '/api/overview');
     expect(r.status).toBe(200);
@@ -228,7 +228,7 @@ describe('trang quản trị — số liệu & tài khoản', () => {
       ['Thư viện', 'owner'],
     ]);
     const texts = an.data.history.map((h) => h.text);
-    expect(texts[0]).toMatch(/^Chỉnh sửa “UniPark\+” — 2 thay đổi/);
+    expect(texts[0]).toMatch(/^Chỉnh sửa “UniPark\+” - 2 thay đổi/);
     expect(texts).toContain('Đăng nhập');
     expect(texts.at(-1)).toBe('Tài khoản được tạo');
 

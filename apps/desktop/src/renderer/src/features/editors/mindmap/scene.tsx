@@ -1,4 +1,4 @@
-// Vẽ mindmap thành SVG — dùng chung cho canvas trực tiếp (có id để bắt sự kiện) và ảnh xuất / ảnh thu nhỏ (nền sáng).
+// Vẽ mindmap thành SVG - dùng chung cho canvas trực tiếp (có id để bắt sự kiện) và ảnh xuất / ảnh thu nhỏ (nền sáng).
 import { renderToStaticMarkup } from 'react-dom/server';
 import { useEffect, useState } from 'react';
 import { mindColor, type MindmapData, type MindNode } from '@umlab/core';

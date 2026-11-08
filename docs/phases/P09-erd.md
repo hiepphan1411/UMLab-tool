@@ -1,4 +1,4 @@
-# P09 — Sơ đồ cơ sở dữ liệu (ERD) + Parse ORM
+# P09 - Sơ đồ cơ sở dữ liệu (ERD) + Parse ORM
 
 **Mục tiêu:** vẽ ERD vật lý đầy đủ, sinh ERD từ Class Diagram và xuất SQL DDL. Đặc tả: [spec/notation-erd.md](../spec/notation-erd.md), [spec/orm-mapping.md](../spec/orm-mapping.md).
 

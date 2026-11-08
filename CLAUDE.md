@@ -1,12 +1,12 @@
-# CLAUDE.md — Quy ước dự án UMLab
+# CLAUDE.md - Quy ước dự án UMLab
 
 ## Bối cảnh
 
 - UMLab: **ứng dụng desktop (.exe, Electron)** vẽ sơ đồ UML/kiến trúc/ERD/Gantt theo project, **cộng tác thời gian thực không cần server riêng**: mỗi máy kết nối thẳng MongoDB (Atlas), dữ liệu project là tài liệu CRDT (Yjs) đồng bộ qua change stream.
-- Kế hoạch gốc ở `docs/README.md`, từng phase ở `docs/phases/`, đặc tả ký hiệu ở `docs/spec/`. Kế hoạch gốc viết cho web + NestJS + Postgres; **ánh xạ sang kiến trúc desktop ở `docs/ARCHITECTURE.md`** — đọc file này trước khi làm phase bất kỳ.
+- Kế hoạch gốc ở `docs/README.md`, từng phase ở `docs/phases/`, đặc tả ký hiệu ở `docs/spec/`. Kế hoạch gốc viết cho web + NestJS + Postgres; **ánh xạ sang kiến trúc desktop ở `docs/ARCHITECTURE.md`** - đọc file này trước khi làm phase bất kỳ.
 - Tool cũ: `docs/reference/diagram-studio/` (clone từ `unipark-plus-web/tools/diagram-studio`: `index.html` + add-on `autosave.js`, `extras.js`, `smart-edges.js`). Dùng làm nguồn cho style, engine kéo thả, routing đường nối, xuất ảnh, Gantt. **Port logic, không chép nguyên file.**
 
-## Lệnh (npm workspaces — không dùng pnpm)
+## Lệnh (npm workspaces - không dùng pnpm)
 
 - `npm i` · `npm run dev` (mở app Electron ở chế độ dev)
 - `npm test` · `npm run lint` · `npm run typecheck` · `npm run check` (cả ba)
@@ -18,7 +18,7 @@
 ## Kiến trúc & phụ thuộc
 
 - `packages/core`: TypeScript thuần, **không import React/Electron/MongoDB**. Types, zod schema JSON, migrate legacy, generators, ORM mapper, DDL, mô hình dữ liệu project (Yjs). Mọi logic chuyển đổi đặt ở đây và có unit test.
-- `apps/desktop/src/main`: main process — kết nối MongoDB, auth, project/thành viên, đồng bộ (change stream + hàng đợi offline), presence, hộp thoại tệp. Module theo domain, mỗi module một file `*.service.ts`; `ipc.ts` chỉ nối kênh IPC → service.
+- `apps/desktop/src/main`: main process - kết nối MongoDB, auth, project/thành viên, đồng bộ (change stream + hàng đợi offline), presence, hộp thoại tệp. Module theo domain, mỗi module một file `*.service.ts`; `ipc.ts` chỉ nối kênh IPC → service.
 - `apps/desktop/src/preload`: `contextBridge` lộ `window.umlab` (kiểu `UmlabApi` trong `src/shared/api.ts`). Renderer **không** truy cập DB hay Node.
 - `apps/desktop/src/renderer/src/features/editors/engine`: engine canvas dùng chung. Editor từng loại sơ đồ chỉ **đăng ký shape/connector/palette/inspector**, không sửa engine để phục vụ riêng một loại (nếu cần, mở rộng API engine).
 - Dữ liệu project = một `Y.Doc` (xem `packages/core/src/project/ydoc.ts`): `folders`, `diagrams` (meta), `views:<id>`, `conns:<id>`, `data:<id>`, `model`, `meta`. Mọi ghi đi qua helper trong core để giữ đúng cấu trúc; undo/redo bằng `Y.UndoManager` (chỉ hoàn tác thao tác của chính mình).
@@ -54,4 +54,4 @@
 2. Pass mọi "Tiêu chí nghiệm thu".
 3. `npm run check` sạch.
 4. Cập nhật `docs/CHANGELOG.md` (một mục cho phase).
-5. Commit `feat(P0x): …` — **không** thêm trailer Co-Authored-By/Claude.
+5. Commit `feat(P0x): …` - **không** thêm trailer Co-Authored-By/Claude.

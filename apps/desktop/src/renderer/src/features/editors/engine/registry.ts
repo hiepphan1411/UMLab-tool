@@ -278,7 +278,7 @@ export interface ConnectorDef {
   }>;
   onCreate?: (tx: Tx, c: Connector, src: ViewCtx, tgt: ViewCtx) => void;
   onDelete?: (tx: Tx, c: Connector) => void;
-  /** Sau khi người dùng tạo đường nối (ngoài giao dịch) — hỏi thêm (vd. tạo bảng trung gian cho N-N). */
+  /** Sau khi người dùng tạo đường nối (ngoài giao dịch) - hỏi thêm (vd. tạo bảng trung gian cho N-N). */
   afterCreate?: (e: Engine, c: Connector) => void;
   /** Sau khi xoá đường nối (ngoài giao dịch); `model` là phần tử mô hình trước khi xoá. */
   afterDelete?: (e: Engine, c: Connector, model: ModelElement | null) => void;
@@ -286,7 +286,7 @@ export interface ConnectorDef {
   freeEnds?: boolean;
   /** Nhãn phụ thuộc phần tử khác (Extend lấy tên extension point của use case gốc) → vẽ lại khi mô hình đổi. */
   live?: boolean;
-  /** Đường đi do bố cục riêng của loại sơ đồ tính (message Sequence) — không có waypoint / tay nắm đoạn. */
+  /** Đường đi do bố cục riêng của loại sơ đồ tính (message Sequence) - không có waypoint / tay nắm đoạn. */
   route?: (c: Connector, env: RouteEnv) => Routed | null;
   /** Đầu mút lưu toạ độ y (thời gian) thay cho cạnh: khi vẽ / nối lại ghi `y` của điểm bấm. */
   timeline?: boolean;
@@ -353,7 +353,7 @@ export interface CanvasInputCtx {
 
 /** Thả từ ngoài (icon từ tab Icon, tệp ảnh…). Trả về true nếu đã xử lý. */
 export interface DropHandler {
-  /** Kiểu dữ liệu nhận (dataTransfer.types) — 'Files' cho tệp. */
+  /** Kiểu dữ liệu nhận (dataTransfer.types) - 'Files' cho tệp. */
   types: string[];
   diagramTypes?: string[];
   drop: (dt: DataTransfer, ctx: CanvasInputCtx) => boolean | Promise<boolean>;
@@ -386,7 +386,7 @@ export function registerRules(diagramType: string, list: Rule[]): void {
   rules.set(diagramType, [...(rules.get(diagramType) ?? []), ...list]);
 }
 
-/** Mục palette có thể là biến thể "kind#preset" — phần trước dấu # là shape/connector thật. */
+/** Mục palette có thể là biến thể "kind#preset" - phần trước dấu # là shape/connector thật. */
 export const baseTool = (id: string) => id.split('#')[0];
 export const getShape = (type: string) => shapes.get(baseTool(type));
 export const getConnector = (kind: string) => connectors.get(baseTool(kind));

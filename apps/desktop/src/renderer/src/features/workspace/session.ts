@@ -172,7 +172,7 @@ export class ProjectSession {
 
 // ---------------- vòng đời dùng chung (dashboard ↔ editor) ----------------
 const sessions = new Map<string, Promise<ProjectSession>>();
-/** Người dùng đang đăng nhập — phiên project gắn với người dùng, đổi tài khoản thì mở lại. */
+/** Người dùng đang đăng nhập - phiên project gắn với người dùng, đổi tài khoản thì mở lại. */
 let currentUser = '';
 
 export function setSessionUser(userId: string | null): void {

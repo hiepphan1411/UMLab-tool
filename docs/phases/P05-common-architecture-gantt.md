@@ -1,4 +1,4 @@
-# P05 — Nhóm hình chung + port Sơ đồ kiến trúc & Gantt
+# P05 - Nhóm hình chung + port Sơ đồ kiến trúc & Gantt
 
 **Mục tiêu:** có đủ nhóm công cụ dùng chung cho mọi sơ đồ UML, và đưa 2 tính năng của tool cũ vào hệ thống mới không mất chức năng.
 

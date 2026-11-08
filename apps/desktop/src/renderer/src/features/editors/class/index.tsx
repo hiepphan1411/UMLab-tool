@@ -1,4 +1,4 @@
-// Class Diagram (`class`) — docs/phases/P08-class.md, docs/spec/notation-class.md.
+// Class Diagram (`class`) - docs/phases/P08-class.md, docs/spec/notation-class.md.
 import { Database } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { emptyAttribute, uid, type Attribute } from '@umlab/core';

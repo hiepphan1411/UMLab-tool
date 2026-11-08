@@ -1,4 +1,4 @@
-// Xuất/nhập tệp JSON `umlab` (một sơ đồ hoặc cả project) — docs/spec/json-format.md mục 1–5.
+// Xuất/nhập tệp JSON `umlab` (một sơ đồ hoặc cả project) - docs/spec/json-format.md mục 1–5.
 import type { z } from 'zod';
 import { referencedModel } from '../project/bundle';
 import { clone } from '../util/json';

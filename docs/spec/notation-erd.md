@@ -1,11 +1,11 @@
-# Sơ đồ cơ sở dữ liệu (ERD) — palette & ký hiệu
+# Sơ đồ cơ sở dữ liệu (ERD) - palette & ký hiệu
 
 > Chưa có ảnh chụp palette ERD của VP trong yêu cầu. Danh sách dưới đây theo bộ công cụ Entity Relationship Diagram thường thấy của VP. Nên chụp thêm palette ERD trong VP để đối chiếu trước khi làm P09.
 
 Sơ đồ có 2 chế độ (chọn khi tạo, đổi được trong Inspector của sơ đồ):
 
-- **Vật lý (Crow's foot)** — mặc định. Dùng cho thiết kế bảng, parse ORM, xuất DDL.
-- **Khái niệm (Chen)** — tuỳ chọn, cho mô hình thực thể–kết hợp hay dạy ở trường (P09 mục 9.8).
+- **Vật lý (Crow's foot)** - mặc định. Dùng cho thiết kế bảng, parse ORM, xuất DDL.
+- **Khái niệm (Chen)** - tuỳ chọn, cho mô hình thực thể–kết hợp hay dạy ở trường (P09 mục 9.8).
 
 ## 1. Palette chế độ Vật lý
 
@@ -19,7 +19,7 @@ Note · Anchor · Constraint
 | Pencil · Pen · Calligraphy Tool · Connector
 ```
 
-### Entity — `erd.entity` / `erd.entity`
+### Entity - `erd.entity` / `erd.entity`
 
 Ký hiệu: hình chữ nhật bo góc nhẹ, **đầu bảng** màu (tên bảng đậm, tuỳ chọn tên logic phía trên nhỏ), thân là các cột; **ngăn cột khoá chính** tách khỏi các cột còn lại bằng đường kẻ.
 
@@ -62,9 +62,9 @@ Catalog: One-to-Many → Entity mới; One-to-One → Entity mới; Many-to-Many
 
 | Công cụ                   | kind        | Ký hiệu mặc định                    | Khi tạo                                                                                                               |
 | ------------------------- | ----------- | ----------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| One-to-One Relationship   | `erd.rel11` | Cha `‖` (one and only one) — Con `○ | ` (zero or one)                                                                                                       | Thêm cột FK vào con, đặt **UNIQUE** |
-| One-to-Many Relationship  | `erd.rel1n` | Cha `‖` — Con `○<` (zero or many)   | Thêm cột FK `<cha>_id` vào con, kiểu = kiểu PK cha                                                                    |
-| Many-to-Many Relationship | `erd.relnn` | `>○` — `○<`                         | Hỏi: **Tạo bảng trung gian** (`a_b` với PK ghép 2 FK + 2 quan hệ 1-N) / **Giữ N-N khái niệm** (cảnh báo khi xuất DDL) |
+| One-to-One Relationship   | `erd.rel11` | Cha `‖` (one and only one) - Con `○ | ` (zero or one)                                                                                                       | Thêm cột FK vào con, đặt **UNIQUE** |
+| One-to-Many Relationship  | `erd.rel1n` | Cha `‖` - Con `○<` (zero or many)   | Thêm cột FK `<cha>_id` vào con, kiểu = kiểu PK cha                                                                    |
+| Many-to-Many Relationship | `erd.relnn` | `>○` - `○<`                         | Hỏi: **Tạo bảng trung gian** (`a_b` với PK ghép 2 FK + 2 quan hệ 1-N) / **Giữ N-N khái niệm** (cảnh báo khi xuất DDL) |
 
 Thuộc tính quan hệ:
 
@@ -109,7 +109,7 @@ Thuộc tính quan hệ:
 - **Nhập DDL** (tuỳ chọn): dán `CREATE TABLE …` → sinh entity + quan hệ (dùng `node-sql-parser`).
 - **Xuất Prisma schema / TypeORM entity** (tuỳ chọn P13).
 
-## 5. Chế độ Khái niệm (Chen) — tuỳ chọn
+## 5. Chế độ Khái niệm (Chen) - tuỳ chọn
 
 | Công cụ                  | Shape                   | Ký hiệu                                                                                         |
 | ------------------------ | ----------------------- | ----------------------------------------------------------------------------------------------- |

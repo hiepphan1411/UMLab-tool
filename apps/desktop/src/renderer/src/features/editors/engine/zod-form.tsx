@@ -1,6 +1,6 @@
 // Inspector tự động từ zod schema (docs/phases/P04 mục 4.3):
 // string → Input, enum → Segmented/Select, boolean → Checkbox, number → ô số, màu → ô màu, mảng → danh sách thêm/xoá/kéo.
-// Nhãn & kiểu hiển thị lấy từ .describe('Nhãn|textarea') — hậu tố: textarea, color, hidden, readonly, select, wide.
+// Nhãn & kiểu hiển thị lấy từ .describe('Nhãn|textarea') - hậu tố: textarea, color, hidden, readonly, select, wide.
 import { ArrowDown, ArrowUp, Plus, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { z, type ZodTypeAny } from 'zod';
@@ -163,7 +163,7 @@ export function FieldControl({
         compact
       />
     );
-  return <span className="text-muted">—</span>;
+  return <span className="text-muted">-</span>;
 }
 
 function ArrayControl({

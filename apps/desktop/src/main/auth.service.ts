@@ -14,7 +14,7 @@ interface Session {
   userId: string;
   tv: number;
   remember: boolean;
-  /** Hồ sơ công khai lần cuối — để dùng app khi mất mạng (local-first). */
+  /** Hồ sơ công khai lần cuối - để dùng app khi mất mạng (local-first). */
   profile?: PublicUser;
 }
 

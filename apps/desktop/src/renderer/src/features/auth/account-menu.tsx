@@ -62,7 +62,7 @@ function ProfileDialog({ open, onClose }: { open: boolean; onClose: () => void }
         <div className="flex items-center gap-3">
           <Avatar name={name || '?'} color={color} size={44} />
           <div className="min-w-0">
-            <div className="font-semibold">{name || '—'}</div>
+            <div className="font-semibold">{name || '-'}</div>
             <div className="text-muted">{user?.email}</div>
           </div>
         </div>

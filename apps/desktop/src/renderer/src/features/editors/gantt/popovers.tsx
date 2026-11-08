@@ -1,4 +1,4 @@
-// Tooltip chi tiết khi bấm thanh (showTip) và popover cập nhật tiến độ nhanh (openProgPop) — port tool cũ.
+// Tooltip chi tiết khi bấm thanh (showTip) và popover cập nhật tiến độ nhanh (openProgPop) - port tool cũ.
 import { X } from 'lucide-react';
 import { useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { GST, ddmy, dn, durOf, plannedPct, statusOf, type GanttTask } from '@umlab/core';
@@ -52,7 +52,7 @@ export function TaskTip({ t, rd, x, y }: { t: GanttTask; rd: number; x: number; 
           </>
         )}
         <span>Phụ trách</span>
-        <b>{t.owner || '—'}</b>
+        <b>{t.owner || '-'}</b>
         {t.jira && (
           <>
             <span>Jira</span>

@@ -1,4 +1,4 @@
-/* UniPark+ Diagram Studio — add-on "liên kết thông minh" (tiêm qua vite.config.diagram.ts, giữ index.html nguyên vẹn).
+/* UniPark+ Diagram Studio - add-on "liên kết thông minh" (tiêm qua vite.config.diagram.ts, giữ index.html nguyên vẹn).
  * - Kiểu nối "Thông minh": đường vuông góc tự né các khối, tránh chạy chồng lên đường khác, ít khúc gấp,
  *   tự đặt nhãn vào chỗ trống và vẽ cầu nhảy tại chỗ hai đường cắt nhau.
  * - Mục "Gợi ý bố cục" trong Inspector: chọn một khối / đường nối sẽ thấy vài cách dời hoặc nối lại kèm

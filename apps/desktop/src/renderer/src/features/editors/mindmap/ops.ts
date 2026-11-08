@@ -24,7 +24,7 @@ export interface MindOps {
   replace(d: MindmapData): void;
 }
 
-/** `readOnly`: không có quyền sửa project. `locked`: khoá sơ đồ — vẫn cho thu gọn/mở nhánh và mở/khoá lại. */
+/** `readOnly`: không có quyền sửa project. `locked`: khoá sơ đồ - vẫn cho thu gọn/mở nhánh và mở/khoá lại. */
 export function makeOps(doc: Y.Doc, diagramId: string, readOnly: boolean, locked: boolean): MindOps {
   const no = readOnly || locked;
   return {

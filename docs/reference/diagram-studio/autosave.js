@@ -1,4 +1,4 @@
-/* UniPark+ Diagram Studio — autosave add-on (injected by vite.config.diagram.ts, keeps index.html untouched).
+/* UniPark+ Diagram Studio - autosave add-on (injected by vite.config.diagram.ts, keeps index.html untouched).
  * - Wraps the built-in save(): surfaces errors (quota) instead of swallowing them.
  * - Polls for uncommitted edits (typing in fields) and flushes on tab hide / close.
  * - Keeps rolling backups so a "new"/"sample"/import that replaced the doc can be restored after reload.
@@ -21,7 +21,7 @@
   chip.className = 'btn flex-none';
   chip.id = 'autosaveChip';
   chip.style.cssText = 'height:24px;padding:0 8px;font-size:12px;color:var(--muted);font-weight:400';
-  chip.title = 'Tự động lưu vào trình duyệt — bấm để xem các bản lưu';
+  chip.title = 'Tự động lưu vào trình duyệt - bấm để xem các bản lưu';
   chip.onclick = openBackups;
   const nameInput = $('#docName');
   if (nameInput) nameInput.parentElement.appendChild(chip);
@@ -30,7 +30,7 @@
   const dateTime = t => new Date(t).toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' });
   function paint() {
     if (status === 'error') {
-      chip.innerHTML = `${uiIcon('circle-alert', 14)}<span>Lỗi lưu — hãy Xuất JSON</span>`;
+      chip.innerHTML = `${uiIcon('circle-alert', 14)}<span>Lỗi lưu - hãy Xuất JSON</span>`;
       chip.style.color = 'var(--danger)';
     } else if (status === 'dirty') {
       chip.innerHTML = `${uiIcon('save', 14)}<span>Đang lưu…</span>`;
@@ -78,7 +78,7 @@
     lastSaved = s; lastSavedAt = Date.now(); status = 'saved'; paint();
   }
 
-  // Replace the built-in silent save() — the main script calls it via the global binding.
+  // Replace the built-in silent save() - the main script calls it via the global binding.
   window.save = () => persist(false);
 
   /* ---------- backups ---------- */
@@ -107,7 +107,7 @@
 
   // Another tab of the studio saved: warn instead of silently overwriting each other.
   window.addEventListener('storage', e => {
-    if (e.key === LS_KEY && e.newValue && e.newValue !== snapshot()) toast('Sơ đồ vừa được sửa ở tab khác — tải lại trang để đồng bộ.');
+    if (e.key === LS_KEY && e.newValue && e.newValue !== snapshot()) toast('Sơ đồ vừa được sửa ở tab khác - tải lại trang để đồng bộ.');
   });
 
   /* ---------- restore UI ---------- */
@@ -121,7 +121,7 @@
           <button class="btn outline" data-bk="${i}">${uiIcon('history', 14)}Khôi phục</button></div>`).join('')
       : `<p style="color:var(--muted)">Chưa có bản sao lưu nào. Bản sao lưu được tạo mỗi 5 phút khi có thay đổi, khi mở trang và trước khi thay nội dung (Sơ đồ trống, Mẫu, Nhập JSON).</p>`;
     modal('Bản lưu tự động',
-      `<p style="font-size:12px;color:var(--muted);margin-bottom:8px">Lưu lần cuối: ${lastSavedAt ? dateTime(lastSavedAt) : '—'}. Dữ liệu chỉ nằm trong trình duyệt này (theo địa chỉ ${esc(location.origin)}).</p>${rows}`,
+      `<p style="font-size:12px;color:var(--muted);margin-bottom:8px">Lưu lần cuối: ${lastSavedAt ? dateTime(lastSavedAt) : '-'}. Dữ liệu chỉ nằm trong trình duyệt này (theo địa chỉ ${esc(location.origin)}).</p>${rows}`,
       `<button class="btn outline" id="bkNow">${uiIcon('save', 14)}Tạo bản sao lưu ngay</button><button class="btn outline" id="bkClear">Xoá các bản sao lưu</button>`, 520);
     $('#bkNow').onclick = () => { persist(true); maybeBackup('Thủ công'); openBackups(); toast('Đã tạo bản sao lưu'); };
     $('#bkClear').onclick = () => { try { localStorage.removeItem(BK_KEY); } catch (e) {} openBackups(); };

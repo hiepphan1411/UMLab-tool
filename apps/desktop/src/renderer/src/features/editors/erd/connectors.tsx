@@ -1,4 +1,4 @@
-// Đường quan hệ ERD — Crow's foot (docs/spec/notation-erd.md mục 2): One-to-One / One-to-Many / Many-to-Many.
+// Đường quan hệ ERD - Crow's foot (docs/spec/notation-erd.md mục 2): One-to-One / One-to-Many / Many-to-Many.
 // Identifying = nét liền (FK nằm trong PK con), non-identifying = nét đứt. Cha = nguồn, con = đích.
 import { Table2 } from 'lucide-react';
 import {
@@ -103,7 +103,7 @@ function CardPicker({
           label: <CardGlyph card={k} />,
           title:
             parent && (k === 'oneOrMany' || k === 'zeroOrMany')
-              ? 'Đầu cha chỉ là 1 hoặc 0..1 — dùng Many-to-Many'
+              ? 'Đầu cha chỉ là 1 hoặc 0..1 - dùng Many-to-Many'
               : CARD_LABEL[k],
           disabled: parent && (k === 'oneOrMany' || k === 'zeroOrMany'),
         }))}
@@ -182,7 +182,7 @@ function RelationshipInspector({
       ) : (
         <>
           <Checkbox
-            label="Identifying (nét liền — FK nằm trong khoá chính của con)"
+            label="Identifying (nét liền - FK nằm trong khoá chính của con)"
             checked={r.identifying}
             disabled={readOnly}
             onChange={(identifying) => set({ identifying })}

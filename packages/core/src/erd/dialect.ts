@@ -231,7 +231,7 @@ export const SQL_KEYWORDS: Record<Dialect, Set<string>> = {
 
 export const isKeyword = (name: string, dialect: Dialect) => SQL_KEYWORDS[dialect].has(name.trim().toLowerCase());
 
-/** Tên cần trích dẫn: trùng từ khoá, có ký tự đặc biệt, (PostgreSQL) có chữ hoa — giữ đúng hoa thường. */
+/** Tên cần trích dẫn: trùng từ khoá, có ký tự đặc biệt, (PostgreSQL) có chữ hoa - giữ đúng hoa thường. */
 export function needsQuote(name: string, dialect: Dialect): boolean {
   if (isKeyword(name, dialect)) return true;
   if (dialect === 'postgresql') return !/^[a-z_][a-z0-9_$]*$/.test(name);

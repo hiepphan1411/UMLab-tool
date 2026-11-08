@@ -129,7 +129,7 @@ describe('Sequence: đánh số + kéo message', () => {
     // kéo message thứ 3 (1.1.1) xuống dưới message thứ 5 (không Shift: chỉ dời message đó)
     e.apply((tx) => commitMsgDrag(tx, e.lookup.conn(m[2])!, 70, { shift: false }));
     expect(m.slice(0, 5).map((id) => num(e, id))).toEqual(['1', '1.1', '1.1.3', '1.1.1', '1.1.2']);
-    // Shift + kéo: chèn khoảng trống — message + fragment phía dưới cùng dời
+    // Shift + kéo: chèn khoảng trống - message + fragment phía dưới cùng dời
     const yBefore = e.lookup.conn(m[11])!.source.y!;
     const frag = e.lookup.views().find((v) => v.shape === 'seq.fragment')!;
     e.apply((tx) => commitMsgDrag(tx, e.lookup.conn(m[4])!, 40, { shift: true }));

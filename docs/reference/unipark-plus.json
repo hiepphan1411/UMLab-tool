@@ -2,7 +2,7 @@
   "format": "unipark-diagram",
   "version": 2,
   "gantt": {
-    "title": "UniPark+ — Tiến độ khóa luận",
+    "title": "UniPark+ - Tiến độ khóa luận",
     "reportDate": "",
     "scale": "week",
     "weekends": true,
@@ -115,7 +115,7 @@
     ]
   },
   "moduleGantt": {
-    "title": "UniPark+ — Tiến độ theo module",
+    "title": "UniPark+ - Tiến độ theo module",
     "reportDate": "",
     "scale": "week",
     "weekends": true,
@@ -331,7 +331,7 @@
       "y": 294.0,
       "w": 1005.0,
       "h": 283.5,
-      "title": "UniPark+ BACKEND — Modular Monolith",
+      "title": "UniPark+ BACKEND - Modular Monolith",
       "titleSize": 15.5,
       "titleWeight": 700,
       "titleColor": "#1F2937",

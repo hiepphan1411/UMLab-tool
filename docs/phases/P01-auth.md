@@ -1,4 +1,4 @@
-# P01 — Đăng ký, đăng nhập
+# P01 - Đăng ký, đăng nhập
 
 **Mục tiêu:** vào UMLab bắt buộc đăng nhập; phiên đăng nhập bền, an toàn.
 

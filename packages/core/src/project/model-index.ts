@@ -234,7 +234,7 @@ export interface SearchResult {
   steps: StepHit[];
 }
 
-/** Tìm sơ đồ (tên), phần tử mô hình (tên, mã), bước đặc tả (nội dung) — không phân biệt dấu / hoa thường. */
+/** Tìm sơ đồ (tên), phần tử mô hình (tên, mã), bước đặc tả (nội dung) - không phân biệt dấu / hoa thường. */
 export function searchProject(doc: Y.Doc, q: string, limit = 20): SearchResult {
   const k = searchKey(q);
   const out: SearchResult = { diagrams: [], model: [], steps: [] };

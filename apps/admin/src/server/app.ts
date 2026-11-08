@@ -1,5 +1,5 @@
 // API của trang quản trị (JSON dưới /api). Mọi route trừ /api/login và /api/session cần phiên quản trị; request ghi
-// (POST) phải có header `X-UMLab-Admin: 1` (trình duyệt không gửi được header tuỳ ý sang trang khác mà không qua CORS —
+// (POST) phải có header `X-UMLab-Admin: 1` (trình duyệt không gửi được header tuỳ ý sang trang khác mà không qua CORS -
 // server không bật CORS) + cookie SameSite=Strict → chống CSRF.
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import type { Db } from 'mongodb';

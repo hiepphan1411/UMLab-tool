@@ -26,7 +26,7 @@ const item = (page: Page, name: string) =>
     .locator('[data-model]')
     .filter({ hasText: new RegExp(`^${name}`) });
 
-test('P12: Model Explorer — kéo "Sinh viên" vào 3 sơ đồ, đổi tên một lần; ma trận truy vết; Ctrl+K; dọn mồ côi', async () => {
+test('P12: Model Explorer - kéo "Sinh viên" vào 3 sơ đồ, đổi tên một lần; ma trận truy vết; Ctrl+K; dọn mồ côi', async () => {
   const { app, page } = await launch();
   await register(page, 'Model', uniqueEmail('p12'));
   await page

@@ -7,11 +7,11 @@ Atlas**, **đóng gói bộ cài `.exe`** có nhúng chuỗi kết nối, và **
 ## 1. Chuẩn bị MongoDB Atlas
 
 1. Tạo cluster (M0 miễn phí dùng được cho nhóm nhỏ; nên M10+ khi nhiều người dùng đồng thời). Change stream cần
-   replica set — mọi cluster Atlas đều là replica set.
+   replica set - mọi cluster Atlas đều là replica set.
 2. **Database Access → Add New Database User**:
    - Authentication: Password, đặt mật khẩu dài ngẫu nhiên.
    - **Database User Privileges → Specific Privileges → `readWrite` @ `umlab`** (chỉ database `umlab`). Không dùng tài
-     khoản admin / tài khoản chung với hệ thống khác cho bản phát hành — chuỗi kết nối nằm trong app nên coi như công
+     khoản admin / tài khoản chung với hệ thống khác cho bản phát hành - chuỗi kết nối nằm trong app nên coi như công
      khai với người có bộ cài.
 3. **Network Access → IP Access List**:
    - Nhóm làm việc cố định: thêm IP công cộng của văn phòng / phòng lab.
@@ -39,7 +39,7 @@ npm run dist                # → apps/desktop/release/<version>/UMLab-Setup-<ve
 - Có thể ghi đè khi chạy bằng biến môi trường `UMLAB_MONGO_URI` / `UMLAB_DB` (dùng cho thử nghiệm, CI).
 - Đổi phiên bản: sửa `version` trong `apps/desktop/package.json` trước khi `npm run dist`.
 - CI (`.github/workflows/ci.yml`): job `check` chạy lint/typecheck/test trên Ubuntu; job `e2e-and-package` trên
-  `windows-latest` chạy Playwright (Electron + mongodb-memory-server) rồi đóng gói `.exe` — cần secret
+  `windows-latest` chạy Playwright (Electron + mongodb-memory-server) rồi đóng gói `.exe` - cần secret
   `UMLAB_MONGO_URI` trong GitHub → Settings → Secrets.
 - Chữ ký số (khuyến nghị khi phát hành rộng để tránh cảnh báo SmartScreen): đặt `CSC_LINK` / `CSC_KEY_PASSWORD` trước
   `npm run dist` (electron-builder tự ký).
@@ -71,13 +71,13 @@ npm run dist                # → apps/desktop/release/<version>/UMLab-Setup-<ve
 
 ## 4. Trang quản trị (web, cổng 5176)
 
-`apps/admin` — trang web xem **tổng quan** (số tài khoản, project, sơ đồ theo loại, số thay đổi 14 ngày, tài khoản hoạt
+`apps/admin` - trang web xem **tổng quan** (số tài khoản, project, sơ đồ theo loại, số thay đổi 14 ngày, tài khoản hoạt
 động, đang online), **danh sách tài khoản** (tìm, tạo tài khoản), **lịch sử từng tài khoản** (tạo tài khoản, đăng nhập /
 đăng xuất, đổi / đặt lại mật khẩu, tạo / xoá project, chỉnh sửa theo project × ngày, lưu phiên bản), đặt lại mật khẩu và
 đăng xuất mọi nơi. Đọc thẳng cùng database MongoDB với app desktop.
 
 ```bash
-# .env ở gốc repo: UMLAB_MONGO_URI, UMLAB_DB và UMLAB_ADMIN_EMAILS (hoặc UMLAB_ADMIN_PASSWORD) — xem .env.example
+# .env ở gốc repo: UMLAB_MONGO_URI, UMLAB_DB và UMLAB_ADMIN_EMAILS (hoặc UMLAB_ADMIN_PASSWORD) - xem .env.example
 npm run admin                 # chế độ phát triển → http://127.0.0.1:5176 (giao diện tự nạp lại khi sửa code)
 npm run admin:build && npm run admin:start   # bản build
 ```
@@ -85,7 +85,7 @@ npm run admin:build && npm run admin:start   # bản build
 - **Ai vào được:** tài khoản UMLab có email trong `UMLAB_ADMIN_EMAILS` (mật khẩu của chính tài khoản), hoặc tên `admin`
   với `UMLAB_ADMIN_PASSWORD`. Sai 5 lần → chờ 1 phút. Phiên là cookie HttpOnly, SameSite=Strict, hết hạn sau 8 giờ;
   request ghi cần header `X-UMLab-Admin` (chống CSRF).
-- **Chỉ nghe trên máy này** (`127.0.0.1`) theo mặc định. Muốn mở trong mạng LAN: `UMLAB_ADMIN_HOST=0.0.0.0` — khi đó
+- **Chỉ nghe trên máy này** (`127.0.0.1`) theo mặc định. Muốn mở trong mạng LAN: `UMLAB_ADMIN_HOST=0.0.0.0` - khi đó
   đặt `UMLAB_ADMIN_SECRET` cố định và chỉ mở sau tường lửa / VPN (trang không có HTTPS riêng).
 - **Đưa lên Internet (Vercel):** xem `docs/DEPLOY-ADMIN-VERCEL.md`.
 - Lịch sử đăng nhập / đổi mật khẩu / tạo-xoá project được app desktop ghi vào collection `audit_log` từ bản này trở đi;

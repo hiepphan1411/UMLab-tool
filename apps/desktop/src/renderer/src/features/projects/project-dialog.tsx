@@ -108,7 +108,7 @@ export function ProjectDialog({
               size2="lg"
               value={f.name}
               onChange={(e) => setF({ ...f, name: e.target.value })}
-              placeholder="VD: UniPark+ — Bãi giữ xe thông minh"
+              placeholder="VD: UniPark+ - Bãi giữ xe thông minh"
               invalid={!!err}
               data-autofocus
             />

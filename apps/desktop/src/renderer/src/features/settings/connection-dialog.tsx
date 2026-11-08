@@ -68,10 +68,10 @@ export function ConnectionDialog({ open, onClose }: { open: boolean; onClose: ()
         </div>
         <div>
           <Row label="Trạng thái">{STATE[s.state] ?? s.state}</Row>
-          <Row label="Máy chủ">{s.host ? s.host.replace(/^[^.]+/, (m) => m.slice(0, 3) + '***') : '—'}</Row>
-          <Row label="Cơ sở dữ liệu">{s.dbName || '—'}</Row>
+          <Row label="Máy chủ">{s.host ? s.host.replace(/^[^.]+/, (m) => m.slice(0, 3) + '***') : '-'}</Row>
+          <Row label="Cơ sở dữ liệu">{s.dbName || '-'}</Row>
           <Row label="Đồng bộ">
-            {s.state === 'online' ? (s.realtime ? 'Realtime (change stream)' : 'Hỏi vòng 1,5 giây') : '—'}
+            {s.state === 'online' ? (s.realtime ? 'Realtime (change stream)' : 'Hỏi vòng 1,5 giây') : '-'}
           </Row>
           <Row label="Độ trễ">
             {s.state === 'online' && s.latencyMs !== undefined ? (
@@ -79,7 +79,7 @@ export function ConnectionDialog({ open, onClose }: { open: boolean; onClose: ()
                 {s.latencyMs} ms
               </span>
             ) : (
-              '—'
+              '-'
             )}
           </Row>
           <Row label="Thay đổi chờ gửi">{s.pending ? `${s.pending} (đã lưu trên máy)` : 'Không có'}</Row>

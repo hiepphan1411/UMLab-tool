@@ -1,4 +1,4 @@
-// Sequence Diagram (`sequence`) — docs/phases/P11-sequence.md, docs/spec/notation-sequence.md.
+// Sequence Diagram (`sequence`) - docs/phases/P11-sequence.md, docs/spec/notation-sequence.md.
 import { useNavigate } from 'react-router-dom';
 import { useStore } from 'zustand';
 import {

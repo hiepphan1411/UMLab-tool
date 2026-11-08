@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
 
-// Standalone UniPark+ Diagram Studio (plain HTML, Tailwind via CDN) — no React/Tailwind plugins.
+// Standalone UniPark+ Diagram Studio (plain HTML, Tailwind via CDN) - no React/Tailwind plugins.
 export default defineConfig({
   root: `${import.meta.dirname}/tools/diagram-studio`,
   // Separate cache so this server doesn't overwrite the main app's optimized deps (causes 504 Outdated Optimize Dep).

@@ -1,4 +1,4 @@
-// Biểu đồ cột một chuỗi (một màu accent — một chuỗi nên không cần chú thích; tiêu đề gọi tên chuỗi): cột mảnh, đầu
+// Biểu đồ cột một chuỗi (một màu accent - một chuỗi nên không cần chú thích; tiêu đề gọi tên chuỗi): cột mảnh, đầu
 // bo 4px bám đường đáy, khe 2px giữa các cột, lưới nhạt, tooltip khi rê chuột, bảng ẩn cho trình đọc màn hình.
 import { useState } from 'react';
 

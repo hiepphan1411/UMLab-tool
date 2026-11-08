@@ -1,4 +1,4 @@
-# P03 — Dashboard project, cây thư mục, quản lý sơ đồ
+# P03 - Dashboard project, cây thư mục, quản lý sơ đồ
 
 **Mục tiêu:** trong một project, tổ chức sơ đồ theo cây thư mục, xem theo cây hoặc theo loại, tạo/mở/nhập/xuất sơ đồ.
 
@@ -30,7 +30,7 @@ Bố cục 3 vùng (style tool cũ):
   - _Theo loại:_ nhóm theo loại sơ đồ (Kiến trúc, Gantt, Use Case, Đặc tả UC, Class, ERD, Activity, Sequence) kèm số lượng; trong nhóm sắp theo tên; hiện đường dẫn thư mục mờ bên phải.
   - _Gần đây:_ 20 sơ đồ mở gần nhất.
 - **Nội dung chính:**
-  - Hàng **"Tạo sơ đồ mới"**: 8 thẻ có icon lớn và mô tả 1 dòng (ví dụ "Class Diagram — lớp, thuộc tính, quan hệ"). Bấm → hỏi tên + thư mục (mặc định thư mục đang chọn) → mở editor.
+  - Hàng **"Tạo sơ đồ mới"**: 8 thẻ có icon lớn và mô tả 1 dòng (ví dụ "Class Diagram - lớp, thuộc tính, quan hệ"). Bấm → hỏi tên + thư mục (mặc định thư mục đang chọn) → mở editor.
   - Danh sách sơ đồ của thư mục đang chọn: chế độ Lưới (thumbnail SVG) / Danh sách (bảng: tên, loại, cập nhật, kích thước). Chọn nhiều (Shift/Ctrl) → Chuyển thư mục, Xuất JSON gộp, Xoá.
   - Ô thống kê nhỏ: tổng sơ đồ theo loại.
 - Route editor `/p/:pid/d/:did`: P03 dựng **khung editor** chung (thanh trên: tên sơ đồ sửa tại chỗ, trạng thái lưu "Đã lưu · 10:32", Undo/Redo, Xuất ảnh, Xuất/Nhập JSON, nút Kiểm tra, theme; trái: palette placeholder; phải: inspector placeholder). Nội dung editor làm từ P04.

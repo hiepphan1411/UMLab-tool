@@ -36,7 +36,7 @@ const num = (v: unknown, d: number) => (Number.isFinite(Number(v)) ? Number(v) :
 // ---------------- hình cơ bản: Rectangle, Oval, Polygon ----------------
 
 const basicSchema = z.object({
-  text: z.string().describe('Chữ bên trong — **đậm**, *nghiêng*|textarea'),
+  text: z.string().describe('Chữ bên trong - **đậm**, *nghiêng*|textarea'),
   fontSize: z.number().describe('Cỡ chữ|step01'),
   color: z.string().describe('Màu chữ|color'),
   shadow: z.boolean().describe('Đổ bóng'),
@@ -217,7 +217,7 @@ registerShape({
   minSize: { w: 20, h: 12 },
   defaultProps: () => ({ text: 'Văn bản ghi chú', fontSize: 14, weight: 400, color: INK, align: 'left' }),
   propsSchema: z.object({
-    text: z.string().describe('Văn bản — **đậm**, *nghiêng*, "- " gạch đầu dòng|textarea'),
+    text: z.string().describe('Văn bản - **đậm**, *nghiêng*, "- " gạch đầu dòng|textarea'),
     fontSize: z.number().describe('Cỡ chữ|step01'),
     weight: z.enum(['400', '500', '700']).describe('Độ đậm|opts:400=Thường;500=Vừa;700=Đậm'),
     color: z.string().describe('Màu chữ|color'),
@@ -260,7 +260,7 @@ registerShape({
 
 // ---------------- Callout ----------------
 
-/** Bong bóng hội thoại có đuôi nhọn tới điểm (tx, ty) — toạ độ tương đối so với góc trên trái hình. */
+/** Bong bóng hội thoại có đuôi nhọn tới điểm (tx, ty) - toạ độ tương đối so với góc trên trái hình. */
 export function calloutPath(v: { x: number; y: number; w: number; h: number }, tx: number, ty: number, r = 8): string {
   const X = v.x;
   const Y = v.y;
@@ -510,7 +510,7 @@ registerShape({
           <Label
             x={v.x + v.w / 2}
             y={bodyY + bodyH / 2}
-            text={meta ? '(Sơ đồ trống)' : '—'}
+            text={meta ? '(Sơ đồ trống)' : '-'}
             size={12}
             color="#94A3B8"
           />
@@ -526,7 +526,7 @@ registerShape({
   },
   name: (ctx) => {
     const id = str((ctx.props as P).diagramId);
-    return 'Overview: ' + (ctx.lookup.diagram(id)?.name ?? '—');
+    return 'Overview: ' + (ctx.lookup.diagram(id)?.name ?? '-');
   },
 });
 

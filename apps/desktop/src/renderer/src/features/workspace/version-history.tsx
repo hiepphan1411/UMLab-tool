@@ -1,5 +1,5 @@
 // Lịch sử phiên bản sơ đồ (docs/phases/P13-polish-deploy.md mục 3): tự lưu snapshot khi sơ đồ thay đổi, cách nhau
-// ≥ 5 phút (giữ 50 bản — main process cắt bớt), lưu tay có nhãn, xem trước, khôi phục (một giao dịch — Undo được).
+// ≥ 5 phút (giữ 50 bản - main process cắt bớt), lưu tay có nhãn, xem trước, khôi phục (một giao dịch - Undo được).
 import { History, RotateCcw, Save } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import * as Y from 'yjs';

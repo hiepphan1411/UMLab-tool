@@ -1,4 +1,4 @@
-// Thư viện marker đầu mút (docs/spec/engine.md mục 3) — vẽ bằng path SVG, cỡ theo độ dày nét, màu theo stroke.
+// Thư viện marker đầu mút (docs/spec/engine.md mục 3) - vẽ bằng path SVG, cỡ theo độ dày nét, màu theo stroke.
 import type { ReactNode } from 'react';
 import type { Pt } from './geometry';
 import type { MarkerKind } from './registry';

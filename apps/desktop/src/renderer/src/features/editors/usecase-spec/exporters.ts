@@ -1,4 +1,4 @@
-// Xuất đặc tả DOCX / Markdown (một hoặc nhiều đặc tả) — dùng ở editor và dashboard (chọn nhiều → Xuất DOCX).
+// Xuất đặc tả DOCX / Markdown (một hoặc nhiều đặc tả) - dùng ở editor và dashboard (chọn nhiều → Xuất DOCX).
 import type * as Y from 'yjs';
 import { diagramsMap, readSpec, specContext, specToMarkdown, specsDocx } from '@umlab/core';
 import { umlab } from '@/lib/api';

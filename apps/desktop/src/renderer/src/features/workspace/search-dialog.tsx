@@ -1,4 +1,4 @@
-// Tìm kiếm toàn project (Ctrl+K — dashboard và editor): sơ đồ, phần tử mô hình, bước đặc tả; kết quả nhóm theo loại.
+// Tìm kiếm toàn project (Ctrl+K - dashboard và editor): sơ đồ, phần tử mô hình, bước đặc tả; kết quả nhóm theo loại.
 import { FileText, Search } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';

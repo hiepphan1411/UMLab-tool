@@ -233,7 +233,7 @@ export function GanttLeft({
             key="ct"
             x={cx + 28}
             y={cy + 4.5}
-            s={fitText(t.code || '—', 13, 600, w - 34)}
+            s={fitText(t.code || '-', 13, 600, w - 34)}
             size={13}
             weight={600}
             fill={P.text}
@@ -285,7 +285,7 @@ export function GanttLeft({
             key="d"
             x={cx + 14}
             y={cy + 4.5}
-            s={t.type === 'milestone' ? '—' : durOf(t)}
+            s={t.type === 'milestone' ? '-' : durOf(t)}
             size={12.5}
             weight={500}
             fill={P.text}
@@ -316,7 +316,7 @@ export function GanttLeft({
             key="on"
             x={tx}
             y={cy + 4.5}
-            s={fitText(ppl.join(', ') || '—', 12.5, 400, cx + w - tx - 8)}
+            s={fitText(ppl.join(', ') || '-', 12.5, 400, cx + w - tx - 8)}
             size={12.5}
             weight={400}
             fill={P.text}

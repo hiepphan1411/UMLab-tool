@@ -1,4 +1,4 @@
-// Đặc tả Use Case (`usecase-spec`) — docs/phases/P07-usecase-spec.md, docs/spec/usecase-spec-template.md.
+// Đặc tả Use Case (`usecase-spec`) - docs/phases/P07-usecase-spec.md, docs/spec/usecase-spec-template.md.
 // Không có canvas: dữ liệu ở `data:<id>` (mỗi trường cấp 1 một khoá), logic nằm ở core/spec.
 import { AlertCircle, AlertTriangle, FileDown, FileText, Info, Plus, Table2, Trash2, Workflow, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
@@ -54,7 +54,7 @@ import { exportSpecMarkdown, exportSpecsDocx } from './exporters';
 import { FlowTable, type Option } from './flow-table';
 import { openSpecReport } from './report-dialog';
 
-/** Origin của ghi tự động (include/extend rút từ sơ đồ) — không đưa vào undo. */
+/** Origin của ghi tự động (include/extend rút từ sơ đồ) - không đưa vào undo. */
 const DERIVED = 'derived';
 
 type Doc = EditorProps['session']['doc'];
@@ -298,7 +298,7 @@ function ActorChips({
           />
         </div>
       )}
-      {!ids.length && readOnly && <span className="text-muted">—</span>}
+      {!ids.length && readOnly && <span className="text-muted">-</span>}
     </div>
   );
 }
@@ -890,11 +890,11 @@ export function SpecEditor({ session, diagram, readOnly, setActions }: EditorPro
               />
               <label>Include</label>
               <div className="text-[12.5px]">
-                {spec.includes.map(ctx.useCaseLabel).join(', ') || <span className="text-muted">—</span>}
+                {spec.includes.map(ctx.useCaseLabel).join(', ') || <span className="text-muted">-</span>}
               </div>
               <label>Extend</label>
               <div className="text-[12.5px]">
-                {spec.extends.map(ctx.useCaseLabel).join(', ') || <span className="text-muted">—</span>}
+                {spec.extends.map(ctx.useCaseLabel).join(', ') || <span className="text-muted">-</span>}
               </div>
             </div>
             {derived &&
@@ -903,8 +903,8 @@ export function SpecEditor({ session, diagram, readOnly, setActions }: EditorPro
               (derived.primary.join() !== spec.primaryActors.join() ||
                 derived.secondary.join() !== spec.secondaryActors.join()) && (
                 <p className="mt-2 text-[11.5px] text-muted">
-                  Trên sơ đồ: chính {derived.primary.map(ctx.actorName).join(', ') || '—'} · phụ{' '}
-                  {derived.secondary.map(ctx.actorName).join(', ') || '—'}.{' '}
+                  Trên sơ đồ: chính {derived.primary.map(ctx.actorName).join(', ') || '-'} · phụ{' '}
+                  {derived.secondary.map(ctx.actorName).join(', ') || '-'}.{' '}
                   <button
                     className="underline"
                     onClick={() =>
@@ -975,7 +975,7 @@ export function SpecEditor({ session, diagram, readOnly, setActions }: EditorPro
             />
             <p className="mt-1.5 text-[11.5px] text-muted">
               Enter cuối dòng để thêm bước (người thực hiện tự xen kẽ), Shift+Enter xuống dòng, Backspace ở dòng rỗng để
-              xoá. Kéo ⠿ để đổi thứ tự — luồng thay thế / ngoại lệ tự cập nhật số bước.
+              xoá. Kéo ⠿ để đổi thứ tự - luồng thay thế / ngoại lệ tự cập nhật số bước.
             </p>
           </Section>
 
@@ -1118,7 +1118,7 @@ export function SpecEditor({ session, diagram, readOnly, setActions }: EditorPro
                 ))}
                 {!readOnly && (
                   <AddLine
-                    placeholder="VD: PhienGuiXe — chọn từ class hoặc gõ tên"
+                    placeholder="VD: PhienGuiXe - chọn từ class hoặc gõ tên"
                     classes={classes}
                     onAdd={(name, classId) =>
                       setField('entities', [

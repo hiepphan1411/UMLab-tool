@@ -64,7 +64,7 @@ registerConnector({
     if (!ok(s) || !ok(t)) return 'Association nối Actor với Use Case';
     return true;
   },
-  warn: (s, t) => (is(s, UC) && is(t, UC) ? 'Association giữa hai use case — nên dùng Include hoặc Extend' : null),
+  warn: (s, t) => (is(s, UC) && is(t, UC) ? 'Association giữa hai use case - nên dùng Include hoặc Extend' : null),
 });
 
 // ---------------- Include ----------------
@@ -187,7 +187,7 @@ registerConnector({
       out.push({
         role: 'note',
         note: true,
-        text: `Condition: {${cond || '…'}}\nextension point: ${ep?.name ?? '—'}`,
+        text: `Condition: {${cond || '…'}}\nextension point: ${ep?.name ?? '-'}`,
         pos: 0.5,
         draggable: true,
       });

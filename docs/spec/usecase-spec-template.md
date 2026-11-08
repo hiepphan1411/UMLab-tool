@@ -1,4 +1,4 @@
-# Đặc tả Use Case — mẫu & dữ liệu
+# Đặc tả Use Case - mẫu & dữ liệu
 
 Loại sơ đồ `usecase-spec` không có canvas: `diagram.data` chứa đặc tả. Mỗi đặc tả gắn với **một** use case (`useCaseId` → ModelElement `uml.usecase`).
 
@@ -91,19 +91,19 @@ Bảng 2 cột viền đen, cột trái tô xám nhạt, font Times New Roman 13
 
 Dùng thư viện `docx`. Có thể xuất **nhiều đặc tả vào một file** từ dashboard project (chọn nhiều → Xuất DOCX), mỗi đặc tả một tiêu đề `Bảng x: Đặc tả use case UCxx`.
 
-## 4. Ví dụ dữ liệu mẫu (UniPark+ — dùng làm fixture test)
+## 4. Ví dụ dữ liệu mẫu (UniPark+ - dùng làm fixture test)
 
-UC03 **Check-in xe vào bãi** — actor chính _Sinh viên_, phụ _Bảo vệ_, _Thiết bị cổng_. Màn hình: _Màn hình cổng vào_. Dữ liệu: _TheRFID_, _Xe_, _GoiThang_, _ViDienTu_, _PhienGuiXe_.
+UC03 **Check-in xe vào bãi** - actor chính _Sinh viên_, phụ _Bảo vệ_, _Thiết bị cổng_. Màn hình: _Màn hình cổng vào_. Dữ liệu: _TheRFID_, _Xe_, _GoiThang_, _ViDienTu_, _PhienGuiXe_.
 Luồng chính:
 
-1. Sinh viên — Quét thẻ RFID tại cổng vào.
-2. Hệ thống — Đọc mã thẻ và kiểm tra thẻ hợp lệ.
-3. Hệ thống — Chụp ảnh biển số và nhận dạng (ALPR).
-4. Hệ thống — Đối chiếu biển số với xe đã đăng ký của sinh viên.
-5. Hệ thống — Kiểm tra gói tháng hoặc số dư ví.
-6. Hệ thống — Tạo phiên gửi xe và mở barrier.
-7. Sinh viên — Đưa xe vào bãi.
+1. Sinh viên - Quét thẻ RFID tại cổng vào.
+2. Hệ thống - Đọc mã thẻ và kiểm tra thẻ hợp lệ.
+3. Hệ thống - Chụp ảnh biển số và nhận dạng (ALPR).
+4. Hệ thống - Đối chiếu biển số với xe đã đăng ký của sinh viên.
+5. Hệ thống - Kiểm tra gói tháng hoặc số dư ví.
+6. Hệ thống - Tạo phiên gửi xe và mở barrier.
+7. Sinh viên - Đưa xe vào bãi.
 
-A1 _Biển số không khớp_ (tại bước 4, điều kiện: biển số khác xe đăng ký): A1.1 Hệ thống — Thông báo bảo vệ kiểm tra; A1.2 Bảo vệ — Xác nhận thủ công → quay lại bước 5.
-E1 _Thẻ không hợp lệ_ (tại bước 2): E1.1 Hệ thống — Hiển thị "Thẻ không hợp lệ" → kết thúc thất bại.
-E2 _Không đủ số dư_ (tại bước 5): E2.1 Hệ thống — Thông báo nạp tiền → kết thúc thất bại.
+A1 _Biển số không khớp_ (tại bước 4, điều kiện: biển số khác xe đăng ký): A1.1 Hệ thống - Thông báo bảo vệ kiểm tra; A1.2 Bảo vệ - Xác nhận thủ công → quay lại bước 5.
+E1 _Thẻ không hợp lệ_ (tại bước 2): E1.1 Hệ thống - Hiển thị "Thẻ không hợp lệ" → kết thúc thất bại.
+E2 _Không đủ số dư_ (tại bước 5): E2.1 Hệ thống - Thông báo nạp tiền → kết thúc thất bại.

@@ -620,7 +620,7 @@ export function CanvasEditor(props: EditorProps & { options?: CanvasEditorOption
             label={label}
             active={left === k}
             onClick={() => {
-              // màn hẹp: bảng trái là ngăn trượt — bấm lại tab đang mở để đóng
+              // màn hẹp: bảng trái là ngăn trượt - bấm lại tab đang mở để đóng
               setNarrowLeft(left === k ? !narrowLeft : true);
               setLeft(k);
             }}

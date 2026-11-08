@@ -99,7 +99,7 @@ for dark in (False, True):
     td, _ = text_path(F800, 'SYSTEMS & FLOWS', 22, MCX - tw / 2, 388, 5)
     body = defs(p, uid) + mark(p, uid) + wb + f'<path d="{td}" fill="{p["navy"]}"/>'
     x0 = min(MX0, wx0) - 12; x1 = max(MX1, wx1) + 12
-    open(f'{OUT}/umlab-logo-tagline{sfx}.svg', 'w').write(svg((r(x0), 63, r(x1 - x0), 340), body, title='UMLab — Systems &amp; Flows'))
+    open(f'{OUT}/umlab-logo-tagline{sfx}.svg', 'w').write(svg((r(x0), 63, r(x1 - x0), 340), body, title='UMLab - Systems &amp; Flows'))
     # 2) ngang: mark + chữ (thanh trên, đăng nhập)
     size = 150
     wum = ink_width(F900, 'UM', size, -1.5 * size / 88)

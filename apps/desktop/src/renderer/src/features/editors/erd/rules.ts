@@ -1,4 +1,4 @@
-// Kiểm tra ERD (docs/spec/notation-erd.md mục 3) — dùng validateErd của core trên các phần tử có trên sơ đồ.
+// Kiểm tra ERD (docs/spec/notation-erd.md mục 3) - dùng validateErd của core trên các phần tử có trên sơ đồ.
 import { schemaFromModel, validateErd, type ModelElement } from '@umlab/core';
 import type { Issue, Rule } from '../engine/registry';
 import { dialectOf, ensurePk, makeJunction } from './ops';

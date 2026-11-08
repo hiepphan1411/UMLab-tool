@@ -1,4 +1,4 @@
-# Sequence Diagram — palette & ký hiệu
+# Sequence Diagram - palette & ký hiệu
 
 Thứ tự palette (theo hình 4):
 

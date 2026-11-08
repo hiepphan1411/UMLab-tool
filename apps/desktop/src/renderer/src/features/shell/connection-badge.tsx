@@ -11,12 +11,12 @@ export const QUALITY: Record<ConnQuality, { color: string; label: string; hint: 
   weak: {
     color: 'var(--warn)',
     label: 'Kết nối yếu / đang đồng bộ',
-    hint: 'Vẫn làm việc bình thường — thay đổi đã lưu trên máy, sẽ gửi lên dần',
+    hint: 'Vẫn làm việc bình thường - thay đổi đã lưu trên máy, sẽ gửi lên dần',
   },
   down: {
     color: 'var(--danger)',
     label: 'Mất kết nối',
-    hint: 'Đang làm việc trên bản lưu ở máy — sẽ tự đồng bộ khi có mạng lại',
+    hint: 'Đang làm việc trên bản lưu ở máy - sẽ tự đồng bộ khi có mạng lại',
   },
 };
 
@@ -50,7 +50,7 @@ export function ConnectionBadge({ compact }: { compact?: boolean }) {
   else if (s.state === 'connecting') text = 'Đang kết nối…';
   else if (s.state === 'unconfigured') text = 'Chưa cấu hình DB';
   else text = s.pending ? `Mất kết nối · ${s.pending} chờ gửi` : 'Mất kết nối';
-  const tipText = `${QUALITY[q].label}${s.latencyMs !== undefined && s.state === 'online' ? ` · ${s.latencyMs} ms` : ''} — ${QUALITY[q].hint}`;
+  const tipText = `${QUALITY[q].label}${s.latencyMs !== undefined && s.state === 'online' ? ` · ${s.latencyMs} ms` : ''} - ${QUALITY[q].hint}`;
   const tip = useTooltip(tipText);
   return (
     <>

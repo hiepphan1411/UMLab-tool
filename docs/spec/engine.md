@@ -1,4 +1,4 @@
-# Diagram engine — đặc tả
+# Diagram engine - đặc tả
 
 Engine dùng chung cho mọi sơ đồ dạng canvas. Mỗi loại sơ đồ chỉ khai báo shape, connector, palette và luật nối.
 
@@ -57,7 +57,7 @@ Vẽ bằng SVG path, kích thước tỉ lệ theo `strokeWidth`, màu theo `st
 
 | Mã                                                                               | Hình                 | Dùng cho                                                                                      |
 | -------------------------------------------------------------------------------- | -------------------- | --------------------------------------------------------------------------------------------- |
-| `none`                                                                           | —                    | Association, Anchor                                                                           |
+| `none`                                                                           | -                    | Association, Anchor                                                                           |
 | `arrow-open`                                                                     | mũi tên 2 nét `>`    | Dependency, Include, Extend, Navigable association, Async message, Reply, Control/Object Flow |
 | `arrow-filled`                                                                   | tam giác đặc         | Synchronous message                                                                           |
 | `triangle-hollow`                                                                | tam giác rỗng        | Generalization, Realization                                                                   |

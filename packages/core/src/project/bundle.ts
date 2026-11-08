@@ -20,7 +20,7 @@ export function remapDeep<T>(value: T, map: Map<string, string>): T {
 const prefixOf = (id: string, fallback: string) => (/^([a-z]+)_/i.exec(id)?.[1] ?? fallback).slice(0, 6);
 
 /**
- * Sinh lại toàn bộ id (thư mục, sơ đồ, hình, đường nối, phần tử mô hình) và cập nhật mọi tham chiếu —
+ * Sinh lại toàn bộ id (thư mục, sơ đồ, hình, đường nối, phần tử mô hình) và cập nhật mọi tham chiếu -
  * dùng khi nhập project, nhân bản project, tạo từ mẫu. Hai bundle sau đó không đụng nhau.
  */
 export function regenerateIds(b: ProjectBundle): ProjectBundle {

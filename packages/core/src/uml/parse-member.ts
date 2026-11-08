@@ -115,7 +115,7 @@ function indexTop(s: string, ch: string, from = 0): number {
   return -1;
 }
 
-/** Tách "Type [mult]" — ngoặc vuông cuối là multiplicity nếu đúng dạng, ngược lại thuộc kiểu (byte[]). */
+/** Tách "Type [mult]" - ngoặc vuông cuối là multiplicity nếu đúng dạng, ngược lại thuộc kiểu (byte[]). */
 function splitTypeMult(s: string): { type: string; multiplicity: string } {
   const m = s.match(/\[([^\]]*)\]\s*$/);
   if (m && MULT.test(m[1])) return { type: s.slice(0, m.index).trim(), multiplicity: m[1].replace(/\s+/g, '') };

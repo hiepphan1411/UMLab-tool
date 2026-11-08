@@ -28,7 +28,7 @@ interface OpenState {
 const toU8 = (b: Binary): Uint8Array => new Uint8Array(b.buffer.buffer, b.buffer.byteOffset, b.buffer.byteLength);
 
 class SyncService {
-  /** Mỗi lần chạy app là một client — dùng để bỏ qua bản cập nhật của chính mình trong change stream. */
+  /** Mỗi lần chạy app là một client - dùng để bỏ qua bản cập nhật của chính mình trong change stream. */
   readonly clientId = CLIENT_ID;
   private open = new Map<string, OpenState>();
   private queue = new Map<string, Uint8Array[]>();
@@ -115,7 +115,7 @@ class SyncService {
         } catch (e) {
           const code = (e as { code?: string }).code;
           if (code === 'FORBIDDEN' || code === 'NOT_FOUND') {
-            // Project đã bị xoá hoặc mình bị gỡ quyền — bỏ hàng đợi.
+            // Project đã bị xoá hoặc mình bị gỡ quyền - bỏ hàng đợi.
             this.queue.delete(projectId);
             this.persistQueue(projectId);
           } else throw e;

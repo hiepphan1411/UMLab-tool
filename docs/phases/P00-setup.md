@@ -1,4 +1,4 @@
-# P00 — Khởi tạo dự án
+# P00 - Khởi tạo dự án
 
 **Mục tiêu:** repo chạy được `pnpm dev` với web + api + postgres, có design tokens và logo UMLab.
 

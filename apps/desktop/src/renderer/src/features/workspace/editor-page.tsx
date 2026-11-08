@@ -39,7 +39,7 @@ export function EditorPage() {
   return <DiagramEditor key={diagramId} session={session} diagramId={diagramId} />;
 }
 
-/** Chip trạng thái lưu: "Đã lưu · 10:32" / "Đang lưu…" / "Ngoại tuyến — sẽ gửi khi có mạng". */
+/** Chip trạng thái lưu: "Đã lưu · 10:32" / "Đang lưu…" / "Ngoại tuyến - sẽ gửi khi có mạng". */
 function SaveChip({ session }: { session: ProjectSession }) {
   const { save, lastSavedAt, error } = useSessionState(session);
   const conn = useConn((x) => x.status);

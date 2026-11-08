@@ -10,7 +10,7 @@ export interface FeedOptions<T extends Document> {
   /** Chế độ hỏi vòng khi không có change stream (Mongo đơn lẻ). */
   poll: () => Promise<void>;
   pollMs: number;
-  /** Gọi khi vừa (re)kết nối — nơi nạp lại toàn bộ để không lỡ thay đổi trong lúc mất kết nối. */
+  /** Gọi khi vừa (re)kết nối - nơi nạp lại toàn bộ để không lỡ thay đổi trong lúc mất kết nối. */
   onReconnect?: () => Promise<void> | void;
 }
 
@@ -26,7 +26,7 @@ export class ChangeFeed<T extends Document> {
   private gen = -1;
   private stopped = false;
   private polling = false;
-  /** Xong khi stream đã có mốc thời gian bắt đầu — đọc dữ liệu sau mốc này sẽ không lỡ thay đổi nào. */
+  /** Xong khi stream đã có mốc thời gian bắt đầu - đọc dữ liệu sau mốc này sẽ không lỡ thay đổi nào. */
   ready: Promise<void> = Promise.resolve();
 
   constructor(private readonly opts: FeedOptions<T>) {}

@@ -233,7 +233,7 @@ export function renderTable(ctx: RenderCtx, kind: TableKind) {
   return <>{out}</>;
 }
 
-/** Ghép dòng gõ với cột cũ: theo tên trước, rồi theo vị trí (dòng đổi tên) — giữ id / FK. */
+/** Ghép dòng gõ với cột cũ: theo tên trước, rồi theo vị trí (dòng đổi tên) - giữ id / FK. */
 export function linesToColumns(lines: string[], old: ErdColumn[]): ErdColumn[] {
   const used = new Set<string>();
   const names = lines.map(

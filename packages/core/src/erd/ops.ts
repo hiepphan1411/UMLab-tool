@@ -213,7 +213,7 @@ export function validateErd(s: ErdSchema, dialect: Dialect): ErdIssue[] {
       out.push({
         level: 'warning',
         code: 'keyword',
-        message: `Tên bảng “${e.name}” là từ khoá SQL — sẽ đặt trong ${quoteIdent(e.name, dialect, true)} hoặc nên đổi tên`,
+        message: `Tên bảng “${e.name}” là từ khoá SQL - sẽ đặt trong ${quoteIdent(e.name, dialect, true)} hoặc nên đổi tên`,
         targetId: e.id,
       });
     const cols = new Set<string>();
@@ -232,7 +232,7 @@ export function validateErd(s: ErdSchema, dialect: Dialect): ErdIssue[] {
         out.push({
           level: 'warning',
           code: 'keyword',
-          message: `Cột “${e.name}.${c.name}” là từ khoá SQL — sẽ đặt trong ${quoteIdent(c.name, dialect, true)} hoặc nên đổi tên`,
+          message: `Cột “${e.name}.${c.name}” là từ khoá SQL - sẽ đặt trong ${quoteIdent(c.name, dialect, true)} hoặc nên đổi tên`,
           targetId: e.id,
           columnId: c.id,
         });
@@ -280,7 +280,7 @@ export function validateErd(s: ErdSchema, dialect: Dialect): ErdIssue[] {
       out.push({
         level: 'warning',
         code: 'nn',
-        message: `Quan hệ N-N “${byId.get(r.parent.entityId)?.name ?? '?'} — ${byId.get(r.child.entityId)?.name ?? '?'}” chưa có bảng trung gian (DDL bỏ qua)`,
+        message: `Quan hệ N-N “${byId.get(r.parent.entityId)?.name ?? '?'} - ${byId.get(r.child.entityId)?.name ?? '?'}” chưa có bảng trung gian (DDL bỏ qua)`,
         targetId: r.id,
       });
   return out;

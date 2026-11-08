@@ -23,7 +23,7 @@ function ReportDialog({ doc, diagramId, done }: { doc: Y.Doc; diagramId: string;
           'text/plain': new Blob([specReportText(spec, ctx)], { type: 'text/plain' }),
         }),
       ]);
-      toast('Đã sao chép — dán (Ctrl+V) vào Word để giữ nguyên bảng');
+      toast('Đã sao chép - dán (Ctrl+V) vào Word để giữ nguyên bảng');
     } catch {
       toast('Không sao chép được vào clipboard', { error: true });
     }

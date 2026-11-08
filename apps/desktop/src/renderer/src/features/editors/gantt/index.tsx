@@ -1,4 +1,4 @@
-// Editor Gantt (`gantt`) — editor riêng, không dùng canvas engine (docs/phases/P05 mục 5.3). Port toàn bộ Gantt của tool cũ.
+// Editor Gantt (`gantt`) - editor riêng, không dùng canvas engine (docs/phases/P05 mục 5.3). Port toàn bộ Gantt của tool cũ.
 // Một sơ đồ Gantt = một bảng (theo sprint hoặc theo module). Dữ liệu ở `data:<id>` của Y.Doc (core/gantt/doc.ts).
 import { Diamond, LocateFixed, Plus, Sheet } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';

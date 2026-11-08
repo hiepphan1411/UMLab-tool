@@ -1756,7 +1756,7 @@ button.fb-item:hover {
 
 /* ---------- Banner sơ đồ sinh từ đặc tả ---------- */
 .gen-banner {
-  /* dải ngay trên canvas — không đè lên nội dung sơ đồ (tiêu đề làn…) */
+  /* dải ngay trên canvas - không đè lên nội dung sơ đồ (tiêu đề làn…) */
   position: absolute;
   top: 0;
   left: 0;
@@ -1894,7 +1894,7 @@ main:has(> .gen-banner) > .canvas-wrap {
   }
 }
 @media (max-width: 640px) {
-  /* điện thoại: xem + chỉnh nhẹ — bảng trái là ngăn trượt, mở bằng tab */
+  /* điện thoại: xem + chỉnh nhẹ - bảng trái là ngăn trượt, mở bằng tab */
   .editor-grid {
     grid-template-columns: 44px minmax(0, 1fr);
   }

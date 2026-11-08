@@ -1,4 +1,4 @@
-// Mô hình Gantt — port nguyên logic từ tool cũ (docs/reference/diagram-studio/index.html, mục GANTT MODEL).
+// Mô hình Gantt - port nguyên logic từ tool cũ (docs/reference/diagram-studio/index.html, mục GANTT MODEL).
 import { normAttachments, type Attachment } from '../media/attachment';
 import { uid } from '../util/ids';
 

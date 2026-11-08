@@ -54,7 +54,7 @@ export function buildTemplate(template: ProjectTemplate, name: string, legacyFix
     folderId: d.type === 'gantt' ? fPlan.id : fDesign.id,
     order: i,
   }));
-  b.project.description = 'Dự án mẫu UniPark+ — bãi giữ xe thông minh';
+  b.project.description = 'Dự án mẫu UniPark+ - bãi giữ xe thông minh';
   b.project.icon = 'car';
   return b;
 }

@@ -1,4 +1,4 @@
-# P07 — Đặc tả Use Case
+# P07 - Đặc tả Use Case
 
 **Mục tiêu:** soạn đặc tả có cấu trúc cho từng use case, làm nguồn để sinh Activity (P10) và Sequence (P11), xuất DOCX đúng mẫu báo cáo. Đặc tả: [spec/usecase-spec-template.md](../spec/usecase-spec-template.md).
 
@@ -15,7 +15,7 @@
 4. Kiểm tra: bước rỗng, rẽ/quay về bước không tồn tại, thiếu actor chính.
 5. Xuất **DOCX** (thư viện `docx`) đúng bảng mẫu; xuất **Markdown**; xuất nhiều đặc tả cùng lúc từ dashboard (chọn nhiều → Xuất DOCX).
 6. Xuất/nhập JSON như mọi sơ đồ.
-7. Nút **Sinh Activity** và **Sinh Sequence** ở thanh trên: ở P07 hiển thị nhưng disabled với tooltip "Có ở bản cập nhật sau" — bật ở P10/P11.
+7. Nút **Sinh Activity** và **Sinh Sequence** ở thanh trên: ở P07 hiển thị nhưng disabled với tooltip "Có ở bản cập nhật sau" - bật ở P10/P11.
 8. Dashboard: đặc tả hiển thị dưới dạng thẻ có mã UC + tên; trong chế độ Theo loại có nhóm "Đặc tả Use Case".
 
 ## Tiêu chí nghiệm thu

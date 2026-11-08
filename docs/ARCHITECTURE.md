@@ -1,4 +1,4 @@
-# Kiến trúc UMLab desktop — ánh xạ từ kế hoạch web
+# Kiến trúc UMLab desktop - ánh xạ từ kế hoạch web
 
 Kế hoạch gốc (README, phases/) thiết kế UMLab là web app React + NestJS + PostgreSQL. Yêu cầu thực tế:
 
@@ -29,7 +29,7 @@ Kế hoạch gốc (README, phases/) thiết kế UMLab là web app React + Nest
 - **Nén dữ liệu:** khi một project có > 200 bản cập nhật, máy mở project gộp chúng (`Y.mergeUpdates`) thành 1 snapshot rồi xoá các bản đã gộp. Gộp trùng giữa hai máy vẫn an toàn vì Yjs idempotent.
 - **Local-first:** mỗi project gắn một tệp `<thư mục>/<tên>.umlab` trên máy (chọn khi tạo project; danh mục ở `userData/local-projects.json`). Main process giữ một Y.Doc/project, ghi mọi thay đổi vào tệp trước rồi mới đẩy lên MongoDB; mở project = tệp local ⊕ bản trên DB, phần chỉ có ở local được đẩy lên (`Y.encodeStateAsUpdate(local, stateVector(remote))`). Mất mạng vẫn liệt kê / mở / sửa / tạo project; project tạo offline được ghi lên MongoDB khi có mạng lại. Chuỗi kết nối cố định theo bản build (không sửa trong app).
 - **Offline:** mất mạng vẫn sửa được; cập nhật xếp hàng trong main process (ghi ra `userData/pending/`) và tự gửi khi có mạng lại. Sau khi kết nối lại, main nạp lại toàn bộ project và bắn `resync`.
-- **Presence:** mỗi máy upsert một bản ghi `presence` (người dùng, sơ đồ đang mở, con trỏ, vùng chọn, đang kéo) — hiển thị avatar người đang xem và con trỏ của họ trên canvas.
+- **Presence:** mỗi máy upsert một bản ghi `presence` (người dùng, sơ đồ đang mở, con trỏ, vùng chọn, đang kéo) - hiển thị avatar người đang xem và con trỏ của họ trên canvas.
 
 ## 2. Ánh xạ thành phần
 
@@ -86,4 +86,4 @@ Giá trị là JSON thuần (thay cả object khi sửa) → xung đột ở m�
 - **P01**: auth ở main process (bảng ở mục 2). Không có refresh token; “Ghi nhớ đăng nhập” = lưu phiên đã mã hoá ra đĩa, bỏ chọn = chỉ giữ trong bộ nhớ tới khi tắt app.
 - **P02**: CRUD project + **thành viên/chia sẻ**; nhân bản/nhập/xuất JSON làm ở renderer trên Y.Doc rồi gửi qua `projects.create(initialUpdate)`.
 - **P03**: cây thư mục/sơ đồ là dữ liệu trong Y.Doc; “autosave” = mọi thay đổi gửi đi ngay (gộp 250 ms); trạng thái “Đã lưu · 10:32” theo xác nhận ghi DB; thay dialog 409 bằng presence (ai đang xem sơ đồ nào).
-- **P13**: thay “triển khai VPS” bằng đóng gói `.exe` + hướng dẫn cấu hình Atlas (user riêng, IP access list); bỏ “quên mật khẩu qua email” (không có server gửi mail) — thay bằng chủ project/ quản trị đặt lại qua công cụ `scripts/reset-password` (tuỳ chọn). Đã làm: `docs/DEPLOY.md`, `npm run reset-password`. Lịch sử phiên bản lưu ở collection `diagram_versions`; ảnh vẫn nhúng trong Y.Doc (local-first, dùng được offline) thay vì bảng `Asset`.
+- **P13**: thay “triển khai VPS” bằng đóng gói `.exe` + hướng dẫn cấu hình Atlas (user riêng, IP access list); bỏ “quên mật khẩu qua email” (không có server gửi mail) - thay bằng chủ project/ quản trị đặt lại qua công cụ `scripts/reset-password` (tuỳ chọn). Đã làm: `docs/DEPLOY.md`, `npm run reset-password`. Lịch sử phiên bản lưu ở collection `diagram_versions`; ảnh vẫn nhúng trong Y.Doc (local-first, dùng được offline) thay vì bảng `Asset`.

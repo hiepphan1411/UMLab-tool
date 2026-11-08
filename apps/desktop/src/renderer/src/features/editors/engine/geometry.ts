@@ -1,4 +1,4 @@
-// Hình học thuần cho engine — port từ tool cũ (anchorPt, autoOrtho, cleanPts, roundedPath, polyLen, pointAt,
+// Hình học thuần cho engine - port từ tool cũ (anchorPt, autoOrtho, cleanPts, roundedPath, polyLen, pointAt,
 // segDist, unionBox, inside, nearestSide, snapMove) + bổ sung đường cong, vòng tự nối, cầu nhảy.
 import type { Side } from '@umlab/core';
 
@@ -241,7 +241,7 @@ export const containsPt = (b: Box, x: number, y: number, pad = 0) =>
   x >= b.x - pad && x <= b.x + b.w + pad && y >= b.y - pad && y <= b.y + b.h + pad;
 export const center = (b: Box): Pt => [b.x + b.w / 2, b.y + b.h / 2];
 
-/** Cạnh gần nhất + vị trí t (bắt dính 1/20, hút về giữa) — như tool cũ. */
+/** Cạnh gần nhất + vị trí t (bắt dính 1/20, hút về giữa) - như tool cũ. */
 export function nearestSide(b: Box, wx: number, wy: number): { side: Side; t: number } {
   const c: [Side, number][] = (
     [
@@ -259,7 +259,7 @@ export function nearestSide(b: Box, wx: number, wy: number): { side: Side; t: nu
 }
 
 /** Cạnh của hộp hướng về điểm p (dùng cho định tuyến tự chọn cạnh). */
-/** Điểm (x,y) có nằm sát mép hộp (trong khoảng tol) không — kéo nối từ sát mép thì khoá cạnh, từ giữa hình thì tự chọn. */
+/** Điểm (x,y) có nằm sát mép hộp (trong khoảng tol) không - kéo nối từ sát mép thì khoá cạnh, từ giữa hình thì tự chọn. */
 export function nearEdge(b: Box, x: number, y: number, tol: number): boolean {
   return Math.min(Math.abs(x - b.x), Math.abs(x - b.x - b.w), Math.abs(y - b.y), Math.abs(y - b.y - b.h)) <= tol;
 }

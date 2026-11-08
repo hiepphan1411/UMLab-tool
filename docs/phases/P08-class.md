@@ -1,4 +1,4 @@
-# P08 — Class Diagram
+# P08 - Class Diagram
 
 **Mục tiêu:** Class Diagram với đủ palette như hình 2. Đặc tả: [spec/notation-class.md](../spec/notation-class.md).
 
@@ -10,7 +10,7 @@
 4. Association đầy đủ: tên + ▶ hướng đọc, role/multiplicity/navigability (✕ cho non-navigable)/aggregation/`{ordered}`/qualifier ở từng đầu; nhãn tự lật; self-association.
 5. Kiểm tra theo spec mục 3; gạch lượn sóng kiểu không tồn tại + quick fix "Tạo class".
 6. "Chuyển thuộc tính thành association" và ngược lại.
-7. Class dùng chung toàn project (model element) — đổi tên class ở một sơ đồ, mọi sơ đồ cập nhật.
+7. Class dùng chung toàn project (model element) - đổi tên class ở một sơ đồ, mọi sơ đồ cập nhật.
 8. Nút **Parse ORM → ERD** trên thanh công cụ: disabled cho tới P09.
 9. Mẫu "Class UniPark+" (User, SinhVien, Xe, TheRFID, PhienGuiXe, GoiThang, ViDienTu, GiaoDich, ReputationEvent + quan hệ).
 10. Icon palette theo danh sách trong spec.
@@ -18,7 +18,7 @@
 ## Tiêu chí nghiệm thu
 
 - Gõ `- bienSo : String [1] {unique}` → hiển thị đúng và lưu đủ trường.
-- Composition từ PhienGuiXe ◆— Xe hiển thị thoi đặc ở đúng đầu; đổi multiplicity trong Inspector thấy ngay.
+- Composition từ PhienGuiXe ◆- Xe hiển thị thoi đặc ở đúng đầu; đổi multiplicity trong Inspector thấy ngay.
 - Interface + Realization (nét đứt tam giác rỗng) đúng ký hiệu.
 - Xuất SVG mở bằng trình duyệt, chữ nghiêng/gạch chân đúng.
 - Unit test parser ≥ 20 trường hợp.

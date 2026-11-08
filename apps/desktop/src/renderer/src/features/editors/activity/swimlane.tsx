@@ -1,6 +1,6 @@
 // Swimlane ngang / dọc (docs/spec/notation-activity.md "Swimlane (chi tiết)"): làn có tên, `represents` (actor /
 // class), làn con tối đa 2 cấp; kéo vạch ngăn trên dải tiêu đề để đổi bề rộng; thêm/xoá/đổi tên/đổi thứ tự trong
-// Inspector. Node thuộc làn theo vị trí (laneAt) — kéo swimlane thì node con đi theo (container).
+// Inspector. Node thuộc làn theo vị trí (laneAt) - kéo swimlane thì node con đi theo (container).
 import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { uid, type View } from '@umlab/core';
@@ -20,7 +20,7 @@ type P = Record<string, unknown>;
 export interface Lane {
   id: string;
   name: string;
-  /** Bề rộng (làn dọc) / chiều cao (làn ngang) — tỉ lệ, co giãn theo kích thước hình. */
+  /** Bề rộng (làn dọc) / chiều cao (làn ngang) - tỉ lệ, co giãn theo kích thước hình. */
   size: number;
   /** actor / class mà làn đại diện. */
   represents?: string;

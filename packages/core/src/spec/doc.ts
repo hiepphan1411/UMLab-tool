@@ -1,4 +1,4 @@
-// Đặc tả trong Y.Doc: `data:<diagramId>` lưu mỗi trường cấp 1 một khoá `f:<trường>` (project/ydoc.ts) —
+// Đặc tả trong Y.Doc: `data:<diagramId>` lưu mỗi trường cấp 1 một khoá `f:<trường>` (project/ydoc.ts) -
 // hai người sửa hai phần khác nhau (luồng chính / quy tắc nghiệp vụ…) không đè nhau.
 import type * as Y from 'yjs';
 import { connsMap, dataMap, decodeData, diagramsMap, modelMap, viewsMap } from '../project/ydoc';

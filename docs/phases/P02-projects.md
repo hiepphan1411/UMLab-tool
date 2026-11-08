@@ -1,4 +1,4 @@
-# P02 — Trang chủ: quản lý project
+# P02 - Trang chủ: quản lý project
 
 **Mục tiêu:** sau đăng nhập thấy danh sách project; chưa có thì được mời tạo.
 

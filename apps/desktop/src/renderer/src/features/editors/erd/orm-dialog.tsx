@@ -318,7 +318,7 @@ function OrmDialog({
               </select>
             </div>
             <div>
-              <span className="lbl">Bảng kiểu tuỳ chỉnh (lưu theo project) — mỗi dòng `KieuUML = KIỂU SQL`</span>
+              <span className="lbl">Bảng kiểu tuỳ chỉnh (lưu theo project) - mỗi dòng `KieuUML = KIỂU SQL`</span>
               <textarea
                 className="field"
                 rows={3}
@@ -346,7 +346,7 @@ function OrmDialog({
               </ul>
             )}
             <div className="grid gap-2" style={{ maxHeight: 360, overflow: 'auto' }} aria-label="Thay đổi">
-              {!diff.items.length && <p className="text-muted">Không có thay đổi — ERD đã khớp Class Diagram.</p>}
+              {!diff.items.length && <p className="text-muted">Không có thay đổi - ERD đã khớp Class Diagram.</p>}
               {groups.map(([table, items]) => (
                 <div
                   key={table}

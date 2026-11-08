@@ -1,5 +1,5 @@
 // Bố cục Sequence Diagram (docs/spec/notation-sequence.md mục 1): đánh số lồng `1`, `1.1`, `1.1.2`, activation bar tự
-// tính và toạ độ đầu mút message — thuần, không phụ thuộc renderer.
+// tính và toạ độ đầu mút message - thuần, không phụ thuộc renderer.
 //
 // Mô hình thực thi một luồng (call stack): message gọi (sync/async/create/recursive…) mở một "frame" (activation) trên
 // lifeline đích; reply đóng frame đang mở của lifeline gửi; lifeline gửi một message khi đang có frame sâu hơn ở trên

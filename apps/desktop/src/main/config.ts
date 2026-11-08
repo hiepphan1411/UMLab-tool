@@ -48,7 +48,7 @@ export function removeFile(file: string): void {
 }
 
 /**
- * Chuỗi kết nối cố định: nhúng trong bản build (.env lúc build) — không sửa được từ app.
+ * Chuỗi kết nối cố định: nhúng trong bản build (.env lúc build) - không sửa được từ app.
  * Biến môi trường UMLAB_MONGO_URI_OVERRIDE chỉ dùng cho test E2E.
  */
 export function loadSettings(): { mongoUri: string; dbName: string; usingBuiltIn: boolean } {

@@ -370,7 +370,7 @@ export function Overlay(p: OverlayProps) {
         />,
       ),
     );
-    // tay nắm giữa đoạn (kéo để dời cả đoạn) — chỉ với đường gấp khúc vuông góc, không phải đường do bố cục tính
+    // tay nắm giữa đoạn (kéo để dời cả đoạn) - chỉ với đường gấp khúc vuông góc, không phải đường do bố cục tính
     if (!r.curved && !p.fixedRoute?.(id))
       for (let i = 1; i < r.pts.length; i++) {
         const [x1, y1] = r.pts[i - 1];

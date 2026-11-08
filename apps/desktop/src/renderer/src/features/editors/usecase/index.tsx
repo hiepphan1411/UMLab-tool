@@ -1,4 +1,4 @@
-// Use Case Diagram (`usecase`) — docs/phases/P06-usecase.md, docs/spec/notation-usecase.md.
+// Use Case Diagram (`usecase`) - docs/phases/P06-usecase.md, docs/spec/notation-usecase.md.
 import { registerDiagramTemplates, registerEditor } from '../editor-registry';
 import { CanvasEditor } from '../engine/canvas-editor';
 import { registerPalette, registerRules } from '../engine/registry';

@@ -127,7 +127,7 @@ function UseCaseInspector({ view, model, apply, readOnly, lookup }: ShapeInspect
         </div>
       )}
       <p className="text-[11.5px] text-muted">
-        {spec ? `Đặc tả: ${spec.name} (chuột phải → Mở đặc tả)` : 'Chưa có đặc tả — chuột phải → Tạo đặc tả.'}
+        {spec ? `Đặc tả: ${spec.name} (chuột phải → Mở đặc tả)` : 'Chưa có đặc tả - chuột phải → Tạo đặc tả.'}
       </p>
     </div>
   );

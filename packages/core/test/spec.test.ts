@@ -34,7 +34,7 @@ const refs = (s: UseCaseSpec) =>
     f.end.kind === 'returnTo' ? f.end.stepNo : f.end.kind,
   ]);
 
-describe('Đặc tả use case — luồng sự kiện', () => {
+describe('Đặc tả use case - luồng sự kiện', () => {
   it('fixture UC03: 7 bước, A1 tại 4 quay lại 5, E1 tại 2, E2 tại 5', () => {
     expect(UC03.mainFlow.map((s) => s.no)).toEqual([1, 2, 3, 4, 5, 6, 7]);
     expect(refs(UC03)).toEqual([
@@ -98,7 +98,7 @@ describe('Đặc tả use case — luồng sự kiện', () => {
   });
 });
 
-describe('Đặc tả use case — lưu & xuất', () => {
+describe('Đặc tả use case - lưu & xuất', () => {
   const setup = () => {
     const doc = new Y.Doc();
     for (const m of UC03_MODEL) modelMap(doc).set(m.id, m);

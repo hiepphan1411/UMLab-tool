@@ -203,7 +203,7 @@ function RefsPanel({ d, ops, locked }: { d: MindmapData; ops: MindOps; locked: b
       {editing ? (
         <>
           <p className="text-muted" style={{ fontSize: 12.5, margin: '6px 0' }}>
-            Mỗi dòng một mục dạng <code>[n] nội dung &lt;url&gt;</code> — có thể dán nguyên mục "Tài liệu tham khảo" của
+            Mỗi dòng một mục dạng <code>[n] nội dung &lt;url&gt;</code> - có thể dán nguyên mục "Tài liệu tham khảo" của
             báo cáo.
           </p>
           <Textarea className="mm-src" rows={22} value={text} onChange={(e) => setText(e.target.value)} />
@@ -371,7 +371,7 @@ export function MindDrawer({
               <Markdown src={n.detail} />
             ) : (
               <p className="text-muted" style={{ fontSize: 13 }}>
-                Chưa có nội dung chi tiết{!locked && ' — bấm biểu tượng bút để soạn'}.
+                Chưa có nội dung chi tiết{!locked && ' - bấm biểu tượng bút để soạn'}.
               </p>
             )}
             {t.children(n.id).length > 0 && (

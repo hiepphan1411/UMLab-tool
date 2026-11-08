@@ -32,7 +32,7 @@ test('Màn hình chờ: hiện logo + thanh tải, rồi đóng khi cửa sổ c
       NODE_ENV: 'production',
     },
   });
-  // màn hình chờ và cửa sổ chính (đang ẩn) cùng được tạo — lấy đúng trang splash.html
+  // màn hình chờ và cửa sổ chính (đang ẩn) cùng được tạo - lấy đúng trang splash.html
   await app.firstWindow();
   await expect.poll(() => app.windows().some((w) => /splash\.html$/.test(w.url())), { timeout: 10_000 }).toBe(true);
   const splash = app.windows().find((w) => /splash\.html$/.test(w.url()))!;

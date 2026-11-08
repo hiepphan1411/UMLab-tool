@@ -31,7 +31,7 @@ export async function wrap<T>(fn: () => Promise<T>): Promise<Result<T>> {
 }
 
 const ALPHA = '0123456789abcdefghijklmnopqrstuvwxyz';
-/** Id ngắn, ngẫu nhiên (base36) có tiền tố — dùng cho _id dạng chuỗi. */
+/** Id ngắn, ngẫu nhiên (base36) có tiền tố - dùng cho _id dạng chuỗi. */
 export function newId(prefix: string, len = 14): string {
   const bytes = randomBytes(len);
   let s = '';

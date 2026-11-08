@@ -1,4 +1,4 @@
-// Kiểu dữ liệu định dạng `umlab` — xem docs/spec/json-format.md.
+// Kiểu dữ liệu định dạng `umlab` - xem docs/spec/json-format.md.
 
 export const DIAGRAM_TYPES = [
   'architecture',

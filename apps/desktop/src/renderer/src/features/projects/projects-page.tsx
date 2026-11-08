@@ -360,7 +360,7 @@ export function ProjectsPage() {
                             <span
                               className="ml-1 font-medium"
                               style={{ color: 'var(--warn)' }}
-                              title="Tạo khi mất mạng — sẽ tự đồng bộ lên MongoDB"
+                              title="Tạo khi mất mạng - sẽ tự đồng bộ lên MongoDB"
                             >
                               · chưa đồng bộ
                             </span>

@@ -390,7 +390,7 @@ function ConnInspector({ engine, conn }: { engine: Engine; conn: Connector }) {
             {(conn.source.side || conn.target.side) && (
               <button
                 className="btn outline"
-                title="Bỏ khoá vị trí đầu mút — tự chọn giữa cạnh hướng về đầu kia"
+                title="Bỏ khoá vị trí đầu mút - tự chọn giữa cạnh hướng về đầu kia"
                 onClick={() =>
                   engine.apply((tx) =>
                     tx.setConn(conn.id, (c) => ({

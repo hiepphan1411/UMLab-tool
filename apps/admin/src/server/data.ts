@@ -218,7 +218,7 @@ export async function userDetail(db: Db, id: string, limit = 200): Promise<UserD
     ...edits.map((e) => ({
       at: e.last.toISOString(),
       kind: 'edit',
-      text: `Chỉnh sửa “${pname(e._id.p)}” — ${e.n} thay đổi`,
+      text: `Chỉnh sửa “${pname(e._id.p)}” - ${e.n} thay đổi`,
     })),
     ...versions.map((v) => ({
       at: v.createdAt.toISOString(),
@@ -278,7 +278,7 @@ async function checkIdentity(
     throw new AdminError(
       409,
       taken.isDeleted
-        ? `${what} này thuộc một tài khoản đã xoá — khôi phục tài khoản đó trong mục “Đã xoá”.`
+        ? `${what} này thuộc một tài khoản đã xoá - khôi phục tài khoản đó trong mục “Đã xoá”.`
         : `${what} này đã được dùng.`,
     );
   }
@@ -403,7 +403,7 @@ export async function resetUserPassword(db: Db, id: string, by: string): Promise
   return pw;
 }
 
-/** Đăng xuất tài khoản ở mọi máy (tăng tokenVersion — app nhận qua change stream). */
+/** Đăng xuất tài khoản ở mọi máy (tăng tokenVersion - app nhận qua change stream). */
 export async function logoutEverywhere(db: Db, id: string, by: string): Promise<void> {
   const c = col(db);
   const r = await c.users.updateOne({ _id: id }, { $inc: { tokenVersion: 1 } });

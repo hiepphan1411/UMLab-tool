@@ -1,4 +1,4 @@
-// Activity Diagram (`activity`) — docs/phases/P10-activity.md, docs/spec/notation-activity.md.
+// Activity Diagram (`activity`) - docs/phases/P10-activity.md, docs/spec/notation-activity.md.
 import { activityDiagram, layoutActivity, modelMap, normSpec, specToActivity, type UseCaseSpec } from '@umlab/core';
 import { useNavigate } from 'react-router-dom';
 import uc03 from '@fixtures/uc03-spec.umlab.json';

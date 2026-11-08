@@ -1,4 +1,4 @@
-# P10 — Activity Diagram + sinh từ đặc tả
+# P10 - Activity Diagram + sinh từ đặc tả
 
 **Mục tiêu:** Activity Diagram với đủ palette như hình 3, và sinh tự động từ đặc tả use case. Đặc tả: [spec/notation-activity.md](../spec/notation-activity.md), [spec/generators.md](../spec/generators.md) mục 1.
 

@@ -1,4 +1,4 @@
-# P11 — Sequence Diagram + sinh từ đặc tả
+# P11 - Sequence Diagram + sinh từ đặc tả
 
 **Mục tiêu:** Sequence Diagram với đủ palette như hình 4, bố cục theo thời gian, và sinh tự động từ đặc tả. Đặc tả: [spec/notation-sequence.md](../spec/notation-sequence.md), [spec/generators.md](../spec/generators.md) mục 2.
 

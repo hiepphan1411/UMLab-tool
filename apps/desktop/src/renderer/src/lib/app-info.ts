@@ -4,7 +4,7 @@ import { umlab } from './api';
 
 let cached: AppInfo | null = null;
 
-/** Thông tin app (phiên bản, bản dev…) — lấy một lần từ main process. */
+/** Thông tin app (phiên bản, bản dev…) - lấy một lần từ main process. */
 export function useAppInfo(): AppInfo | null {
   const [info, setInfo] = useState<AppInfo | null>(cached);
   useEffect(() => {

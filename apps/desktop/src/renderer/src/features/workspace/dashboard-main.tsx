@@ -53,7 +53,7 @@ interface Props {
 }
 
 function sizeOf(s: ProjectSession, d: DiagramMeta): string {
-  if (d.type === 'gantt' || d.type === 'usecase-spec') return '—';
+  if (d.type === 'gantt' || d.type === 'usecase-spec') return '-';
   if (d.type === 'mindmap')
     return `${[...dataMap(s.doc, d.id).keys()].filter((k) => k.startsWith('node:')).length} node`;
   const v = viewsMap(s.doc, d.id).size;

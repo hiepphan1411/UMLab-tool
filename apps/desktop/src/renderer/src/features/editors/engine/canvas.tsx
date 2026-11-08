@@ -199,7 +199,7 @@ export function Canvas({
 
   // ---------- đường nối đã định tuyến ----------
   // Khi đang kéo (có preview) chỉ tính lại đường nối gắn với hình đang dời / đang sửa; đường khác giữ kết quả lần trước
-  // (né hình mới tính lại đầy đủ khi thả) — sơ đồ lớn vẫn kéo mượt.
+  // (né hình mới tính lại đầy đủ khi thả) - sơ đồ lớn vẫn kéo mượt.
   const routeCache = useRef<{
     conns: EngineState['conns'];
     views: EngineState['views'];
@@ -263,7 +263,7 @@ export function Canvas({
 
   // cầu nhảy tính giao cắt giữa mọi cặp đường → tắt tạm khi đang kéo (vẽ lại khi thả), để memo ConnectorView giữ được
   const lineJumps = engine.meta?.canvas?.lineJumps !== false && !s.preview.size && !s.connPreview.size;
-  // mảng đường khác cho từng đường nối — ổn định giữa các lần render (hover, con trỏ…) để memo ConnectorView giữ được
+  // mảng đường khác cho từng đường nối - ổn định giữa các lần render (hover, con trỏ…) để memo ConnectorView giữ được
   const jumpsOf = useMemo(() => {
     if (!lineJumps) return null;
     const all = [...routes.values()].map((r) => r.pts);
@@ -278,7 +278,7 @@ export function Canvas({
 
   // ---------- culling ----------
   const viewport: Box = { x: -s.tx / s.zoom, y: -s.ty / s.zoom, w: size.w / s.zoom, h: size.h / s.zoom };
-  // ô lưới 200px của khung nhìn (chỉ đổi khi cuộn đủ xa) — dựng lại danh sách hình hiển thị
+  // ô lưới 200px của khung nhìn (chỉ đổi khi cuộn đủ xa) - dựng lại danh sách hình hiển thị
   const cellX = s.order.length > 300 ? Math.round(viewport.x / 200) : 0;
   const cellY = s.order.length > 300 ? Math.round(viewport.y / 200) : 0;
   const visible = useMemo(() => {

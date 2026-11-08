@@ -22,7 +22,7 @@ const mainRows = (page: Page) =>
 const waitFile = (p: string) =>
   expect.poll(() => (existsSync(p) ? readFileSync(p).length : 0), { timeout: 20_000 }).toBeGreaterThan(1000);
 
-test('P07: đặc tả UC03 — nhập fixture, chèn bước cập nhật tham chiếu, xuất DOCX / Markdown', async () => {
+test('P07: đặc tả UC03 - nhập fixture, chèn bước cập nhật tham chiếu, xuất DOCX / Markdown', async () => {
   const { app, page } = await launch();
   await register(page, 'Đặc tả', uniqueEmail('p07'));
   await page

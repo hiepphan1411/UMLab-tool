@@ -163,7 +163,7 @@ function attrColumn(ctx: Ctx, cls: OrmClass, a: Attribute, name: string, keyBase
     else {
       Object.assign(col, parseTypeText(base || 'VARCHAR'));
       col.type = base || 'VARCHAR';
-      ctx.warnings.push(`Kiểu lạ “${base}” (${cls.name}.${a.name}) — giữ nguyên, hãy sửa trong ERD hoặc bảng kiểu`);
+      ctx.warnings.push(`Kiểu lạ “${base}” (${cls.name}.${a.name}) - giữ nguyên, hãy sửa trong ERD hoặc bảng kiểu`);
     }
     col.default = defaultSql(a.default, st, ctx.o.dialect);
   }
@@ -272,7 +272,7 @@ export function classToErd(input: OrmInput, options: Partial<OrmOptions> = {}): 
       const pre = opt.prefix ?? '';
       if (target && isEmbeddable(target)) {
         if (many) {
-          ctx.warnings.push(`${cls.name}.${a.name}: tập hợp kiểu embeddable chưa hỗ trợ — bỏ qua`);
+          ctx.warnings.push(`${cls.name}.${a.name}: tập hợp kiểu embeddable chưa hỗ trợ - bỏ qua`);
           continue;
         }
         addAttrs(e, target, {
@@ -285,11 +285,11 @@ export function classToErd(input: OrmInput, options: Partial<OrmOptions> = {}): 
       if (target && selected.has(target.id)) {
         // thuộc tính kiểu entity → khoá ngoại (giống association N-1)
         if (!many) refs.push({ from: e, cls, attr: a, target: target.id });
-        else ctx.warnings.push(`${cls.name}.${a.name}: tập hợp entity nên vẽ thành association — bỏ qua`);
+        else ctx.warnings.push(`${cls.name}.${a.name}: tập hợp entity nên vẽ thành association - bỏ qua`);
         continue;
       }
       if (target && target.kind === 'class' && !selected.has(target.id)) {
-        ctx.warnings.push(`${cls.name}.${a.name}: kiểu “${target.name}” không được chọn — bỏ qua cột`);
+        ctx.warnings.push(`${cls.name}.${a.name}: kiểu “${target.name}” không được chọn - bỏ qua cột`);
         continue;
       }
       if (many) {
@@ -306,7 +306,7 @@ export function classToErd(input: OrmInput, options: Partial<OrmOptions> = {}): 
         col.unique = true;
       }
       if (e.columns.some((x) => x.name.toLowerCase() === col.name.toLowerCase())) {
-        ctx.warnings.push(`${cls.name}: trùng tên cột “${col.name}” — bỏ cột sau`);
+        ctx.warnings.push(`${cls.name}: trùng tên cột “${col.name}” - bỏ cột sau`);
         continue;
       }
       e.columns.push(col);
@@ -500,7 +500,7 @@ export function classToErd(input: OrmInput, options: Partial<OrmOptions> = {}): 
         const other = [a, b].find((x) => !x.classId || !entOf(x.classId));
         const nm = other?.classId ? ctx.byId.get(other.classId)?.name : '?';
         if (other?.classId && tableOfClass.get(other.classId) === null)
-          ctx.warnings.push(`Association tới class abstract “${nm}” (TABLE_PER_CLASS) — bỏ qua`);
+          ctx.warnings.push(`Association tới class abstract “${nm}” (TABLE_PER_CLASS) - bỏ qua`);
       }
       continue;
     }

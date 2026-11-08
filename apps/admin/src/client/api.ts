@@ -38,7 +38,7 @@ export const api = {
   restoreUser: (id: string) => req<{ ok: true }>('POST', `/api/users/${encodeURIComponent(id)}/restore`),
 };
 
-export const fmtDate = (iso: string | null) => (iso ? new Date(iso).toLocaleString('vi-VN') : '—');
+export const fmtDate = (iso: string | null) => (iso ? new Date(iso).toLocaleString('vi-VN') : '-');
 export const fmtDay = (iso: string) => new Date(iso).toLocaleDateString('vi-VN');
 
 export function timeAgo(iso: string | null): string {

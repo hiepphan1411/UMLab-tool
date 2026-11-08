@@ -27,7 +27,7 @@ async function drag(page: Page, a: readonly [number, number], b: readonly [numbe
   await page.mouse.up();
 }
 
-test('P08: Class — mẫu UniPark+, thuộc tính đủ trường, gợi ý kiểu, composition, realization, xuất SVG', async () => {
+test('P08: Class - mẫu UniPark+, thuộc tính đủ trường, gợi ý kiểu, composition, realization, xuất SVG', async () => {
   const { app, page } = await launch();
   await register(page, 'Class', uniqueEmail('p08'));
   await page
@@ -86,7 +86,7 @@ test('P08: Class — mẫu UniPark+, thuộc tính đủ trường, gợi ý ki�
   await expect(page.locator('[data-shape="cls.class"]')).toContainText('+ tinhPhi() : Decimal');
 
   await place('cls.class', 640, 200, 'Xe2');
-  // Composition PhienGuiXe2 ◆— Xe2
+  // Composition PhienGuiXe2 ◆- Xe2
   await page
     .locator('[data-tool="cls.association"]')
     .click({ position: { x: 200, y: 20 } })
