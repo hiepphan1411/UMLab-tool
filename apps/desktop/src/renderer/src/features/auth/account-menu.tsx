@@ -1,4 +1,14 @@
-import { CircleHelp, Database, KeyRound, LogOut, MonitorSmartphone, Palette, UserRound } from 'lucide-react';
+import {
+  CircleHelp,
+  Database,
+  GraduationCap,
+  KeyRound,
+  LogOut,
+  MonitorSmartphone,
+  Palette,
+  UserRound,
+} from 'lucide-react';
+import { FEATURE_VSTEP, hasFeature } from '@shared/api';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { call, errorText, umlab } from '@/lib/api';
@@ -160,6 +170,9 @@ export function AccountMenu() {
     { label: 'Giao diện', icon: <Palette />, children: [themeItem('auto'), themeItem('light'), themeItem('dark')] },
     { label: 'Kết nối cơ sở dữ liệu', icon: <Database />, onSelect: () => setDlg('conn') },
     { label: 'Trợ giúp & phím tắt', icon: <CircleHelp />, shortcut: 'F1', onSelect: () => nav('/help') },
+    ...(hasFeature(user, FEATURE_VSTEP)
+      ? [{ label: 'Ôn thi VSTEP', icon: <GraduationCap />, onSelect: () => nav('/vstep') } satisfies MenuEntry]
+      : []),
     { type: 'sep' },
     {
       label: 'Đăng xuất',

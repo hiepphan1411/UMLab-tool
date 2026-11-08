@@ -14,6 +14,7 @@ import {
   overview,
   resetUserPassword,
   restoreUser,
+  setUserFeatures,
   updateUser,
   userDetail,
 } from './data';
@@ -97,7 +98,7 @@ export function createApi(db: Db, cfg: AdminConfig) {
         send(res, 201, await createUser(db, await readJson(req), who));
         return true;
       }
-      const m = /^\/api\/users\/([\w-]+)(?:\/(reset-password|logout-all|update|delete|restore))?$/.exec(path);
+      const m = /^\/api\/users\/([\w-]+)(?:\/(reset-password|logout-all|update|delete|restore|features))?$/.exec(path);
       if (m && !m[2] && method === 'GET') {
         send(res, 200, await userDetail(db, m[1]));
         return true;
@@ -113,6 +114,10 @@ export function createApi(db: Db, cfg: AdminConfig) {
       }
       if (m && m[2] === 'update' && method === 'POST') {
         send(res, 200, await updateUser(db, m[1], await readJson(req), who));
+        return true;
+      }
+      if (m && m[2] === 'features' && method === 'POST') {
+        send(res, 200, await setUserFeatures(db, m[1], await readJson(req), who));
         return true;
       }
       if (m && m[2] === 'delete' && method === 'POST') {

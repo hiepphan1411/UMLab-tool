@@ -5,8 +5,10 @@ import { database } from './db';
 import { registerIpc } from './ipc';
 import { presence } from './presence.service';
 import { sync } from './sync.service';
+import { registerVstepScheme, vstep } from './vstep.service';
 
 const isDev = !app.isPackaged;
+registerVstepScheme();
 // Giao diện tiếng Việt: ô chọn ngày hiện dd/mm/yyyy, thông báo hệ thống tiếng Việt
 app.commandLine.appendSwitch('lang', 'vi');
 
@@ -106,6 +108,7 @@ app.whenReady().then(async () => {
   if (!isDev) Menu.setApplicationMenu(null);
   const splash = createSplash();
   registerIpc(isDev);
+  vstep.handleProtocol();
   auth.restore();
   sync.init();
   presence.init();

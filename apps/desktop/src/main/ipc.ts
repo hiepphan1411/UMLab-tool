@@ -20,6 +20,7 @@ import { presence } from './presence.service';
 import { projects } from './projects.service';
 import { sync } from './sync.service';
 import { versions } from './versions.service';
+import { vstep } from './vstep.service';
 import { AppError, wrap } from './util';
 
 type Handler = (...args: never[]) => unknown;
@@ -108,6 +109,12 @@ export function registerIpc(isDev: boolean): void {
   handle(IPC.authChangePassword, (input: { currentPassword: string; newPassword: string }) =>
     wrap(() => auth.changePassword(input)),
   );
+
+  // ---------- ôn thi VSTEP ----------
+  handle(IPC.vstepLoad, () => wrap(() => vstep.load()));
+  handle(IPC.vstepSave, (state: unknown) => wrap(() => vstep.save(state)));
+  handle(IPC.vstepMedia, () => wrap(() => vstep.media()));
+  handle(IPC.vstepPickMedia, () => wrap(() => vstep.pickDir()));
 
   // ---------- project ----------
   handle(IPC.projList, () => wrap(() => projects.list()));

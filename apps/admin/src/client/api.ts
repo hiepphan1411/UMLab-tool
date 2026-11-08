@@ -1,5 +1,7 @@
 // Gọi API của server quản trị (cùng origin). Lỗi → Error mang thông điệp tiếng Việt từ server.
-import type { Overview, UserDetail, UserRow } from '../server/types';
+import { FEATURES, type Overview, type UserDetail, type UserRow } from '../server/types';
+
+export { FEATURES };
 
 export type { Overview, UserDetail, UserRow };
 
@@ -30,6 +32,8 @@ export const api = {
   logoutAll: (id: string) => req<{ ok: true }>('POST', `/api/users/${encodeURIComponent(id)}/logout-all`),
   updateUser: (id: string, input: { name: string; email: string; username: string }) =>
     req<UserRow>('POST', `/api/users/${encodeURIComponent(id)}/update`, input),
+  setFeatures: (id: string, features: string[]) =>
+    req<UserRow>('POST', `/api/users/${encodeURIComponent(id)}/features`, { features }),
   deleteUser: (id: string) => req<{ ok: true }>('POST', `/api/users/${encodeURIComponent(id)}/delete`),
   restoreUser: (id: string) => req<{ ok: true }>('POST', `/api/users/${encodeURIComponent(id)}/restore`),
 };

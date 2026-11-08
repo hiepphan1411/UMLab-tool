@@ -14,6 +14,7 @@ import type {
   UserRow,
   VersionDoc,
 } from './types';
+import { FEATURES } from './types';
 
 export class AdminError extends Error {
   constructor(
@@ -131,6 +132,7 @@ const row = (u: UserDoc, projects: Map<string, number>, last: Map<string, Date>)
   deleted: !!u.isDeleted,
   deletedAt: u.deletedAt?.toISOString() ?? null,
   deletedBy: u.deletedBy ?? null,
+  features: Array.isArray(u.features) ? u.features : [],
 });
 
 /** `deleted`: true → chỉ tài khoản đã xoá (mềm), false → chỉ tài khoản còn dùng. */
@@ -413,4 +415,28 @@ export async function logoutEverywhere(db: Db, id: string, by: string): Promise<
     meta: { by },
     at: new Date(),
   });
+}
+
+/** Cấp/thu tính năng (app đang mở nhận hồ sơ mới qua change stream, menu đổi ngay). */
+export async function setUserFeatures(db: Db, id: string, input: { features?: unknown }, by: string): Promise<UserRow> {
+  const known = new Set(FEATURES.map((f) => f.id));
+  if (!Array.isArray(input.features) || input.features.some((f) => typeof f !== 'string' || !known.has(f)))
+    throw new AdminError(400, 'Danh sách tính năng không hợp lệ.');
+  const features = [...new Set(input.features as string[])].sort();
+  const c = col(db);
+  const u = await c.users.findOne({ _id: id });
+  if (!u) throw new AdminError(404, 'Tài khoản không tồn tại.');
+  const before = (u.features ?? []).slice().sort();
+  if (before.join(',') !== features.join(',')) {
+    await c.users.updateOne({ _id: id }, { $set: { features } });
+    const label = (ids: string[]) => ids.map((f) => FEATURES.find((x) => x.id === f)?.label ?? f).join(', ');
+    const added = features.filter((f) => !before.includes(f));
+    const removed = before.filter((f) => !features.includes(f));
+    const changes = [added.length && `cấp ${label(added)}`, removed.length && `thu ${label(removed)}`]
+      .filter(Boolean)
+      .join('; ');
+    await c.audit.insertOne(auditOf(id, 'adminUpdated', { by, changes: 'quyền tính năng (' + changes + ')' }));
+  }
+  const [projects, last] = await Promise.all([projectCounts(db, [id]), lastActive(db, [id])]);
+  return row({ ...u, features }, projects, last);
 }

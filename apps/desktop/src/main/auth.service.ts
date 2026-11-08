@@ -69,6 +69,7 @@ export function toPublic(u: UserDoc): PublicUser {
     username: u.username ?? u.email,
     color: u.color,
     createdAt: u.createdAt.toISOString(),
+    features: Array.isArray(u.features) ? u.features.filter((f) => typeof f === 'string') : [],
   };
 }
 
@@ -145,8 +146,12 @@ class AuthService {
     if (!u || u.isDeleted) return this.clear('Tài khoản không còn tồn tại hoặc đã bị quản trị xoá.');
     if (u.tokenVersion !== this.session.tv)
       return this.clear('Phiên đăng nhập đã hết hiệu lực (mật khẩu vừa đổi hoặc đã đăng xuất mọi thiết bị).');
+    const before = (this.user?.features ?? []).join(',');
     this.user = u;
     this.checkedAt = Date.now();
+    if (this.session) this.session.profile = toPublic(u);
+    // quản trị vừa cấp/thu quyền tính năng → báo renderer cập nhật menu ngay
+    if (before !== (u.features ?? []).join(',')) broadcast(IPC.authUserEvt, toPublic(u));
   }
 
   /** Người dùng hiện tại, đã kiểm tokenVersion (cache 60 giây). Ném UNAUTHORIZED nếu chưa đăng nhập. */

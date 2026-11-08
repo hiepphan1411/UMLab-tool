@@ -13,6 +13,27 @@ export interface PublicUser {
   username: string;
   color: string;
   createdAt: string;
+  /** Tính năng được cấp riêng (vd "vstep"). */
+  features: string[];
+}
+
+export const FEATURE_VSTEP = 'vstep';
+export const hasFeature = (u: PublicUser | null | undefined, f: string) => !!u?.features?.includes(f);
+
+/** Thư mục tài liệu VSTEP trên máy (MP3 + ảnh trang sách) — chỉ lưu cục bộ, không đồng bộ. */
+export interface VstepMediaInfo {
+  dir: string | null;
+  /** Đường dẫn tương đối (dấu /) của các tệp âm thanh trong thư mục (quét tối đa 3 cấp). */
+  audio: string[];
+  /** Có ảnh trang sách / đáp án đã tách sẵn (_umlab/book, _umlab/keys). */
+  bookPages: number;
+  keyPages: number;
+}
+
+export interface VstepSaveResult {
+  savedAt: number;
+  /** Đã ghi lên MongoDB (false = mới lưu trên máy, sẽ đồng bộ khi có mạng). */
+  synced: boolean;
 }
 
 export type Role = 'owner' | 'editor' | 'viewer';
@@ -180,6 +201,15 @@ export interface UmlabApi {
     updateProfile(input: { name: string; color?: string }): Promise<Result<PublicUser>>;
     changePassword(input: { currentPassword: string; newPassword: string }): Promise<Result<void>>;
     onSessionEnded(cb: (reason: string) => void): Unsubscribe;
+    /** Hồ sơ đổi từ xa (vd quản trị cấp quyền tính năng). */
+    onUser(cb: (u: PublicUser) => void): Unsubscribe;
+  };
+  vstep: {
+    /** Trạng thái học (JSON, chuẩn hoá ở renderer bằng normVstepState). Cần quyền tính năng "vstep". */
+    load(): Promise<Result<unknown>>;
+    save(state: unknown): Promise<Result<VstepSaveResult>>;
+    media(): Promise<Result<VstepMediaInfo>>;
+    pickMediaDir(): Promise<Result<VstepMediaInfo | null>>;
   };
   projects: {
     list(): Promise<Result<ProjectSummary[]>>;
@@ -246,6 +276,11 @@ export const IPC = {
   authUpdateProfile: 'auth:updateProfile',
   authChangePassword: 'auth:changePassword',
   authEndedEvt: 'auth:ended:evt',
+  authUserEvt: 'auth:user:evt',
+  vstepLoad: 'vstep:load',
+  vstepSave: 'vstep:save',
+  vstepMedia: 'vstep:media',
+  vstepPickMedia: 'vstep:pickMedia',
   projList: 'proj:list',
   projGet: 'proj:get',
   projCreate: 'proj:create',

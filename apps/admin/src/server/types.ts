@@ -15,6 +15,8 @@ export interface UserDoc {
   isDeleted?: boolean;
   deletedAt?: Date;
   deletedBy?: string;
+  /** Tính năng được cấp thêm trong app (vd "vstep"). */
+  features?: string[];
 }
 
 export interface ProjectDoc {
@@ -89,7 +91,17 @@ export interface UserRow {
   deleted: boolean;
   deletedAt: string | null;
   deletedBy: string | null;
+  features: string[];
 }
+
+/** Tính năng quản trị cấp được cho từng tài khoản. */
+export const FEATURES: { id: string; label: string; text: string }[] = [
+  {
+    id: 'vstep',
+    label: 'Ôn thi VSTEP',
+    text: 'Hiện mục “Ôn VSTEP” trong app: tài liệu 4 kỹ năng, luyện đề, lịch học.',
+  },
+];
 
 export interface HistoryItem {
   at: string;

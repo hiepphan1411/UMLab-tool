@@ -45,9 +45,14 @@ export const useSession = create<SessionState>((set, get) => ({
     const off2 = umlab.conn.onStatus((s) => {
       if (s.state === 'online' && !get().user) void get().refresh();
     });
+    // quản trị cấp/thu quyền tính năng → cập nhật hồ sơ (menu Ôn VSTEP hiện/ẩn ngay)
+    const off3 = umlab.auth.onUser((u) => {
+      if (get().user?.id === u.id) set({ user: u });
+    });
     return () => {
       off1();
       off2();
+      off3();
     };
   },
 }));

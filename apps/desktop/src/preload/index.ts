@@ -18,6 +18,12 @@ const api: UmlabApi = {
     openExternal: (url) => invoke(IPC.appOpenExternal, url),
     reload: () => ipcRenderer.send(IPC.appReload),
   },
+  vstep: {
+    load: () => invoke(IPC.vstepLoad),
+    save: (state) => invoke(IPC.vstepSave, state),
+    media: () => invoke(IPC.vstepMedia),
+    pickMediaDir: () => invoke(IPC.vstepPickMedia),
+  },
   conn: {
     status: () => invoke(IPC.connStatus),
     onStatus: (cb) => on(IPC.connStatusEvt, cb),
@@ -38,6 +44,7 @@ const api: UmlabApi = {
     updateProfile: (input) => invoke(IPC.authUpdateProfile, input),
     changePassword: (input) => invoke(IPC.authChangePassword, input),
     onSessionEnded: (cb) => on(IPC.authEndedEvt, cb),
+    onUser: (cb) => on(IPC.authUserEvt, cb),
   },
   projects: {
     list: () => invoke(IPC.projList),

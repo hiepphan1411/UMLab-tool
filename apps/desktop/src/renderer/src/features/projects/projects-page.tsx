@@ -5,6 +5,7 @@ import {
   FileJson,
   FolderInput,
   FolderOpen,
+  GraduationCap,
   LayoutGrid,
   List,
   MoreHorizontal,
@@ -18,7 +19,8 @@ import {
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DIAGRAM_TYPE_INFO, ImportError, type DiagramType } from '@umlab/core';
-import type { ProjectSummary } from '@shared/api';
+import { FEATURE_VSTEP, hasFeature, type ProjectSummary } from '@shared/api';
+import { useSession } from '../auth/session';
 import { call, errorText, umlab } from '@/lib/api';
 import { cn } from '@/lib/cn';
 import { dateTime, timeAgo } from '@/lib/format';
@@ -126,6 +128,7 @@ export function ProjectsPage() {
   const [dialog, setDialog] = useState<{ mode: 'create' } | { mode: 'edit'; p: ProjectSummary } | null>(null);
   const [share, setShare] = useState<ProjectSummary | null>(null);
   const [busy, setBusy] = useState(false);
+  const canVstep = useSession((s) => hasFeature(s.user, FEATURE_VSTEP));
 
   useEffect(() => {
     try {
@@ -248,6 +251,11 @@ export function ProjectsPage() {
           />
         </div>
         <Spacer />
+        {canVstep && (
+          <Button variant="outline" icon={<GraduationCap />} onClick={() => nav('/vstep')}>
+            Ôn VSTEP
+          </Button>
+        )}
         <Button variant="outline" icon={<FolderInput />} onClick={doImport} disabled={busy}>
           Nhập project
         </Button>

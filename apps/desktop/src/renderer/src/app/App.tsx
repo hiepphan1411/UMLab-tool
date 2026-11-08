@@ -9,6 +9,7 @@ import { WorkspacePage } from '@/features/workspace/workspace-page';
 import { EditorPage } from '@/features/workspace/editor-page';
 import { useConn } from '@/lib/conn';
 import { UiKitPage } from '@/pages/ui-kit-page';
+import { VstepPage } from '@/features/vstep/vstep-page';
 import { HelpPage, useHelpShortcut } from '@/pages/help-page';
 import { DialogHost, FullScreenSpinner, MenuHost, ToastHost, TooltipHost } from '@/ui';
 
@@ -69,6 +70,14 @@ export function App() {
             element={
               <RequireAuth>
                 <EditorPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/vstep/*"
+            element={
+              <RequireAuth>
+                <VstepPage />
               </RequireAuth>
             }
           />

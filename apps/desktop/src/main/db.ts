@@ -16,6 +16,15 @@ export interface UserDoc {
   /** Xoá mềm từ trang quản trị: không đăng nhập được, không mời vào project được; dữ liệu giữ nguyên. */
   isDeleted?: boolean;
   deletedAt?: Date;
+  /** Tính năng được quản trị cấp thêm (vd "vstep" = mục Ôn thi VSTEP). */
+  features?: string[];
+}
+
+/** Tiến độ Ôn VSTEP của một tài khoản (toàn bộ trạng thái dạng JSON, _id = userId). */
+export interface VstepProgressDoc {
+  _id: string;
+  state: unknown;
+  updatedAt: number;
 }
 
 export interface LoginAttemptDoc {
@@ -283,6 +292,7 @@ class Database {
   versions = () => this.col<VersionDoc>('diagram_versions');
   assets = () => this.col<AssetDoc>('assets');
   audit = () => this.col<AuditDoc>('audit_log');
+  vstep = () => this.col<VstepProgressDoc>('vstep_progress');
 }
 
 export function friendlyError(msg: string): string {

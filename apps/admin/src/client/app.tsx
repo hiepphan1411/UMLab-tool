@@ -22,7 +22,17 @@ import {
 import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import { HashRouter, Link, NavLink, Route, Routes, useNavigate, useParams } from 'react-router-dom';
 import { BarChart } from './charts';
-import { TYPE_LABEL, api, fmtDate, fmtDay, timeAgo, type Overview, type UserDetail, type UserRow } from './api';
+import {
+  FEATURES,
+  TYPE_LABEL,
+  api,
+  fmtDate,
+  fmtDay,
+  timeAgo,
+  type Overview,
+  type UserDetail,
+  type UserRow,
+} from './api';
 
 function useLoad<T>(fn: () => Promise<T>, deps: unknown[]) {
   const [data, setData] = useState<T | null>(null);
@@ -482,6 +492,36 @@ function UserPage() {
             </div>
           </section>
           {notice && <p className="notice">{notice}</p>}
+          <section className="card features-card" aria-label="Quyền tính năng">
+            <h2>Quyền tính năng</h2>
+            {FEATURES.map((f) => {
+              const on = data.user.features.includes(f.id);
+              return (
+                <label key={f.id} className="feature-row">
+                  <input
+                    type="checkbox"
+                    checked={on}
+                    disabled={data.user.deleted}
+                    data-testid={`feature-${f.id}`}
+                    onChange={() =>
+                      void act(
+                        () =>
+                          api.setFeatures(
+                            id,
+                            on ? data.user.features.filter((x) => x !== f.id) : [...data.user.features, f.id],
+                          ),
+                        on ? `Đã thu quyền ${f.label}.` : `Đã cấp quyền ${f.label}. App đang mở sẽ hiện mục này ngay.`,
+                      )
+                    }
+                  />
+                  <span>
+                    <b>{f.label}</b>
+                    <span className="muted small">{f.text}</span>
+                  </span>
+                </label>
+              );
+            })}
+          </section>
           <section className="two-col">
             <div className="card">
               <h2>Lịch sử</h2>

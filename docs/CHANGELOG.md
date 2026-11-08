@@ -2,6 +2,25 @@
 
 Mỗi phase hoàn thành thêm một mục: `## P0x — tên phase (ngày)` + danh sách thay đổi chính.
 
+## Ôn thi VSTEP (2026-11-08)
+
+- **Quyền theo tài khoản:** `User.features` (vd `"vstep"`); trang quản trị → chi tiết tài khoản có mục **Quyền tính
+  năng** (bật/tắt “Ôn thi VSTEP”, ghi lịch sử). App nhận hồ sơ mới qua change stream (`auth:user:evt`) nên nút
+  **Ôn VSTEP** (thanh trên trang project + menu tài khoản) hiện/ẩn ngay. Main process chặn mọi IPC `vstep:*` và giao
+  thức media nếu chưa được cấp.
+- **Core `packages/core/src/vstep/`:** zod schema bộ đề JSON (nhập/xuất, đáp án chữ hoặc số, lỗi tiếng Việt kèm vị
+  trí), trạng thái học, quy đổi điểm (0–10, làm tròn 0,5, bậc B1/B2/C1), sinh **lịch học 4 giai đoạn** từ ngày bắt đầu
+  tới ngày thi (xen kẽ kỹ năng, dồn đơn vị khi lịch ngắn) + test.
+- **Main `vstep.service.ts`:** tiến độ lưu trên máy (`userData/vstep/<userId>.json`) + MongoDB (`vstep_progress`, lấy
+  bản mới hơn); thư mục tài liệu trên máy phát qua giao thức `umlab-vstep://media/…` (chặn thoát thư mục, hỗ trợ Range
+  để tua audio); CSP thêm `media-src`.
+- **Renderer `features/vstep/`:** Tổng quan (đếm ngược ngày thi, việc hôm nay, điểm ước tính), **Lịch học** (lịch
+  tháng, tick việc, mục tiêu riêng, ghi chú), tài liệu 6 phần (Nghe, Đọc, Viết, Nói, Ngữ pháp, Từ vựng — template,
+  bài mẫu có dịch, IPA, bấm từ để nghe bằng giọng Windows, bật/tắt IPA/nghĩa, xuất Markdown), làm đề có đồng hồ + chế độ
+  nghe 1 lần + chấm + giải thích, **89 track của sách** kèm ảnh trang sách / lời thoại (tốc độ, tua 5 s, lặp A–B, tự
+  chấm), phòng luyện Viết (đếm từ, chèn template, tự chấm 4 tiêu chí), phòng luyện Nói (máy đọc đề, đếm giờ chuẩn
+  bị/nói, ghi âm + nghe lại), thẻ từ vựng Leitner, sơ đồ tư duy (xuất `.umlab.json`), Kho đề nhập JSON + tệp mẫu.
+
 ## Sơ đồ tư duy (mindmap) + drawer kiến thức (2026-11-08)
 
 - **Loại sơ đồ mới `mindmap`** (“Sơ đồ tư duy”): node trung tâm, nhánh chính, ý, **câu hỏi phản biện** (viền đứt, dấu

@@ -1,0 +1,1512 @@
+/* Ôn thi VSTEP — chỉ dùng token màu của app (tokens.css), tự theo sáng/tối. */
+.vs-brand {
+  font-weight: 600;
+  font-size: 14px;
+  margin-left: 4px;
+}
+.vs-save {
+  color: var(--muted);
+  font-size: 12px;
+  margin-left: 10px;
+}
+.vs-shell {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+.vs-nav {
+  width: 196px;
+  flex: none;
+  border-right: 1px solid var(--line);
+  background: var(--panel);
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: auto;
+}
+.vs-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  color: var(--muted);
+  font-weight: 500;
+}
+.vs-nav-item svg {
+  width: 16px;
+  height: 16px;
+}
+.vs-nav-item:hover {
+  background: var(--panel-2);
+  color: var(--text);
+}
+.vs-nav-item.on {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.vs-main {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+.vs-page {
+  overflow-y: auto;
+  padding: 20px 24px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+  flex: 1;
+}
+.vs-narrow {
+  max-width: 860px;
+  margin: 0 auto;
+  width: 100%;
+}
+.vs-page-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.vs-page-head h1,
+.vs-skill-head h1 {
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.vs-h2 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+.vs-h4 {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 14px 0 6px;
+}
+.vs-muted-line {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.55;
+  margin-top: 8px;
+}
+.vs-path {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  word-break: break-all;
+}
+.vs-ul {
+  padding-left: 20px;
+  list-style: disc;
+  line-height: 1.7;
+  margin: 8px 0 12px;
+}
+ol.vs-ul {
+  list-style: decimal;
+}
+.vs-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-weight: 500;
+}
+.vs-back:hover {
+  color: var(--text);
+}
+.text-ok {
+  color: var(--ok);
+}
+.text-warn {
+  color: var(--warn);
+}
+.vs-pill {
+  font-size: 11.5px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 500;
+}
+
+/* panel, bảng, thanh tiến độ */
+.vs-panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 16px;
+  min-width: 0;
+}
+.vs-panel > header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.vs-panel > header h3 {
+  font-size: 14px;
+  font-weight: 600;
+}
+.vs-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: 16px;
+}
+.vs-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.vs-table th,
+.vs-table td {
+  text-align: left;
+  padding: 7px 8px;
+  border-bottom: 1px solid var(--line);
+}
+.vs-table th {
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 12px;
+}
+.vs-table tr.cursor-pointer:hover td {
+  background: var(--panel-2);
+}
+.vs-bar {
+  height: 6px;
+  border-radius: 99px;
+  background: var(--panel-2);
+  overflow: hidden;
+  margin-top: 6px;
+}
+.vs-bar > span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  border-radius: inherit;
+  transition: width 0.3s;
+}
+.vs-bar[data-tone='ok'] > span {
+  background: var(--ok);
+}
+
+/* trang tổng quan */
+.vs-hero {
+  border-radius: 16px;
+  padding: 22px 24px;
+  color: var(--on-color);
+  background:
+    radial-gradient(circle at 92% 12%, rgba(255, 255, 255, 0.18) 0 70px, transparent 71px),
+    radial-gradient(circle at 78% 110%, rgba(255, 255, 255, 0.12) 0 110px, transparent 111px),
+    linear-gradient(135deg, #2e62e6, #5b3fc4);
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.vs-hero > div:first-child {
+  flex: 1;
+  min-width: 260px;
+}
+.vs-hero-label {
+  opacity: 0.85;
+  font-weight: 500;
+}
+.vs-hero-big {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 2px 0 6px;
+}
+.vs-hero-sub {
+  opacity: 0.9;
+  max-width: 560px;
+  line-height: 1.5;
+}
+.vs-hero-stats {
+  display: flex;
+  gap: 10px;
+}
+.vs-hero-stats > div {
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 12px;
+  padding: 10px 14px;
+  min-width: 104px;
+  display: grid;
+}
+.vs-hero-stats b {
+  font-size: 22px;
+}
+.vs-hero-stats span {
+  font-size: 12px;
+  opacity: 0.85;
+}
+.vs-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+.vs-card {
+  text-align: left;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.vs-card:hover {
+  border-color: var(--accent);
+}
+.vs-card-title {
+  font-weight: 600;
+}
+.vs-card-sub,
+.vs-card-foot {
+  color: var(--muted);
+  font-size: 12px;
+}
+.vs-form {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.vs-form label {
+  display: grid;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.vs-form .field {
+  width: 170px;
+  height: 32px;
+}
+
+/* việc trong lịch */
+.vs-tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.vs-task {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+}
+.vs-task.done .vs-task-title {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+.vs-check {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 1.5px solid var(--muted);
+  flex: none;
+  display: grid;
+  place-items: center;
+  color: var(--on-accent);
+}
+.vs-task.done .vs-check,
+.vs-check[aria-pressed='true'] {
+  background: var(--ok);
+  border-color: var(--ok);
+}
+.vs-task-skill {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--accent);
+  width: 62px;
+  flex: none;
+}
+.vs-task[data-skill='listening'] .vs-task-skill {
+  color: #0e8a9b;
+}
+.vs-task[data-skill='reading'] .vs-task-skill {
+  color: var(--ok);
+}
+.vs-task[data-skill='writing'] .vs-task-skill {
+  color: var(--warn);
+}
+.vs-task[data-skill='speaking'] .vs-task-skill {
+  color: #c2417e;
+}
+.vs-task-main {
+  flex: 1;
+  min-width: 0;
+}
+.vs-task-title {
+  font-weight: 500;
+}
+.vs-task-detail {
+  color: var(--muted);
+  font-size: 12px;
+}
+.vs-task-min {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* lịch */
+.vs-phases {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 8px;
+}
+.vs-phase {
+  border-radius: 10px;
+  padding: 8px 12px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  display: grid;
+  gap: 2px;
+  font-size: 12px;
+}
+.vs-phase span {
+  color: var(--muted);
+}
+.vs-phase[data-phase='1'] {
+  box-shadow: inset 0 3px 0 #2e62e6;
+}
+.vs-phase[data-phase='2'] {
+  box-shadow: inset 0 3px 0 #1f9d66;
+}
+.vs-phase[data-phase='3'] {
+  box-shadow: inset 0 3px 0 #d98a1c;
+}
+.vs-phase[data-phase='4'] {
+  box-shadow: inset 0 3px 0 #d9463e;
+}
+.vs-cal-wrap {
+  display: grid;
+  grid-template-columns: minmax(420px, 1.1fr) minmax(360px, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+.vs-cal {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+.vs-cal-h {
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+  padding: 4px 0;
+}
+.vs-cal-d {
+  position: relative;
+  min-height: 62px;
+  border-radius: 9px;
+  border: 1px solid transparent;
+  background: var(--panel-2);
+  padding: 5px 6px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.vs-cal-d.out {
+  opacity: 0.4;
+}
+.vs-cal-d.in[data-phase='1'] {
+  background: color-mix(in srgb, #2e62e6 12%, var(--panel));
+}
+.vs-cal-d.in[data-phase='2'] {
+  background: color-mix(in srgb, #1f9d66 12%, var(--panel));
+}
+.vs-cal-d.in[data-phase='3'] {
+  background: color-mix(in srgb, #d98a1c 14%, var(--panel));
+}
+.vs-cal-d.in[data-phase='4'] {
+  background: color-mix(in srgb, #d9463e 12%, var(--panel));
+}
+.vs-cal-d.in[data-phase='0'] {
+  background: var(--danger);
+  color: var(--on-accent);
+}
+.vs-cal-d.today {
+  border-color: var(--accent);
+}
+.vs-cal-d.sel {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.vs-cal-n {
+  font-weight: 600;
+}
+.vs-cal-p {
+  font-size: 11px;
+  color: var(--muted);
+}
+.vs-cal-exam {
+  font-weight: 700;
+  font-size: 12px;
+}
+.vs-cal-bar {
+  height: 4px;
+  border-radius: 99px;
+  background: rgba(127, 127, 127, 0.2);
+  overflow: hidden;
+  margin-top: auto;
+}
+.vs-cal-bar i {
+  display: block;
+  height: 100%;
+  background: var(--ok);
+}
+.vs-cal-dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.vs-note {
+  height: 90px;
+  padding: 8px;
+  resize: vertical;
+}
+
+/* trang kỹ năng */
+.vs-skill {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+}
+.vs-skill-head {
+  display: flex;
+  align-items: flex-end;
+  gap: 18px;
+  padding: 14px 24px 0;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+}
+.vs-skill-head h1 {
+  padding-bottom: 10px;
+}
+.vs-tabs {
+  border-bottom: 0;
+  padding: 0;
+}
+.vs-skill-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.vs-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+.vs-stat {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: grid;
+  gap: 2px;
+}
+.vs-stat span,
+.vs-stat small {
+  color: var(--muted);
+  font-size: 12px;
+}
+.vs-stat b {
+  font-size: 22px;
+}
+.vs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.vs-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+}
+.vs-row-main {
+  flex: 1;
+  min-width: 0;
+}
+.vs-row-title {
+  font-weight: 600;
+}
+.vs-row-sub {
+  color: var(--muted);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vs-row-score {
+  color: var(--ok);
+  font-weight: 500;
+  font-size: 12px;
+}
+.vs-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.vs-chip {
+  padding: 3px 9px;
+  border-radius: 99px;
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  font-size: 12px;
+}
+
+/* tài liệu */
+.vs-doc {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+.vs-toc {
+  width: 290px;
+  flex: none;
+  border-right: 1px solid var(--line);
+  background: var(--panel);
+  overflow-y: auto;
+  padding: 12px 10px 24px;
+}
+.vs-toc-head {
+  display: grid;
+  gap: 2px;
+  padding: 2px 6px 12px;
+}
+.vs-toc-pt {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  padding: 10px 6px 4px;
+}
+.vs-toc-item {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  width: 100%;
+  text-align: left;
+  padding: 6px;
+  border-radius: 7px;
+  line-height: 1.4;
+}
+.vs-toc-item:hover {
+  background: var(--panel-2);
+}
+.vs-toc-item.on {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.vs-toc-ck {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line);
+  flex: none;
+  margin-top: 2px;
+  display: grid;
+  place-items: center;
+  color: var(--on-accent);
+}
+.vs-toc-ck.done {
+  background: var(--ok);
+  border-color: var(--ok);
+}
+.vs-doc-body {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+}
+.vs-doc-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 22px 32px 48px;
+}
+.vs-doc-crumb {
+  color: var(--muted);
+  font-size: 12px;
+}
+.vs-doc-h1 {
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 4px 0 14px;
+}
+.vs-doc-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 28px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+/* nội dung Rich */
+.vt-rich {
+  line-height: 1.7;
+  font-size: 14px;
+}
+.vt-md p {
+  margin: 0 0 10px;
+}
+.vt-md ul,
+.vt-md ol {
+  padding-left: 22px;
+  margin: 0 0 10px;
+}
+.vt-md ul {
+  list-style: disc;
+}
+.vt-md ol {
+  list-style: decimal;
+}
+.vt-md li {
+  margin: 3px 0;
+}
+.vt-md h2,
+.vt-md h3 {
+  font-weight: 600;
+  margin: 16px 0 8px;
+}
+.vt-md strong {
+  font-weight: 650;
+}
+.vt-md table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 8px 0 14px;
+  font-size: 13px;
+}
+.vt-md th,
+.vt-md td {
+  border: 1px solid var(--line);
+  padding: 6px 9px;
+  text-align: left;
+  vertical-align: top;
+}
+.vt-md th {
+  background: var(--panel-2);
+  font-weight: 600;
+}
+.vt-md code {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  background: var(--panel-2);
+  padding: 1px 4px;
+  border-radius: 4px;
+}
+.vt-md pre {
+  background: var(--panel-2);
+  padding: 10px 12px;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+.vt-md del {
+  color: var(--danger);
+}
+.vt-md blockquote {
+  border-left: 3px solid var(--line);
+  padding-left: 12px;
+  color: var(--muted);
+}
+.vw {
+  cursor: pointer;
+  border-bottom: 1px dotted var(--muted);
+}
+.vw:hover {
+  color: var(--accent);
+}
+.vw-ipa {
+  font-family: 'Segoe UI', 'Arial Unicode MS', sans-serif;
+  color: var(--accent);
+  font-size: 0.92em;
+  margin-left: 4px;
+}
+.vw-mean {
+  color: var(--muted);
+  font-size: 0.92em;
+  margin-left: 4px;
+}
+.vw-mean::before {
+  content: '(';
+}
+.vw-mean::after {
+  content: ')';
+}
+.vs {
+  cursor: pointer;
+  border-bottom: 1px dotted var(--muted);
+}
+.vs:hover {
+  color: var(--accent);
+}
+.hide-ipa .vw-ipa,
+.hide-ipa .vt-col-ipa {
+  display: none;
+}
+.hide-mean .vw-mean {
+  display: none;
+}
+.vt-block-title {
+  font-weight: 600;
+  font-size: 13px;
+}
+.vt-block-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.vt-block-head .vt-block-title {
+  flex: 1;
+}
+.vt-say {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  color: var(--accent);
+  background: var(--accent-soft);
+  vertical-align: middle;
+}
+.vt-say:hover,
+.vt-say.on {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.vt-say-block,
+.vt-vocab,
+.vt-template,
+.vt-sample,
+.vt-dialog,
+.vt-callout {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 10px 0 14px;
+  background: var(--panel);
+}
+.vt-say-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 6px 0;
+  border-top: 1px dashed var(--line);
+}
+.vt-say-row:first-of-type {
+  border-top: 0;
+}
+.vt-say-block > .vt-block-title + .vt-say-row {
+  border-top: 0;
+}
+.vt-en {
+  font-weight: 600;
+}
+.vt-vi {
+  color: var(--muted);
+  font-size: 13px;
+}
+.vt-vocab table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-top: 6px;
+}
+.vt-vocab th,
+.vt-vocab td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+.vt-vocab th {
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 12px;
+}
+.vt-word {
+  cursor: pointer;
+}
+.vt-ipa {
+  color: var(--accent);
+  font-family: 'Segoe UI', 'Arial Unicode MS', sans-serif;
+  white-space: nowrap;
+}
+.vt-template {
+  background: var(--panel-2);
+}
+.vt-template pre {
+  white-space: pre-wrap;
+  font-family: var(--font-ui);
+  font-size: 13.5px;
+  line-height: 1.75;
+  margin: 0;
+}
+.vt-slot {
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: 4px;
+  padding: 0 3px;
+}
+.vt-opt {
+  color: var(--muted);
+  font-style: italic;
+}
+.vt-sample-vi {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--line);
+  color: var(--muted);
+}
+.vt-dl {
+  padding: 2px 0;
+}
+.vt-callout.tip {
+  background: color-mix(in srgb, var(--ok) 8%, var(--panel));
+  border-color: color-mix(in srgb, var(--ok) 35%, var(--line));
+}
+.vt-callout.warn {
+  background: color-mix(in srgb, var(--warn) 9%, var(--panel));
+  border-color: color-mix(in srgb, var(--warn) 35%, var(--line));
+}
+.vt-callout.note {
+  background: var(--accent-soft);
+  border-color: color-mix(in srgb, var(--accent) 30%, var(--line));
+}
+.vt-callout .vt-block-title {
+  margin-bottom: 4px;
+}
+
+/* làm đề */
+.vs-quiz {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+.vs-quiz-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+}
+.vs-qnav {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  justify-content: center;
+}
+.vs-qn {
+  width: 24px;
+  height: 22px;
+  border-radius: 5px;
+  font-size: 11px;
+  background: var(--panel-2);
+  color: var(--muted);
+  border: 1px solid transparent;
+}
+.vs-qn.ans {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.vs-qn.cur {
+  border-color: var(--accent);
+}
+.vs-qn.ok {
+  background: var(--ok);
+  color: var(--on-accent);
+}
+.vs-qn.bad {
+  background: var(--danger);
+  color: var(--on-accent);
+}
+.vs-timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--panel-2);
+}
+.vs-timer.warn {
+  color: var(--danger);
+}
+.vs-quiz-score {
+  font-weight: 600;
+  color: var(--ok);
+}
+.vs-sec-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 8px 16px 0;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+  overflow-x: auto;
+}
+.vs-sec-tab {
+  padding: 6px 10px;
+  border-bottom: 2px solid transparent;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.vs-sec-tab.on {
+  color: var(--text);
+  border-color: var(--text);
+}
+.vs-quiz-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+.vs-passage {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 26px;
+  border-right: 1px solid var(--line);
+  background: var(--panel);
+}
+.vs-questions {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px 24px 40px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.vs-quiz-body.two .vs-questions {
+  margin: 0;
+}
+.vs-instr {
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.vs-audio {
+  width: 100%;
+  margin-bottom: 14px;
+}
+.vs-tts {
+  margin-bottom: 14px;
+}
+.vs-q {
+  margin-bottom: 18px;
+}
+.vs-q-prompt {
+  margin-bottom: 8px;
+  line-height: 1.55;
+}
+.vs-opts {
+  display: grid;
+  gap: 6px;
+}
+.vs-opt {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  text-align: left;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--panel);
+  line-height: 1.45;
+}
+.vs-opt:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+.vs-opt.sel {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.vs-opt.ok {
+  border-color: var(--ok);
+  background: color-mix(in srgb, var(--ok) 12%, var(--panel));
+}
+.vs-opt.bad {
+  border-color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 10%, var(--panel));
+}
+.vs-opt-l {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 600;
+  font-size: 12px;
+  background: var(--panel-2);
+}
+.vs-explain {
+  margin-top: 6px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--panel-2);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* track sách */
+.vs-tracks {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+.vs-track-list {
+  width: 280px;
+  flex: none;
+  overflow-y: auto;
+  border-right: 1px solid var(--line);
+  background: var(--panel);
+  padding: 6px 8px 24px;
+}
+.vs-track {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 5px 6px;
+  border-radius: 7px;
+  text-align: left;
+}
+.vs-track:hover {
+  background: var(--panel-2);
+}
+.vs-track.on {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.vs-track-n {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  width: 22px;
+}
+.vs-track-l {
+  flex: 1;
+  font-size: 12.5px;
+}
+.vs-track-s {
+  color: var(--ok);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+.vs-track.done .vs-track-n {
+  color: var(--ok);
+}
+.vs-track-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 20px;
+  min-height: 0;
+}
+.vs-track-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.vs-track-head > div:first-child {
+  flex: 1;
+}
+.vs-track-head h2 {
+  font-size: 16px;
+  font-weight: 600;
+}
+.vs-self {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.vs-self .field {
+  width: 56px;
+  height: 28px;
+}
+.vs-player {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+  flex-wrap: wrap;
+}
+.vs-play {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--on-accent);
+  display: grid;
+  place-items: center;
+}
+.vs-seek {
+  flex: 1;
+  min-width: 120px;
+  accent-color: var(--accent);
+}
+.vs-time {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+}
+.vs-track-tabs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.vs-track-tabs .vs-muted-line {
+  margin: 0;
+}
+.vs-pages {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--panel);
+}
+.vs-pages-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--line);
+}
+.vs-page-in {
+  width: 64px;
+  height: 26px;
+  display: inline-block;
+}
+.vs-pages-scroll {
+  flex: 1;
+  overflow: auto;
+  background: var(--canvas);
+  padding: 10px;
+  text-align: center;
+}
+.vs-pages-scroll img {
+  max-width: none;
+  background: var(--paper);
+  box-shadow: var(--shadow);
+  display: inline-block;
+}
+
+/* phòng luyện viết / nói */
+.vs-lab {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+.vs-lab-list {
+  width: 290px;
+  flex: none;
+  overflow-y: auto;
+  border-right: 1px solid var(--line);
+  background: var(--panel);
+  padding: 10px 8px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.vs-lab-list > .seg {
+  margin-bottom: 8px;
+}
+.vs-lab-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px;
+  border-radius: 7px;
+  text-align: left;
+}
+.vs-lab-item:hover {
+  background: var(--panel-2);
+}
+.vs-lab-item.on {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.vs-lab-tag {
+  font-size: 11px;
+  font-weight: 700;
+  width: 24px;
+  color: var(--muted);
+}
+.vs-lab-t {
+  flex: 1;
+  font-size: 13px;
+}
+.vs-lab-done {
+  font-size: 11px;
+  color: var(--ok);
+}
+.vs-lab-main {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.vs-write,
+.vs-speak {
+  padding: 16px 24px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
+}
+.vs-prompt {
+  background: var(--panel-2);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+}
+.vs-outline {
+  white-space: pre-wrap;
+  font-family: var(--font-ui);
+  background: var(--panel-2);
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-top: 8px;
+  line-height: 1.7;
+}
+.vs-editor-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.vs-words {
+  font-weight: 600;
+}
+.vs-editor {
+  height: 420px;
+  padding: 12px 14px;
+  font-size: 14.5px;
+  line-height: 1.75;
+  resize: vertical;
+  font-family: var(--font-ui);
+}
+.vs-criteria {
+  display: grid;
+  gap: 8px;
+}
+.vs-crit {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.vs-hist summary {
+  cursor: pointer;
+  padding: 6px 0;
+}
+.vs-hist pre {
+  white-space: pre-wrap;
+  font-family: var(--font-ui);
+  background: var(--panel-2);
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 6px;
+}
+.vs-qlist {
+  display: grid;
+  gap: 6px;
+  margin: 8px 0 12px;
+}
+.vs-qlist li {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: 8px;
+}
+.vs-qlist li.on {
+  background: var(--accent-soft);
+  font-weight: 600;
+}
+.vs-mind {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 12px;
+  align-items: center;
+}
+.vs-mind-c {
+  font-weight: 700;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.vs-mind-n {
+  padding: 6px 10px;
+  border-radius: 99px;
+  border: 1.5px solid var(--accent);
+  color: var(--accent);
+  font-weight: 500;
+}
+.vs-speak-ctl {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+.vs-big-timer {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 700;
+}
+.vs-big-timer.rec {
+  color: var(--danger);
+}
+.vs-recorded {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+.vs-selfscore {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+/* thẻ từ vựng */
+.vs-flash {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 36px 28px;
+  text-align: center;
+  cursor: pointer;
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.vs-flash-word {
+  font-size: 30px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.vs-flash-ipa {
+  color: var(--accent);
+  font-size: 18px;
+  font-family: 'Segoe UI', 'Arial Unicode MS', sans-serif;
+}
+.vs-flash-hint {
+  color: var(--muted);
+  margin-top: auto;
+}
+.vs-flash-back {
+  cursor: default;
+  width: 100%;
+  max-width: 560px;
+  text-align: left;
+  margin-top: 10px;
+}
+.vs-flash-mean {
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 8px;
+}
+.vs-flash-btns {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+/* sơ đồ tư duy */
+.vs-mm {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+.vs-mm-canvas {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  background: var(--canvas);
+  touch-action: none;
+}
+.vs-mm-tools {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  gap: 6px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 4px;
+  z-index: 1;
+}
+.vs-mm-side {
+  width: 420px;
+  flex: none;
+  overflow-y: auto;
+  border-left: 1px solid var(--line);
+  background: var(--panel);
+  padding: 16px 18px 32px;
+}
+.vs-mm-side h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+@media (max-width: 1100px) {
+  .vs-cal-wrap {
+    grid-template-columns: 1fr;
+  }
+  .vs-toc,
+  .vs-lab-list,
+  .vs-track-list {
+    width: 230px;
+  }
+  .vs-mm-side {
+    width: 320px;
+  }
+}
