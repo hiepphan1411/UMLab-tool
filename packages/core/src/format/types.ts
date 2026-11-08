@@ -9,6 +9,7 @@ export const DIAGRAM_TYPES = [
   'erd',
   'activity',
   'sequence',
+  'mindmap',
 ] as const;
 export type DiagramType = (typeof DIAGRAM_TYPES)[number];
 

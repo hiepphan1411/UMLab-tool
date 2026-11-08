@@ -56,4 +56,5 @@ export const TYPE_LABEL: Record<string, string> = {
   erd: 'ERD',
   architecture: 'Kiến trúc',
   gantt: 'Gantt',
+  mindmap: 'Mindmap',
 };

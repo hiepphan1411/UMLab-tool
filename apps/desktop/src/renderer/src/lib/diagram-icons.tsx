@@ -130,6 +130,20 @@ const ICONS: Record<DiagramType, (p: P) => React.ReactNode> = {
         <path d="M13 6.2h1.5v5.5M18.5 11.7h.5v5.5" strokeWidth={1.1} />
       </>,
     ),
+  // node trung tâm + 4 nhánh cong hai phía
+  mindmap: ({ size, color }) =>
+    wrap(
+      size,
+      color,
+      <>
+        <rect x="8" y="9.6" width="8" height="4.8" rx="2.4" {...soft(color)} />
+        <path d="M8 12c-2 0-2.2-6-4.6-6M8 12c-2 0-2.2 6-4.6 6M16 12c2 0 2.2-6 4.6-6M16 12c2 0 2.2 6 4.6 6" />
+        <circle cx="2.6" cy="6" r="1" />
+        <circle cx="2.6" cy="18" r="1" />
+        <circle cx="21.4" cy="6" r="1" />
+        <circle cx="21.4" cy="18" r="1" />
+      </>,
+    ),
 };
 
 export function DiagramGlyph({ type, size, color }: { type: DiagramType; size: number; color: string }) {

@@ -76,6 +76,14 @@ export const DIAGRAM_TYPE_INFO: DiagramTypeInfo[] = [
     icon: 'gantt-chart',
     canvas: false,
   },
+  {
+    type: 'mindmap',
+    label: 'Sơ đồ tư duy',
+    short: 'Mindmap',
+    description: 'Tổng hợp kiến thức, drawer chi tiết, câu hỏi',
+    icon: 'brain-circuit',
+    canvas: false,
+  },
 ];
 
 export const DIAGRAM_TYPE_BY_ID: Record<DiagramType, DiagramTypeInfo> = Object.fromEntries(

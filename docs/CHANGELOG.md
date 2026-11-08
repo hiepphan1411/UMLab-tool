@@ -2,6 +2,24 @@
 
 Mỗi phase hoàn thành thêm một mục: `## P0x — tên phase (ngày)` + danh sách thay đổi chính.
 
+## Sơ đồ tư duy (mindmap) + drawer kiến thức (2026-11-08)
+
+- **Loại sơ đồ mới `mindmap`** (“Sơ đồ tư duy”): node trung tâm, nhánh chính, ý, **câu hỏi phản biện** (viền đứt, dấu
+  ?), ghi chú. Dữ liệu `data:<id>` = `meta` + `node:<id>` (mỗi node một khoá, cộng tác không đè nhau) —
+  `packages/core/src/mindmap/` + test.
+- **Canvas:** bố cục tự động hai phía / một phía, đường cong theo màu nhánh, thu gọn/mở nhánh, kéo khung nhìn,
+  Ctrl+lăn zoom, **kéo node để dời cả nhánh**, **thả lên node khác để đổi cha**, đổi tên tại chỗ, menu chuột phải, phím
+  tắt (Tab, Enter, Del, F2, Space, Alt+↑/↓, mũi tên, Ctrl+F, Ctrl+0), tìm kiếm không dấu, nút **Khoá** (chỉ xem).
+- **Drawer kiến thức chi tiết:** Markdown mở rộng — bảng, công thức KaTeX, **khung công thức** kèm bảng đại lượng,
+  hình SVG, hộp gợi ý/trả lời, trích dẫn `[n]` nhảy tới **tài liệu tham khảo** (danh sách dùng chung, mở liên kết ngoài);
+  soạn + xem trước ngay trong drawer.
+- Xuất ảnh / JSON, nhập JSON, ảnh thu nhỏ dashboard; mẫu **“Kiến thức bảo vệ UniPark+”**
+  (`docs/reference/unipark-mindmap.umlab.json`, sinh bằng `diagrams/mindmap/build-mindmap.ts`).
+- Thêm phụ thuộc `katex`, `marked`, `dompurify` cho app desktop.
+- Khối ` ```faq ` (dòng `Q:` / `A:`): danh sách câu hỏi ôn tập gập/mở, đánh số, nút “Mở tất cả đáp án”. Mẫu mới
+  **“Kiến thức bảo vệ UniPark+ (chi tiết)”** (`docs/reference/unipark-mindmap-chi-tiet.umlab.json`: 128 node, nhánh
+  Nghiên cứu khoa học, 814 câu hỏi ôn tập); mẫu cũ giữ nguyên.
+
 ## 0.2.0 — Sửa / xoá mềm tài khoản, màn đăng nhập (2026-10-17)
 
 - **Trang quản trị → chi tiết tài khoản:** **Sửa thông tin** (họ tên, email, tên đăng nhập; kiểm trùng như khi tạo,

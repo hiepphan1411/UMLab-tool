@@ -1,6 +1,7 @@
 import { migrateLegacyUnipark } from '../format/legacy';
 import type { DiagramRecord, DiagramType, Folder, ProjectBundle } from '../format/types';
 import { normGantt } from '../gantt/model';
+import { emptyMindmap } from '../mindmap/model';
 import { uid } from '../util/ids';
 import { emptyBundle } from './bundle';
 
@@ -23,10 +24,10 @@ export function newDiagram(
     createdAt: now,
     updatedAt: now,
     generatedFrom: null,
-    canvas: { background: '#FFFFFF', grid: type !== 'gantt' && type !== 'usecase-spec' },
+    canvas: { background: '#FFFFFF', grid: type !== 'gantt' && type !== 'usecase-spec' && type !== 'mindmap' },
     views: [],
     connectors: [],
-    data: type === 'gantt' ? normGantt({ title: name }, 'sprint') : null,
+    data: type === 'gantt' ? normGantt({ title: name }, 'sprint') : type === 'mindmap' ? emptyMindmap(name) : null,
   };
 }
 

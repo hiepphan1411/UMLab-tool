@@ -15,6 +15,7 @@ const LOADERS: Record<string, () => Promise<unknown>> = {
   erd: () => import('./erd'),
   activity: () => import('./activity'),
   sequence: () => import('./sequence'),
+  mindmap: () => import('./mindmap'),
 };
 
 const loading = new Map<string, Promise<void>>();

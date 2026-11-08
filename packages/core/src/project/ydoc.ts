@@ -66,6 +66,12 @@ export function encodeData(type: DiagramType, data: unknown): Record<string, unk
     for (const t of tasks) out['task:' + t.id] = t;
     return out;
   }
+  if (type === 'mindmap' && isPlainObject(data) && Array.isArray(data.nodes)) {
+    const { nodes, ...meta } = data as { nodes: { id: string }[] } & Record<string, unknown>;
+    const out: Record<string, unknown> = { meta };
+    for (const n of nodes) if (n && typeof n.id === 'string') out['node:' + n.id] = n;
+    return out;
+  }
   if (isPlainObject(data)) {
     const out: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(data)) if (v !== undefined) out['f:' + k] = v;
@@ -95,6 +101,10 @@ export function decodeData(type: DiagramType, entries: Record<string, unknown>):
         seen.add(k.slice(5));
       }
     return { ...(entries.meta as object), tasks };
+  }
+  if (type === 'mindmap' && ('meta' in entries || keys.some((k) => k.startsWith('node:')))) {
+    const nodes = keys.filter((k) => k.startsWith('node:')).map((k) => entries[k]);
+    return { ...((entries.meta as object | undefined) ?? {}), nodes };
   }
   if ('value' in entries && keys.length === 1) return entries.value;
   const out: Record<string, unknown> = {};

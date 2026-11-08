@@ -2,6 +2,7 @@ import {
   ArrowRightLeft,
   BookOpen,
   Bot,
+  BrainCircuit,
   Boxes,
   Briefcase,
   Building2,
@@ -87,6 +88,7 @@ export const DIAGRAM_ICONS: Record<DiagramType, LucideIcon> = {
   erd: Database,
   architecture: Network,
   gantt: ChartGantt,
+  mindmap: BrainCircuit,
 };
 
 /** Màu nhấn cho từng loại sơ đồ (thẻ, chip số lượng). */
