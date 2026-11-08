@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { questionCount } from '@umlab/core';
 import { BUILTIN_SETS, CURRICULUM, DOCS, VOCAB_CARDS, docSections, planFor } from './content';
 import { VSTEP_MINDMAP, toPlainMarkdown } from './content/mindmap';
+import { BOOK } from './content/book';
 import { BOOK_TRACKS } from './content/tracks';
 import { inlineTokens, plainText } from './rich';
 
@@ -26,7 +27,13 @@ describe('VSTEP – nội dung', () => {
         ).toBe(true);
       else if (kind === 'set') expect(sets.has(rest), u.link).toBe(true);
       else if (kind === 'write' || kind === 'speak') expect(tasks.has(rest), u.link).toBe(true);
-      else expect(['progress', 'cards']).toContain(kind);
+      else if (kind === 'book') {
+        const [sk, sec] = rest.split('#') as [keyof typeof BOOK, string];
+        expect(
+          BOOK[sk].some((x) => x.id === sec),
+          u.link,
+        ).toBe(true);
+      } else expect(['progress', 'cards']).toContain(kind);
     }
     expect(new Set(CURRICULUM.map((u) => u.id)).size).toBe(CURRICULUM.length);
   });
@@ -73,7 +80,7 @@ describe('VSTEP – nội dung', () => {
     expect(h).toContain('khách sạn');
     expect(h).toContain('data-say="Good morning"');
     expect(plainText('{{hotel|/həʊˈtel/|khách sạn}} **now**')).toBe('hotel now');
-    expect(toPlainMarkdown('~~~say\nHi | Chào\n~~~')).toContain('**Hi** — Chào');
+    expect(toPlainMarkdown('~~~say\nHi | Chào\n~~~')).toContain('**Hi** - Chào');
   });
 
   it('sơ đồ tư duy có đủ 6 nhánh tài liệu + lịch', () => {

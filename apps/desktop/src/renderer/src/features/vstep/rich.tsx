@@ -11,6 +11,7 @@
 //   tip / warn / note → hộp nhấn mạnh
 import DOMPurify from 'dompurify';
 import { Copy, Languages, Pause, Volume2 } from 'lucide-react';
+import { sentenceIpa, useIpaReady } from './ipa';
 import { Marked } from 'marked';
 import { Fragment, memo, useEffect, useMemo, useRef, useState, type MouseEvent, type ReactNode } from 'react';
 import { cn } from '@/lib/cn';
@@ -136,7 +137,36 @@ export function SpeakBtn({ text, label = 'Nghe', script }: { text: string; label
   );
 }
 
+/** Bật/tắt IPA cả câu cho một khối (mặc định theo tuỳ chọn chung). */
+function useBlockIpa(): [boolean, () => void] {
+  const pref = useSpeechPrefs((s) => s.sentenceIpa);
+  const [on, setOn] = useState<boolean | null>(null);
+  const show = on ?? pref;
+  const ready = useIpaReady(show);
+  return [show && ready, () => setOn(!show)];
+}
+
+function IpaBtn({ on, toggle }: { on: boolean; toggle: () => void }) {
+  return (
+    <button
+      type="button"
+      className={cn('vt-say vt-ipa-btn', on && 'on')}
+      onClick={toggle}
+      aria-label="IPA cả câu"
+      title="Hiện/ẩn phiên âm IPA cả câu (giọng Mỹ, tự sinh)"
+    >
+      <span style={{ fontSize: 10, fontWeight: 700 }}>IPA</span>
+    </button>
+  );
+}
+
+const ipaLine = (en: string) => {
+  const t = sentenceIpa(plainText(en).replace(/\[[^\]]*\]/g, ' '));
+  return t ? `<span class="vt-ipa-line">/${esc(t)}/</span>` : '';
+};
+
 function SayBlock({ b }: { b: Block }) {
+  const [ipa, toggleIpa] = useBlockIpa();
   const rows = b.body
     .split('\n')
     .map((l) => l.trim())
@@ -147,12 +177,16 @@ function SayBlock({ b }: { b: Block }) {
     });
   return (
     <div className="vt-say-block">
-      {b.title && <div className="vt-block-title">{b.title}</div>}
+      <div className="vt-block-head">
+        <span className="vt-block-title">{b.title}</span>
+        <IpaBtn on={ipa} toggle={toggleIpa} />
+      </div>
       {rows.map((r, i) => (
         <div key={i} className="vt-say-row">
           <SpeakBtn text={plainText(r.en)} />
           <div>
             <Html as="span" className="vt-en" html={mdInline(r.en)} />
+            {ipa && <Html as="span" html={ipaLine(r.en)} />}
             {r.vi && <Html className="vt-vi" html={mdInline(r.vi)} />}
           </div>
         </div>
@@ -215,10 +249,16 @@ function VocabBlock({ b }: { b: Block }) {
 }
 
 function TemplateBlock({ b }: { b: Block }) {
-  const html = esc(b.body)
-    .replace(/\[([^\]\n]+)\]/g, '<span class="vt-slot">[$1]</span>')
-    .replace(/\(([^)\n]*?(?:tuỳ chọn|optional)[^)\n]*)\)/gi, '<span class="vt-opt">($1)</span>')
-    .replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+  const [ipa, toggleIpa] = useBlockIpa();
+  const fmt = (line: string) =>
+    esc(line)
+      .replace(/\[([^\]\n]+)\]/g, '<span class="vt-slot">[$1]</span>')
+      .replace(/\(([^)\n]*?(?:tuỳ chọn|optional)[^)\n]*)\)/gi, '<span class="vt-opt">($1)</span>')
+      .replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+  const html = b.body
+    .split('\n')
+    .map((l) => fmt(l) + (ipa && /[A-Za-z]{2}/.test(l.replace(/\[[^\]]*\]/g, '')) ? '\n' + ipaLine(l) : ''))
+    .join('\n');
   const copy = async () => {
     await navigator.clipboard.writeText(b.body.replace(/\*\*/g, ''));
     toast('Đã chép template');
@@ -228,6 +268,7 @@ function TemplateBlock({ b }: { b: Block }) {
       <div className="vt-block-head">
         <span className="vt-block-title">{b.title || 'Template'}</span>
         <SpeakBtn text={plainText(b.body.replace(/\[[^\]]*\]/g, ' '))} label="Nghe template" />
+        <IpaBtn on={ipa} toggle={toggleIpa} />
         <button type="button" className="vt-say" onClick={() => void copy()} aria-label="Chép" title="Chép">
           <Copy size={13} />
         </button>
@@ -240,11 +281,13 @@ function TemplateBlock({ b }: { b: Block }) {
 function SampleBlock({ b }: { b: Block }) {
   const [en, vi] = b.body.split(/^---[ \t]*$/m);
   const [showVi, setShowVi] = useState(false);
+  const [ipa, toggleIpa] = useBlockIpa();
   return (
     <div className="vt-sample">
       <div className="vt-block-head">
         <span className="vt-block-title">{b.title || 'Bài mẫu'}</span>
         <SpeakBtn text={plainText(en)} label="Đọc cả bài" />
+        <IpaBtn on={ipa} toggle={toggleIpa} />
         {vi && (
           <button
             type="button"
@@ -257,7 +300,16 @@ function SampleBlock({ b }: { b: Block }) {
           </button>
         )}
       </div>
-      <Html className="vt-md" html={mdHtml(en)} />
+      {ipa ? (
+        en
+          .split(/\n\s*\n/)
+          .filter((p) => p.trim())
+          .map((p, i) => (
+            <Html key={i} className="vt-md" html={mdHtml(p) + (/^\*\*Đề/.test(p.trim()) ? '' : ipaLine(p))} />
+          ))
+      ) : (
+        <Html className="vt-md" html={mdHtml(en)} />
+      )}
       {vi && showVi && <Html className="vt-md vt-sample-vi" html={mdHtml(vi)} />}
     </div>
   );
@@ -284,6 +336,66 @@ function DialogBlock({ b }: { b: Block }) {
   );
 }
 
+/** Bài tập: mỗi dòng "Câu hỏi | A | B | C | D | đáp án (A–D) | giải thích". */
+function QuizBlock({ b }: { b: Block }) {
+  const items = b.body
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean)
+    .map((l) => {
+      const p = l.split('|').map((x) => x.trim());
+      const explain = p.pop() ?? '';
+      const ans = 'ABCDEF'.indexOf((p.pop() ?? 'A').toUpperCase());
+      const [q, ...opts] = p;
+      return { q, opts, ans, explain };
+    });
+  const [picked, setPicked] = useState<Record<number, number>>({});
+  const done = Object.keys(picked).length;
+  const right = items.filter((it, i) => picked[i] === it.ans).length;
+  return (
+    <div className="vt-quiz">
+      <div className="vt-block-head">
+        <span className="vt-block-title">{b.title || 'Bài tập'}</span>
+        {done > 0 && (
+          <button type="button" className="btn sm" onClick={() => setPicked({})}>
+            Làm lại
+          </button>
+        )}
+      </div>
+      {items.map((it, i) => (
+        <div key={i} className="vt-quiz-q">
+          <Html as="span" html={`<b>${i + 1}.</b> ` + mdInline(it.q)} />
+          <div className="vt-quiz-opts">
+            {it.opts.map((o, oi) => (
+              <button
+                key={oi}
+                type="button"
+                disabled={picked[i] != null}
+                className={cn(
+                  'vt-quiz-opt',
+                  picked[i] != null && oi === it.ans && 'ok',
+                  picked[i] === oi && oi !== it.ans && 'bad',
+                )}
+                onClick={() => setPicked((p) => ({ ...p, [i]: oi }))}
+              >
+                {String.fromCharCode(65 + oi)}. {o}
+              </button>
+            ))}
+          </div>
+          {picked[i] != null && (
+            <Html className="vt-quiz-ex" html={(picked[i] === it.ans ? '✔ ' : '✘ ') + mdInline(it.explain)} />
+          )}
+        </div>
+      ))}
+      {done > 0 && (
+        <div className="vt-quiz-score">
+          Đúng {right}/{done} câu đã làm (tổng {items.length} câu).
+        </div>
+      )}
+    </div>
+  );
+}
+
 const CALLOUT: Record<string, string> = { tip: 'Mẹo', warn: 'Lưu ý', note: 'Ghi nhớ' };
 
 function renderBlock(b: Block, key: number): ReactNode {
@@ -298,11 +410,13 @@ function renderBlock(b: Block, key: number): ReactNode {
       return <SampleBlock key={key} b={b} />;
     case 'dialog':
       return <DialogBlock key={key} b={b} />;
+    case 'quiz':
+      return <QuizBlock key={key} b={b} />;
     case 'tip':
     case 'warn':
     case 'note':
       return (
-        <div key={key} className={cn('vt-callout', b.type)}>
+        <div key={key} className="vt-callout" data-kind={b.type}>
           <div className="vt-block-title">{b.title || CALLOUT[b.type]}</div>
           <Html className="vt-md" html={mdHtml(b.body)} />
         </div>

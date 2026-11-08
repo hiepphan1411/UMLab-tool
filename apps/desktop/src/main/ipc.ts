@@ -57,6 +57,25 @@ export function registerIpc(isDev: boolean): void {
     if (/^https?:\/\//.test(String(url))) await shell.openExternal(String(url));
   });
   ipcMain.on(IPC.appReload, (e) => e.sender.reload());
+  ipcMain.handle(
+    IPC.appCapture,
+    async (e, rect: { x: number; y: number; width: number; height: number }, width?: number) => {
+      try {
+        const r = {
+          x: Math.max(0, Math.round(Number(rect?.x) || 0)),
+          y: Math.max(0, Math.round(Number(rect?.y) || 0)),
+          width: Math.max(1, Math.round(Number(rect?.width) || 1)),
+          height: Math.max(1, Math.round(Number(rect?.height) || 1)),
+        };
+        const img = await e.sender.capturePage(r);
+        if (img.isEmpty()) return null;
+        const w = Math.min(480, Math.max(120, Number(width) || 320));
+        return 'data:image/jpeg;base64,' + img.resize({ width: w, quality: 'good' }).toJPEG(72).toString('base64');
+      } catch {
+        return null;
+      }
+    },
+  );
 
   // ---------- kết nối ----------
   handle(IPC.connStatus, (): ConnStatus => database.current);
@@ -115,6 +134,17 @@ export function registerIpc(isDev: boolean): void {
   handle(IPC.vstepSave, (state: unknown) => wrap(() => vstep.save(state)));
   handle(IPC.vstepMedia, () => wrap(() => vstep.media()));
   handle(IPC.vstepPickMedia, () => wrap(() => vstep.pickDir()));
+  handle(IPC.vstepLoadAnnots, () => wrap(() => vstep.load('annots')));
+  handle(IPC.vstepSaveAnnots, (data: unknown) => wrap(() => vstep.save(data, 'annots')));
+  handle(IPC.vstepDocs, () => wrap(() => vstep.listDocs()));
+  handle(IPC.vstepPickPdf, () => wrap(() => vstep.pickPdf()));
+  handle(IPC.vstepAddDoc, (input: { name: string; path: string }) => wrap(() => vstep.addDoc(input)));
+  handle(IPC.vstepUpdateDoc, (id: string, patch: { name?: string; lastPage?: number }) =>
+    wrap(() => vstep.updateDoc(String(id), patch ?? {})),
+  );
+  handle(IPC.vstepRemoveDoc, (id: string) => wrap(() => vstep.removeDoc(String(id))));
+  handle(IPC.vstepTranslate, (text: string) => wrap(() => vstep.translate(String(text))));
+  handle(IPC.vstepOcr, (png: Uint8Array) => wrap(() => vstep.ocr(toU8(png))));
 
   // ---------- project ----------
   handle(IPC.projList, () => wrap(() => projects.list()));

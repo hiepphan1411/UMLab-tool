@@ -1,9 +1,10 @@
+import { GRAMMAR_B2, GRAMMAR_MORE } from './grammar-extra';
 import { md, type VDoc } from './types';
 
-export const grammarDoc: VDoc = {
+const baseGrammar: VDoc = {
   id: 'grammar',
   title: 'Ngữ pháp trọng tâm B1',
-  subtitle: '10 chủ điểm đủ dùng cho Viết và Nói',
+  subtitle: 'Cốt lõi B1 + nâng cao B2, có mẹo nhớ và bài tập tình huống',
   parts: [
     {
       id: 'g1',
@@ -117,7 +118,7 @@ export const grammarDoc: VDoc = {
             ~~~
 
             ~~~tip Dùng ở đâu
-            Viết thư khuyên bạn: *If I were you, I would…* — Bài luận giải pháp: *If the government invests more in…, people will…* — Part 2 Nói: *If we choose this option, we will save money.*
+            Viết thư khuyên bạn: *If I were you, I would…* - Bài luận giải pháp: *If the government invests more in…, people will…* - Part 2 Nói: *If we choose this option, we will save money.*
             ~~~
           `,
         },
@@ -145,11 +146,11 @@ export const grammarDoc: VDoc = {
           id: 'g2-relative',
           title: '2.4. Mệnh đề quan hệ (who, which, that, where)',
           body: md`
-            - **who** — thay cho người: _I have a friend_ **who** _lives in Hue._
-            - **which** — thay cho vật: _This is the book_ **which** _I bought yesterday._
-            - **that** — thay cho người/vật (không dùng sau dấu phẩy).
-            - **where** — nơi chốn: _Hue is the city_ **where** _I was born._
-            - **whose** — sở hữu: _She is the girl_ **whose** _father is a doctor._
+            - **who** - thay cho người: _I have a friend_ **who** _lives in Hue._
+            - **which** - thay cho vật: _This is the book_ **which** _I bought yesterday._
+            - **that** - thay cho người/vật (không dùng sau dấu phẩy).
+            - **where** - nơi chốn: _Hue is the city_ **where** _I was born._
+            - **whose** - sở hữu: _She is the girl_ **whose** _father is a doctor._
 
             ~~~say Câu ăn điểm
             Ha Noi, which is the capital of Vietnam, has a lot of historic buildings. | Hà Nội, thủ đô của Việt Nam, có nhiều công trình lịch sử.
@@ -224,7 +225,7 @@ export const grammarDoc: VDoc = {
           title: '2.8. Danh từ, mạo từ và lượng từ',
           body: md`
             - **a** + âm phụ âm (_a book, a university_ /juː/), **an** + âm nguyên âm (_an apple, an hour_ /aʊə/).
-            - **the** — vật đã xác định/duy nhất: _the sun, the government, the Internet_.
+            - **the** - vật đã xác định/duy nhất: _the sun, the government, the Internet_.
             - Danh từ không đếm được (không thêm -s, không dùng a/an): _information, advice, money, furniture, homework, news, equipment_.
             - **many / a few** + danh từ đếm được số nhiều; **much / a little** + không đếm được; **a lot of / lots of** dùng cho cả hai.
 
@@ -253,5 +254,21 @@ export const grammarDoc: VDoc = {
         },
       ],
     },
+  ],
+};
+
+/** Tài liệu ngữ pháp: nối phần giải thích thêm + bài tập vào từng mục, thêm phần B2. */
+export const grammarDoc: VDoc = {
+  ...baseGrammar,
+  parts: [
+    ...baseGrammar.parts.map((p) => ({
+      ...p,
+      sections: p.sections.map((x) =>
+        GRAMMAR_MORE[x.id]
+          ? { ...x, body: [x.body.trimEnd(), GRAMMAR_MORE[x.id]].join(String.fromCharCode(10, 10)) }
+          : x,
+      ),
+    })),
+    GRAMMAR_B2,
   ],
 };

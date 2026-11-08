@@ -61,7 +61,7 @@ Building Management Office`,
           prompt: 'What will the monthly fee NOT be used for?',
           options: ['Water', 'Tools', 'A gardener', 'Seeds'],
           answer: 3,
-          explain: 'Bài nêu "water, tools and a gardener" — không nhắc tới hạt giống (seeds).',
+          explain: 'Bài nêu "water, tools and a gardener" - không nhắc tới hạt giống (seeds).',
         },
         {
           prompt: 'How often will the gardener visit?',
@@ -174,7 +174,7 @@ Despite these drawbacks, experts believe that the market will continue to grow. 
             'Because they need clothes for work',
           ],
           answer: 1,
-          explain: '"enjoy the feeling of hunting for rare items" — thích tìm món hiếm.',
+          explain: '"enjoy the feeling of hunting for rare items" - thích tìm món hiếm.',
         },
         {
           prompt: 'The writer mentions "2,700 litres of water" in order to',
@@ -283,7 +283,7 @@ Experts recommend that adults get seven to nine hours of sleep a night and that 
             'waste products',
           ],
           answer: 1,
-          explain: '"This allows fluid to flow…" — chính việc khoảng trống tăng lên giúp dịch lưu thông.',
+          explain: '"This allows fluid to flow…" - chính việc khoảng trống tăng lên giúp dịch lưu thông.',
         },
         {
           prompt: 'It can be inferred from paragraph 3 that',
@@ -348,7 +348,7 @@ Psychologist Barry Schwartz has argued that the problem extends beyond simple in
 
 Subsequent research has, nonetheless, painted a more nuanced picture. A review of fifty experiments published in 2010 found that, on average, the size of an assortment had virtually no effect on satisfaction or purchasing. Choice overload appears to occur only under specific conditions: when people lack clear preferences, when the options are difficult to compare, or when they are under time pressure.
 
-The practical implications are considerable. Businesses have begun to simplify their product ranges, and some governments design "default options" — for example, automatically enrolling employees in pension schemes — so that individuals need not make complex decisions unaided. Critics, however, warn that such measures risk becoming paternalistic, restricting freedom in the name of convenience.`,
+The practical implications are considerable. Businesses have begun to simplify their product ranges, and some governments design "default options" - for example, automatically enrolling employees in pension schemes - so that individuals need not make complex decisions unaided. Critics, however, warn that such measures risk becoming paternalistic, restricting freedom in the name of convenience.`,
       questions: [
         {
           prompt: 'According to conventional economic thinking, more choice',
@@ -405,7 +405,7 @@ The practical implications are considerable. Businesses have begun to simplify t
           prompt: 'The word "nuanced" in paragraph 4 is closest in meaning to',
           options: ['simple', 'more detailed and subtle', 'negative', 'outdated'],
           answer: 1,
-          explain: 'nuanced = có nhiều sắc thái, phức tạp hơn — đối lập với kết luận đơn giản trước đó.',
+          explain: 'nuanced = có nhiều sắc thái, phức tạp hơn - đối lập với kết luận đơn giản trước đó.',
         },
         {
           prompt: 'According to the 2010 review, choice overload occurs',

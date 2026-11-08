@@ -1,5 +1,5 @@
-import { ArrowRight, Check, FolderOpen } from 'lucide-react';
-import { useMemo } from 'react';
+import { ArrowRight, CalendarDays, Check, Clock, FolderOpen } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   B1_PLAN,
@@ -16,9 +16,10 @@ import {
   type PlanTask,
 } from '@umlab/core';
 import { cn } from '@/lib/cn';
-import { Button } from '@/ui';
+import { Button, Dialog } from '@/ui';
 import { Bar, Panel, fmtDate, linkPath, type Area } from './common';
 import { DOCS, planFor } from './content';
+import { HERO_STYLES, HeroBg, MiniCalendar, heroInk, resolveHero } from './hero';
 import { docProgress, estimate, overall, practiceCount } from './progress';
 import { useVstep } from './store';
 
@@ -56,8 +57,79 @@ export function TaskRow({ day, t }: { day: PlanDay; t: PlanTask }) {
   );
 }
 
+/** Popup lịch học của một ngày (bấm vào ô trên lịch mini). */
+function DayDialog({ date, days, onClose }: { date: string; days: PlanDay[]; onClose: () => void }) {
+  const nav = useNavigate();
+  const day = days.find((d) => d.date === date);
+  const custom = useVstep((x) => x.state!.custom[date]);
+  const note = useVstep((x) => x.state!.notes[date]);
+  const done = useVstep((x) => x.state!.plan);
+  const p = day ? planProgress([day], done) : null;
+  const wd = ['Chủ nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'][
+    new Date(date + 'T00:00:00').getDay()
+  ];
+  return (
+    <Dialog
+      open
+      onClose={onClose}
+      title={`${wd}, ${fmtDate(date)}${day?.phase === 0 ? ' — Ngày thi' : day?.phase ? ` — Giai đoạn ${day.phase}` : ''}`}
+      width={620}
+      footer={
+        <>
+          {p && p.total > 0 && (
+            <span className="mr-auto text-muted">
+              Đã xong {p.done}/{p.total} việc
+            </span>
+          )}
+          <Button variant="outline" icon={<CalendarDays />} onClick={() => (onClose(), nav(`/vstep/plan?d=${date}`))}>
+            Mở trong Lịch học
+          </Button>
+          <Button variant="primary" onClick={onClose}>
+            Đóng
+          </Button>
+        </>
+      }
+    >
+      {day ? (
+        <div className="vs-tasks">
+          {day.tasks.map((t) => (
+            <TaskRow key={t.id} day={day} t={t} />
+          ))}
+        </div>
+      ) : (
+        <p className="text-muted">Ngày này không nằm trong lịch học.</p>
+      )}
+      {!!custom?.length && (
+        <>
+          <h4 className="vs-h4">Mục tiêu riêng</h4>
+          <ul className="vs-ul">
+            {custom.map((c) => (
+              <li key={c.id} className={c.done ? 'text-muted line-through' : ''}>
+                {c.title}
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+      {note && (
+        <>
+          <h4 className="vs-h4">Ghi chú</h4>
+          <p style={{ whiteSpace: 'pre-wrap' }}>{note}</p>
+        </>
+      )}
+    </Dialog>
+  );
+}
+
 export function HomeView() {
   const nav = useNavigate();
+  const [pick, setPick] = useState<string | null>(null);
+  // nền "Theo giờ": vẽ lại mỗi 5 phút để đổi cảnh khi sang buổi mới
+  const [tick, setTick] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setTick((x) => x + 1), 5 * 60_000);
+    return () => clearInterval(t);
+  }, []);
   const s = useVstep((x) => x.state)!;
   const media = useVstep((x) => x.media);
   const days = useMemo(() => planFor(s), [s.startDate, s.examDate]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -78,9 +150,27 @@ export function HomeView() {
 
   return (
     <div className="vs-page">
-      <section className="vs-hero">
+      <section className="vs-hero" data-ink={heroInk(s.heroStyle)}>
+        <div className="vs-hero-bg">
+          <HeroBg id={s.heroStyle} key={s.heroStyle === 'auto' ? resolveHero('auto') + tick : s.heroStyle} />
+        </div>
+        <div className="vs-hero-pick" role="radiogroup" aria-label="Kiểu nền">
+          {HERO_STYLES.map((h) => (
+            <button
+              key={h.id}
+              role="radio"
+              aria-checked={s.heroStyle === h.id}
+              className={'vs-hero-sw' + (s.heroStyle === h.id ? ' on' : '')}
+              title={h.name}
+              onClick={() => useVstep.getState().update((x) => void (x.heroStyle = h.id))}
+            >
+              <HeroBg id={h.id} />
+              {h.id === 'auto' && <Clock className="vs-hero-sw-ic" size={12} />}
+            </button>
+          ))}
+        </div>
         <div>
-          <div className="vs-hero-label">Kỳ thi VSTEP — {fmtDate(s.examDate)}</div>
+          <div className="vs-hero-label">Kỳ thi VSTEP - {fmtDate(s.examDate)}</div>
           <div className="vs-hero-big">
             {left > 0 ? `Còn ${left} ngày` : left === 0 ? 'Hôm nay thi!' : 'Đã qua ngày thi'}
           </div>
@@ -100,7 +190,7 @@ export function HomeView() {
             <span>ngày liên tiếp</span>
           </div>
           <div>
-            <b>{ov == null ? '—' : ov.toFixed(1)}</b>
+            <b>{ov == null ? '-' : ov.toFixed(1)}</b>
             <span>{ov == null ? 'chưa có điểm' : `ước tính ${levelOf(ov)}`}</span>
           </div>
         </div>
@@ -127,6 +217,20 @@ export function HomeView() {
           )}
         </Panel>
 
+        <Panel
+          title="Lịch tháng này"
+          actions={
+            <Button size="sm" variant="outline" onClick={() => nav('/vstep/plan')}>
+              Mở lịch
+            </Button>
+          }
+        >
+          <MiniCalendar days={days} done={s.plan} onPick={setPick} />
+          {pick && <DayDialog date={pick} days={days} onClose={() => setPick(null)} />}
+        </Panel>
+      </div>
+
+      <div className="vs-grid-2">
         <Panel title="Điểm ước tính theo kỹ năng">
           <table className="vs-table">
             <thead>
@@ -147,7 +251,7 @@ export function HomeView() {
                         est[k] != null && est[k]! >= B1_PLAN[k] ? 'text-ok' : est[k] != null ? 'text-warn' : '',
                       )}
                     >
-                      {est[k] == null ? '—' : est[k]!.toFixed(1)}
+                      {est[k] == null ? '-' : est[k]!.toFixed(1)}
                     </b>
                   </td>
                   <td>{B1_PLAN[k].toFixed(1)}</td>

@@ -4,6 +4,7 @@ import { cn } from '@/lib/cn';
 import { Button, Segmented } from '@/ui';
 import { Bar, Panel, completeDaily } from './common';
 import { VOCAB_CARDS, type VocabCard } from './content';
+import { useActiveKeys } from './layout';
 import { Rich } from './rich';
 import { sayNow } from './speech';
 import { useVstep } from './store';
@@ -15,21 +16,38 @@ const GOAL = 20;
 
 export function CardsView() {
   const cards = useVstep((s) => s.state!.cards);
+  const myWords = useVstep((s) => s.state!.myWords);
+  const ALL = useMemo<VocabCard[]>(
+    () => [
+      ...myWords.map((w) => ({
+        id: 'my:' + w.word.toLowerCase(),
+        word: w.word,
+        ipa: w.ipa,
+        pos: '',
+        mean: w.mean,
+        example: '',
+        exampleVi: '',
+        source: 'Từ của tôi (bôi đen để thêm)',
+      })),
+      ...VOCAB_CARDS,
+    ],
+    [myWords],
+  );
   const [mode, setMode] = useState<'due' | 'all'>('due');
   const [flip, setFlip] = useState(false);
   const [done, setDone] = useState(0);
   const now = Date.now();
   const queue = useMemo(() => {
-    const due = VOCAB_CARDS.filter((c) => (cards[c.id]?.due ?? 0) <= now);
+    const due = ALL.filter((c) => (cards[c.id]?.due ?? 0) <= now);
     // chưa học trước, rồi tới thẻ đến hạn
     due.sort(
       (a, b) => (cards[a.id] ? 1 : 0) - (cards[b.id] ? 1 : 0) || (cards[a.id]?.due ?? 0) - (cards[b.id]?.due ?? 0),
     );
-    return mode === 'due' ? due : VOCAB_CARDS;
-  }, [mode, done]); // eslint-disable-line react-hooks/exhaustive-deps
+    return mode === 'due' ? due : ALL;
+  }, [mode, done, ALL]); // eslint-disable-line react-hooks/exhaustive-deps
   const [idx, setIdx] = useState(0);
   const card: VocabCard | undefined = queue[idx % Math.max(1, queue.length)];
-  const learned = VOCAB_CARDS.filter((c) => (cards[c.id]?.box ?? 0) >= 2).length;
+  const learned = ALL.filter((c) => (cards[c.id]?.box ?? 0) >= 2).length;
 
   useEffect(() => {
     if (card && !flip) sayNow(card.word);
@@ -47,18 +65,15 @@ export function CardsView() {
     if (mode === 'all') setIdx((i) => i + 1);
   };
 
-  useEffect(() => {
-    const k = (e: KeyboardEvent) => {
-      if ((e.target as HTMLElement).closest('input, textarea')) return;
+  useActiveKeys((e) => {
+    {
       if (e.code === 'Space') {
         e.preventDefault();
         setFlip((f) => !f);
       }
       if (flip && (e.key === '1' || e.key === 'ArrowLeft')) answer(false);
       if (flip && (e.key === '2' || e.key === 'ArrowRight')) answer(true);
-    };
-    window.addEventListener('keydown', k);
-    return () => window.removeEventListener('keydown', k);
+    }
   });
 
   return (
@@ -67,9 +82,9 @@ export function CardsView() {
         <div className="vs-stat">
           <span>Đã thuộc (hộp ≥ 2)</span>
           <b>
-            {learned}/{VOCAB_CARDS.length}
+            {learned}/{ALL.length}
           </b>
-          <Bar value={learned} max={VOCAB_CARDS.length} tone="ok" />
+          <Bar value={learned} max={ALL.length} tone="ok" />
         </div>
         <div className="vs-stat">
           <span>Hôm nay đã ôn</span>
@@ -80,7 +95,7 @@ export function CardsView() {
         </div>
         <div className="vs-stat">
           <span>Thẻ đến hạn</span>
-          <b>{VOCAB_CARDS.filter((c) => (cards[c.id]?.due ?? 0) <= now).length}</b>
+          <b>{ALL.filter((c) => (cards[c.id]?.due ?? 0) <= now).length}</b>
         </div>
       </div>
       <div className="flex items-center gap-2">

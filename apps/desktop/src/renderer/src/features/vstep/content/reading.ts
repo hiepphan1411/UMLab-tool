@@ -40,7 +40,7 @@ export const readingDoc: VDoc = {
             | 24               | 6,0           | Mức B2           |
 
             ~~~tip Kế hoạch lấy 18/40 câu
-            - Passage 1: đúng **7/10** — bài dễ nhất, đầu tư thời gian ở đây.
+            - Passage 1: đúng **7/10** - bài dễ nhất, đầu tư thời gian ở đây.
             - Passage 2: đúng **5/10**.
             - Passage 3: đúng **3–4/10** (chọn làm câu từ vựng, câu chi tiết có tên riêng/số).
             - Passage 4: làm nhanh câu từ vựng, câu tham chiếu (*it, they*); còn lại đoán.
@@ -51,8 +51,8 @@ export const readingDoc: VDoc = {
           id: 'r1-tips',
           title: '1.3. Mẹo chung: skimming và scanning',
           body: md`
-            - **Skimming (đọc lướt)** — đọc tiêu đề, câu đầu mỗi đoạn và câu cuối bài để nắm ý chính. Dùng cho câu hỏi ý chính, mục đích.
-            - **Scanning (đọc quét)** — tìm nhanh một từ khoá: tên riêng, năm, con số, chữ in hoa. Dùng cho câu hỏi chi tiết.
+            - **Skimming (đọc lướt)** - đọc tiêu đề, câu đầu mỗi đoạn và câu cuối bài để nắm ý chính. Dùng cho câu hỏi ý chính, mục đích.
+            - **Scanning (đọc quét)** - tìm nhanh một từ khoá: tên riêng, năm, con số, chữ in hoa. Dùng cho câu hỏi chi tiết.
             - **Đọc câu hỏi trước, đọc bài sau**: gạch từ khoá trong câu hỏi, quét bài tìm đoạn chứa từ khoá (hoặc từ đồng nghĩa), đọc kỹ 2–3 câu xung quanh.
             - **Không cần hiểu hết bài.** Chỉ cần hiểu những câu chứa đáp án.
             - **Không dịch từng chữ**; gặp từ lạ thì đoán nghĩa theo ngữ cảnh rồi đọc tiếp.
@@ -83,10 +83,10 @@ export const readingDoc: VDoc = {
 
             1. Tìm từ trong bài, đọc **cả câu chứa nó** và câu trước/sau.
             2. Xác định từ loại (danh từ, động từ, tính từ) và sắc thái (tích cực/tiêu cực).
-            3. **Thay từng lựa chọn vào chỗ của từ đó** — lựa chọn nào giữ nguyên nghĩa câu là đáp án.
+            3. **Thay từng lựa chọn vào chỗ của từ đó** - lựa chọn nào giữ nguyên nghĩa câu là đáp án.
             4. Cẩn thận lựa chọn là nghĩa phổ biến của từ nhưng **không hợp ngữ cảnh**.
 
-            Ví dụ: _The company_ **launched** _a new product last month._ — A. threw · B. **introduced** · C. ate · D. started a boat. Nghĩa phổ biến của _launch_ là "phóng (tên lửa)" nhưng trong ngữ cảnh sản phẩm → **introduced** (giới thiệu, tung ra).
+            Ví dụ: _The company_ **launched** _a new product last month._ - A. threw · B. **introduced** · C. ate · D. started a boat. Nghĩa phổ biến của _launch_ là "phóng (tên lửa)" nhưng trong ngữ cảnh sản phẩm → **introduced** (giới thiệu, tung ra).
 
             ~~~vocab Từ hay được hỏi nghĩa
             significant | /sɪɡˈnɪfɪkənt/ | adj | đáng kể, quan trọng | = important, considerable
@@ -115,7 +115,7 @@ export const readingDoc: VDoc = {
             - **Sai thông tin** hoặc **không được nhắc tới**.
 
             ~~~tip
-            Ý chính thường nằm ở **câu chủ đề (topic sentence)** — câu đầu tiên của đoạn — và được nhắc lại trong đoạn kết bằng từ khác.
+            Ý chính thường nằm ở **câu chủ đề (topic sentence)** - câu đầu tiên của đoạn - và được nhắc lại trong đoạn kết bằng từ khác.
             ~~~
           `,
         },
@@ -127,7 +127,7 @@ export const readingDoc: VDoc = {
 
             **Cách làm:**
 
-            1. Gạch từ khoá trong câu hỏi — ưu tiên tên riêng, năm, số, thuật ngữ.
+            1. Gạch từ khoá trong câu hỏi - ưu tiên tên riêng, năm, số, thuật ngữ.
             2. Scan bài tìm từ khoá hoặc **từ đồng nghĩa**.
             3. Đọc kỹ câu chứa từ khoá; so sánh **từng lựa chọn** với câu đó.
             4. Đáp án đúng **diễn đạt lại** thông tin trong bài; lựa chọn chép y nguyên từ ngữ nhưng đổi nghĩa thường là bẫy.
@@ -151,7 +151,7 @@ export const readingDoc: VDoc = {
             **Cách làm:** đây là câu tốn thời gian nhất. Tìm đoạn liệt kê (thường có _and, also, in addition, such as_), **đánh dấu lần lượt 3 lựa chọn có trong bài**, lựa chọn còn lại là đáp án.
 
             ~~~warn
-            Đọc kỹ chữ **NOT/EXCEPT** in hoa — nhiều bạn quên và chọn lựa chọn đúng. Nếu thiếu thời gian, làm câu này cuối cùng.
+            Đọc kỹ chữ **NOT/EXCEPT** in hoa - nhiều bạn quên và chọn lựa chọn đúng. Nếu thiếu thời gian, làm câu này cuối cùng.
             ~~~
           `,
         },
@@ -167,16 +167,16 @@ export const readingDoc: VDoc = {
             - _it/its_ → danh từ số ít hoặc cả một ý
             - _this/that_ → thường chỉ cả một ý/sự việc vừa nhắc
 
-            Ví dụ: _Scientists studied 200_ **dolphins***. They found that* **they** _can recognise their own names._ — "they" thứ hai = **dolphins**, không phải scientists.
+            Ví dụ: _Scientists studied 200_ **dolphins***. They found that* **they** _can recognise their own names._ - "they" thứ hai = **dolphins**, không phải scientists.
           `,
         },
         {
           id: 'r2-inference',
           title: '2.6. Câu hỏi suy luận và mục đích tác giả',
           body: md`
-            **Suy luận** — _It can be inferred from the passage that… / The author implies that…_ Đáp án không viết thẳng nhưng **chắc chắn đúng** dựa trên bài. Không suy diễn quá xa: chọn lựa chọn **gần với bài nhất**.
+            **Suy luận** - _It can be inferred from the passage that… / The author implies that…_ Đáp án không viết thẳng nhưng **chắc chắn đúng** dựa trên bài. Không suy diễn quá xa: chọn lựa chọn **gần với bài nhất**.
 
-            **Mục đích** — _Why does the author mention X? / The purpose of paragraph 4 is to…_
+            **Mục đích** - _Why does the author mention X? / The purpose of paragraph 4 is to…_
 
             ~~~vocab Động từ chỉ mục đích tác giả
             illustrate | /ˈɪləstreɪt/ | v | minh hoạ | to illustrate a point = đưa ví dụ
@@ -187,16 +187,16 @@ export const readingDoc: VDoc = {
             describe | /dɪˈskraɪb/ | v | mô tả | to describe a place
             ~~~
 
-            **Thái độ/giọng văn** — _The author's attitude towards X is…_: positive/supportive, negative/critical, neutral/objective, doubtful/sceptical.
+            **Thái độ/giọng văn** - _The author's attitude towards X is…_: positive/supportive, negative/critical, neutral/objective, doubtful/sceptical.
           `,
         },
         {
           id: 'r2-paraphrase',
           title: '2.7. Câu hỏi nhận biết thông tin diễn đạt lại và chèn câu',
           body: md`
-            **Diễn đạt lại** — _Which sentence best expresses the essential information in the highlighted sentence?_ Chọn câu giữ **đủ ý chính và đúng quan hệ** (nguyên nhân – kết quả, đối lập). Loại câu đổi nghĩa hoặc thiếu ý quan trọng.
+            **Diễn đạt lại** - _Which sentence best expresses the essential information in the highlighted sentence?_ Chọn câu giữ **đủ ý chính và đúng quan hệ** (nguyên nhân – kết quả, đối lập). Loại câu đổi nghĩa hoặc thiếu ý quan trọng.
 
-            **Chèn câu (insertion)** — _Where would the following sentence best fit? [A] [B] [C] [D]_ Tìm "manh mối nối":
+            **Chèn câu (insertion)** - _Where would the following sentence best fit? [A] [B] [C] [D]_ Tìm "manh mối nối":
 
             - Câu cần chèn có _this, these, such, however, also, for example_ → phải đứng **sau** câu mà nó nhắc tới.
             - Câu chèn mở đầu ý mới → thường đứng đầu đoạn.

@@ -1,0 +1,1138 @@
+/* Ôn VSTEP - đợt 2: tab, bố cục, sách, PDF, vẽ/ghi chú, tra từ, biểu đồ. Chỉ dùng token màu của app. */
+
+/* chuyển động: nhẹ, ngắn, chỉ opacity + transform */
+@keyframes vs-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes vs-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vs-tabpane,
+  .vs-drawer,
+  .vs-lookup,
+  .an-pop {
+    animation: none !important;
+  }
+}
+.vs-nav-item,
+.vs-toc-item,
+.vs-track,
+.vs-lab-item,
+.vs-card,
+.vt-tab {
+  transition:
+    background-color 0.12s ease,
+    color 0.12s ease,
+    border-color 0.12s ease;
+}
+
+/* tab kiểu Chrome trên thanh trên */
+.vs-topbar {
+  gap: 6px;
+}
+.vt-tabs {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  min-width: 0;
+  flex: 0 1 auto;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  align-self: stretch;
+  padding-top: 7px;
+}
+.vt-tabs::-webkit-scrollbar {
+  display: none;
+}
+.vt-tab {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 34px;
+  min-width: 44px;
+  max-width: 200px;
+  flex: 0 1 180px;
+  padding: 0 6px 0 10px;
+  border-radius: 9px 9px 0 0;
+  color: var(--muted);
+  cursor: default;
+  user-select: none;
+}
+.vt-tab:hover {
+  background: var(--panel-2);
+  color: var(--text);
+}
+.vt-tab.on {
+  background: var(--bg);
+  color: var(--text);
+}
+.vt-tab.pinned {
+  flex: none;
+  min-width: 38px;
+  padding: 0 11px;
+}
+.vt-tab.over {
+  background: var(--accent-soft);
+}
+.vt-tab.dragging {
+  opacity: 0.5;
+}
+.vt-tab-ic {
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+.vt-tab-ic svg {
+  width: 15px;
+  height: 15px;
+}
+.vt-tab-t {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+  font-size: 12.5px;
+  font-weight: 500;
+  /* chữ dài mờ dần ở mép phải như Chrome, không hiện dấu … */
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 22px), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - 22px), transparent);
+}
+.vt-tab-x {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  flex: none;
+  opacity: 0;
+  color: var(--muted);
+}
+.vt-tab:hover .vt-tab-x,
+.vt-tab.on .vt-tab-x {
+  opacity: 1;
+}
+.vt-tab-x:hover {
+  background: var(--line);
+  color: var(--text);
+}
+.vt-tab-new {
+  width: 30px;
+  height: 30px;
+  margin: 0 0 2px 2px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  flex: none;
+}
+.vt-tab-new:hover {
+  background: var(--panel-2);
+  color: var(--text);
+}
+
+/* tab đang hiện */
+.vs-tabpane {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  animation: vs-in 0.14s ease-out;
+}
+.vs-tabpane[hidden] {
+  display: none !important;
+}
+
+/* chế độ toàn màn hình: ẩn cột điều hướng */
+.vs-focus .vs-nav {
+  display: none;
+}
+.vs-focus-exit {
+  position: fixed;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  z-index: 40;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 99px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  color: var(--muted);
+  font-size: 12px;
+  opacity: 0.35;
+  transition: opacity 0.15s;
+}
+.vs-focus-exit:hover {
+  opacity: 1;
+  color: var(--text);
+}
+
+/* cột danh sách thu/mở */
+.vs-pane {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border-right: 1px solid var(--line);
+  background: var(--panel);
+}
+.vs-pane.vs-toc,
+.vs-pane.vs-lab-list {
+  padding: 0;
+  overflow: hidden;
+  gap: 0;
+}
+.vs-pane-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 8px 6px 14px;
+}
+.vs-pane-title {
+  flex: 1;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.vs-pane-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 8px 24px;
+}
+.vs-lab-list .vs-pane-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.vs-lab-list .vs-pane-body > .seg {
+  margin-bottom: 8px;
+}
+.vs-pane-rail {
+  width: 40px;
+  flex: none;
+  border-right: 1px solid var(--line);
+  background: var(--panel);
+  display: flex;
+  justify-content: center;
+  padding-top: 8px;
+}
+
+/* ngăn kéo bên phải */
+.vs-drawer {
+  position: relative;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  max-width: 80vw;
+  border-left: 1px solid var(--line);
+  background: var(--panel);
+  animation: vs-in 0.14s ease-out;
+}
+.vs-drawer-grip {
+  position: absolute;
+  left: -4px;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  cursor: col-resize;
+  z-index: 2;
+}
+.vs-drawer-grip:hover,
+.vs-drawer-grip:active {
+  background: var(--accent-soft);
+}
+.vs-drawer-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 10px 10px 16px;
+  border-bottom: 1px solid var(--line);
+}
+.vs-drawer-title {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vs-drawer-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 12px 16px 32px;
+}
+
+/* lớp vẽ + ghi chú */
+.an-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.an-layer > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.an-layer.active > svg {
+  pointer-events: auto;
+  cursor: crosshair;
+  touch-action: none;
+}
+.an-layer.tool-erase > svg {
+  cursor: cell;
+}
+.an-layer.tool-note > svg {
+  cursor: copy;
+}
+.an-note {
+  position: absolute;
+  transform: translate(-12px, -12px);
+  pointer-events: auto;
+  z-index: 1;
+}
+.an-pin {
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: var(--nc, #f5a524);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+.an-preview {
+  position: absolute;
+  left: 28px;
+  top: 0;
+  width: max-content;
+  max-width: 220px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: #fffbe6;
+  color: #3b3000;
+  font-size: 12px;
+  line-height: 1.4;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  white-space: pre-wrap;
+  display: none;
+}
+.an-note:hover .an-preview {
+  display: block;
+}
+.an-pop {
+  position: absolute;
+  left: 28px;
+  top: 0;
+  width: 240px;
+  padding: 8px;
+  border-radius: 10px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  animation: vs-pop 0.12s ease-out;
+}
+.an-pop textarea {
+  width: 100%;
+  height: 90px;
+  resize: vertical;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel-2);
+  color: var(--text);
+  padding: 6px 8px;
+  font: inherit;
+  font-size: 13px;
+}
+.an-pop-foot {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+}
+.an-tools {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 4px;
+  border-radius: 9px;
+  background: var(--panel-2);
+  flex-wrap: wrap;
+}
+.an-sep {
+  width: 1px;
+  height: 18px;
+  background: var(--line);
+  margin: 0 3px;
+}
+.an-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  margin: 0 2px;
+  border: 2px solid transparent;
+  box-shadow: 0 0 0 1px var(--line);
+}
+.an-color.on {
+  border-color: var(--panel);
+  box-shadow: 0 0 0 2px var(--text);
+}
+.an-size {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+}
+.an-size i {
+  display: block;
+  border-radius: 50%;
+  background: var(--muted);
+}
+.an-size.on {
+  background: var(--accent-soft);
+}
+.an-size.on i {
+  background: var(--accent);
+}
+.an-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex: none;
+  margin-top: 4px;
+}
+
+/* trình xem sách / PDF */
+.bk {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+.bk-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.bk-bar,
+.pdf-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+  flex-wrap: wrap;
+  min-height: 46px;
+}
+.bk-bar > b,
+.pdf-bar > b {
+  max-width: 340px;
+}
+.bk-body,
+.pdf-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  position: relative;
+}
+.bk-scroll,
+.pdf-scroll {
+  flex: 1;
+  min-width: 0;
+  overflow: auto;
+  background: var(--canvas);
+  padding: 16px 16px 96px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.bk-page,
+.pdf-page {
+  position: relative;
+  flex: none;
+  background: var(--paper);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+  border-radius: 3px;
+}
+.bk-page img,
+.pdf-page canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+}
+.pdf-num {
+  position: absolute;
+  right: 8px;
+  bottom: 6px;
+  font-size: 11px;
+  color: #888;
+  pointer-events: none;
+}
+.pdf-ph {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  color: #999;
+}
+.bk-pp {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+}
+.bk-keys {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.bk-keys-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.bk-keys-page {
+  overflow: auto;
+  background: var(--canvas);
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+}
+
+/* trình phát nổi */
+.fp {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: min(760px, calc(100% - 32px));
+  padding: 6px 8px 6px 6px;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--panel) 92%, transparent);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+.fp.mini {
+  width: auto;
+}
+.fp-title {
+  font-weight: 600;
+  font-size: 12.5px;
+  white-space: nowrap;
+  padding: 0 4px;
+}
+.fp-mini-t {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+  padding: 0 6px;
+}
+.fp-rate {
+  width: 64px;
+  height: 26px;
+}
+.fp .vs-seek {
+  min-width: 80px;
+}
+
+/* PDF */
+.pdf-view {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+.pdf-pg {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--muted);
+}
+.pdf-pg .field {
+  width: 60px;
+  height: 26px;
+}
+.pdf-loading {
+  padding: 40px;
+  color: var(--muted);
+}
+.pdf-note-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  text-align: left;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--panel);
+}
+.pdf-note-row:hover {
+  border-color: var(--accent);
+}
+.pdf-note-row > span {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.pdf-note-t {
+  color: var(--muted);
+  font-size: 12.5px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.vs-doc-card {
+  position: relative;
+  cursor: pointer;
+}
+.vs-doc-card.missing {
+  opacity: 0.55;
+  cursor: default;
+}
+.vs-doc-card-ic {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: var(--accent-soft);
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+.vs-doc-card-actions {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+}
+.vs-doc-card:hover .vs-doc-card-actions {
+  opacity: 1;
+}
+
+/* popup tra từ */
+.vs-lookup {
+  position: fixed;
+  z-index: 80;
+  width: 320px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  animation: vs-pop 0.12s ease-out;
+}
+.vs-lookup-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.vs-lookup-word {
+  flex: 1;
+  font-size: 15px;
+  overflow-wrap: anywhere;
+}
+.vs-lookup-ipa {
+  color: var(--accent);
+  font-family: 'Segoe UI', 'Arial Unicode MS', sans-serif;
+  margin-top: 2px;
+}
+.vs-lookup-mean {
+  margin-top: 6px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+.vs-lookup-ex {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12.5px;
+  font-style: italic;
+}
+.vs-lookup-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  font-size: 11.5px;
+}
+
+/* biểu đồ */
+.ch-wrap {
+  position: relative;
+  overflow-x: auto;
+}
+.ch-svg {
+  width: 100%;
+  min-width: 320px;
+  height: auto;
+  display: block;
+}
+.ch-grid {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+.ch-axis {
+  fill: var(--muted);
+  font-size: 10px;
+}
+.ch-target {
+  stroke: var(--muted);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+}
+.ch-bar {
+  fill: var(--accent);
+  transition: opacity 0.12s;
+}
+.ch-tip {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--text);
+  color: var(--panel);
+  font-size: 11.5px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.ch-rows {
+  display: grid;
+  gap: 8px;
+}
+.ch-row {
+  display: grid;
+  grid-template-columns: 70px 1fr 54px;
+  align-items: center;
+  gap: 10px;
+  font-size: 12.5px;
+}
+.ch-row-l {
+  color: var(--muted);
+}
+.ch-row-bar {
+  height: 8px;
+  border-radius: 99px;
+  background: var(--panel-2);
+  overflow: hidden;
+}
+.ch-row-bar i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+}
+.ch-row-v {
+  text-align: right;
+  font-family: var(--font-mono);
+}
+
+/* lịch học: mũi tên giữa các giai đoạn */
+.vs-phases {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+}
+.vs-phases > .vs-phase {
+  flex: 1;
+  min-width: 0;
+}
+.vs-phase-arrow {
+  flex: none;
+  align-self: center;
+  color: var(--muted);
+}
+.vs-phase-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: 1px;
+}
+
+/* thẻ tổng quan: nhiều kiểu nền */
+.vs-hero {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.vs-hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+.vs-hero-bg svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.vs-hero-pick {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 99px;
+  background: rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.vs-hero:hover .vs-hero-pick,
+.vs-hero-pick:focus-within {
+  opacity: 1;
+}
+.vs-hero-sw {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  overflow: hidden;
+}
+.vs-hero-sw.on {
+  border-color: #fff;
+}
+.vs-hero-sw svg {
+  width: 100%;
+  height: 100%;
+}
+.vs-hero[data-ink='dark'] {
+  color: #1b2130;
+}
+.vs-hero[data-ink='dark'] .vs-hero-stats > div {
+  background: rgba(255, 255, 255, 0.55);
+  border-color: rgba(27, 33, 48, 0.12);
+}
+
+/* lịch mini */
+.vs-mini-cal {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+.vs-mini-cal .h {
+  text-align: center;
+  font-size: 11px;
+  color: var(--muted);
+  padding-bottom: 2px;
+}
+.vs-mini-cal button {
+  aspect-ratio: 1;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  position: relative;
+  background: var(--panel-2);
+}
+.vs-mini-cal button.out {
+  opacity: 0.35;
+}
+.vs-mini-cal button.today {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  font-weight: 700;
+}
+.vs-mini-cal button.full {
+  background: var(--ok);
+  color: var(--on-accent);
+}
+.vs-mini-cal button.part {
+  background: color-mix(in srgb, var(--ok) 25%, var(--panel));
+}
+.vs-mini-cal button.exam {
+  background: var(--danger);
+  color: var(--on-accent);
+  font-weight: 700;
+}
+.vs-mini-legend {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  font-size: 11.5px;
+  color: var(--muted);
+}
+.vs-mini-legend i {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  margin-right: 4px;
+  vertical-align: -1px;
+}
+
+/* IPA cả câu dưới mẫu câu */
+.vt-ipa-line {
+  display: block;
+  color: var(--accent);
+  font-family: 'Segoe UI', 'Arial Unicode MS', sans-serif;
+  font-size: 12.5px;
+  line-height: 1.5;
+  opacity: 0.9;
+}
+.vt-template pre .vt-ipa-line {
+  margin-bottom: 4px;
+}
+
+/* bài tập trắc nghiệm trong tài liệu */
+.vt-quiz {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 10px 0 14px;
+  background: var(--panel);
+}
+.vt-quiz-q {
+  padding: 8px 0;
+  border-top: 1px dashed var(--line);
+}
+.vt-quiz-q:first-of-type {
+  border-top: 0;
+}
+.vt-quiz-opts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+.vt-quiz-opt {
+  padding: 4px 10px;
+  border-radius: 99px;
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  font-size: 13px;
+}
+.vt-quiz-opt:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+.vt-quiz-opt.ok {
+  background: var(--ok);
+  border-color: var(--ok);
+  color: var(--on-accent);
+}
+.vt-quiz-opt.bad {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: var(--on-accent);
+}
+.vt-quiz-ex {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.vt-quiz-score {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+/* popup xem trước tab (giống Chrome) */
+.vt-peek {
+  position: fixed;
+  z-index: 95;
+  width: 280px;
+  padding: 10px;
+  border-radius: 12px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  animation: vs-pop 0.12s ease-out;
+}
+.vt-peek-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.vt-peek-head b {
+  font-size: 13px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+.vt-peek-sub {
+  color: var(--muted);
+  font-size: 11.5px;
+  margin: 2px 0 8px 23px;
+}
+.vt-peek-img {
+  display: block;
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+}
+.vt-peek-empty {
+  height: 120px;
+  border-radius: 8px;
+  background: var(--panel-2);
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+  padding: 0 16px;
+}
+
+/* thẻ tổng quan cao hơn */
+.vs-hero {
+  min-height: 236px;
+  padding: 30px 32px;
+  align-items: flex-end;
+}
+.vs-hero-big {
+  font-size: 40px;
+  margin: 4px 0 10px;
+}
+.vs-hero-label {
+  font-size: 14px;
+}
+.vs-hero-sub {
+  font-size: 14.5px;
+}
+.vs-hero-stats > div {
+  min-width: 118px;
+  padding: 12px 16px;
+}
+.vs-hero-stats b {
+  font-size: 26px;
+}
+
+/* chọn vùng lấy chữ */
+.an-layer.tool-ocr > svg {
+  cursor: crosshair;
+}
+.an-sel {
+  fill: color-mix(in srgb, var(--accent) 14%, transparent);
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-dasharray: 6 4;
+  vector-effect: non-scaling-stroke;
+}
+.an-extract {
+  position: absolute;
+  z-index: 3;
+  width: min(420px, 90%);
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  pointer-events: auto;
+  animation: vs-pop 0.12s ease-out;
+}
+.an-extract-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.an-extract-text {
+  width: 100%;
+  height: 120px;
+  padding: 8px;
+  resize: vertical;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+.an-extract-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.an-extract-ipa {
+  margin-top: 8px;
+  color: var(--accent);
+  font-family: 'Segoe UI', 'Arial Unicode MS', sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.an-extract-vi {
+  margin-top: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--panel-2);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+/* popup ghi chú / lấy chữ không bị trang sau che, không bị cắt ở mép trang */
+.bk-page:has(.an-extract, .an-note.open),
+.pdf-page:has(.an-extract, .an-note.open) {
+  z-index: 6;
+}
+.bk-page img,
+.pdf-page canvas {
+  border-radius: 3px;
+}
+.an-pin svg,
+.an-pop svg,
+.an-extract svg {
+  position: static;
+  width: 14px;
+  height: 14px;
+  flex: none;
+}
+.an-note:hover .an-pin {
+  transform: scale(1.08);
+}
+.an-pin {
+  transition: transform 0.12s;
+}
+.an-extract {
+  cursor: default;
+}
+.an-extract textarea {
+  cursor: text;
+}
+
+.vs-hero-sw {
+  position: relative;
+}
+.vs-hero-sw-ic {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  color: #fff;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6));
+}
+.vs-hero-pick {
+  flex-wrap: wrap;
+  max-width: 360px;
+  justify-content: flex-end;
+}

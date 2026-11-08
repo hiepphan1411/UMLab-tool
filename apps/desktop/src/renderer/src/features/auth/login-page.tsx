@@ -1,4 +1,5 @@
 import { Eye, EyeOff } from 'lucide-react';
+import { HOME_PATH } from '@shared/app-mode';
 import { useState, type FormEvent } from 'react';
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import { call, errorText, umlab } from '@/lib/api';
@@ -60,7 +61,7 @@ export function LoginPage() {
   const [remember, setRemember] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const next = params.get('next') || '/projects';
+  const next = params.get('next') || HOME_PATH;
 
   if (user) return <Navigate to={next} replace />;
 

@@ -37,7 +37,7 @@ export const listeningDoc: VDoc = {
           body: md`
             Mỗi kỹ năng chấm thang **0–10**, làm tròn 0,5. Điểm tổng = trung bình 4 kỹ năng. **B1 cần điểm tổng 4,0–5,5**, B2 cần 6,0–8,0. Nghe không cần cao nếu Viết và Nói tốt nhờ template.
 
-            Quy đổi ước tính (tuyến tính, chỉ để tự đánh giá — hội đồng không công bố bảng cố định):
+            Quy đổi ước tính (tuyến tính, chỉ để tự đánh giá - hội đồng không công bố bảng cố định):
 
             | Số câu đúng / 35 | Điểm ước tính | Nhận xét                           |
             | ---------------- | ------------- | ---------------------------------- |
@@ -62,7 +62,7 @@ export const listeningDoc: VDoc = {
             1. **Đọc câu hỏi trước, gạch từ để hỏi** (Where, Who, Why, What… do, When). Từ để hỏi cho biết phải nghe thông tin gì.
             2. **Gạch 1–2 từ khoá** trong câu hỏi và lựa chọn, đoán trước nội dung. Ví dụ đọc "Why is the woman calling?" → chờ nghe _I'm calling to… / I'd like to…_.
             3. **Đáp án đúng thường được nói theo cách khác (paraphrase)**: bài nói "_the meeting has been_ **put off**" → đáp án "_The meeting was_ **postponed**".
-            4. **Cẩn thận lựa chọn lặp lại đúng từ nghe được** — đó thường là bẫy. Từ nghe thấy y nguyên ≠ đáp án đúng.
+            4. **Cẩn thận lựa chọn lặp lại đúng từ nghe được** - đó thường là bẫy. Từ nghe thấy y nguyên ≠ đáp án đúng.
             5. **Nghe hết câu, chú ý từ đổi ý**: _but, however, actually, unfortunately, I'm afraid, instead_. Thông tin sau các từ này thường là đáp án.
             6. **Lỡ một câu thì bỏ ngay**, chọn tạm một đáp án và chuyển sang câu tiếp theo. Tiếc câu cũ sẽ mất luôn câu sau.
             7. **Không để trống**: những câu không nghe được, chọn cùng một chữ cái (ví dụ luôn chọn B).
@@ -89,9 +89,9 @@ export const listeningDoc: VDoc = {
           body: md`
             Part 1 gồm 8 đoạn ngắn: thông báo ở sân bay/siêu thị/nhà ga, tin nhắn thoại, hướng dẫn, hội thoại 2–3 lượt lời. Mỗi đoạn **một câu hỏi**. Sách luyện (track **01–07**) chia thành 4 dạng tổng quan.
 
-            **A. Câu hỏi về địa điểm** — _Where are the speakers? / Where does the conversation take place? / Where would you hear this announcement?_
+            **A. Câu hỏi về địa điểm** - _Where are the speakers? / Where does the conversation take place? / Where would you hear this announcement?_
 
-            Địa điểm **hiếm khi được nói thẳng**. Hãy nghe các **từ liên quan** rồi suy ra. Nhưng đừng chọn chỉ vì nghe một từ — một từ có thể hợp nhiều nơi.
+            Địa điểm **hiếm khi được nói thẳng**. Hãy nghe các **từ liên quan** rồi suy ra. Nhưng đừng chọn chỉ vì nghe một từ - một từ có thể hợp nhiều nơi.
 
             ~~~vocab Từ khoá gợi ý địa điểm
             boarding pass | /ˈbɔːdɪŋ pɑːs/ | n | thẻ lên máy bay | Please have your boarding pass ready. → sân bay
@@ -112,15 +112,15 @@ export const listeningDoc: VDoc = {
             Woman: It sure makes being home on a rainy day a little easier.
             ~~~
 
-            Câu hỏi: _Where are the speakers?_ — A. At the beach · B. In their living room · C. On a rainy street · D. At a zoo. Nghe thấy **beach** và **rainy** nhưng đó là bẫy; cụm **soundtrack**, **being home on a rainy day** cho biết họ đang ở nhà nghe nhạc → **B**.
+            Câu hỏi: _Where are the speakers?_ - A. At the beach · B. In their living room · C. On a rainy street · D. At a zoo. Nghe thấy **beach** và **rainy** nhưng đó là bẫy; cụm **soundtrack**, **being home on a rainy day** cho biết họ đang ở nhà nghe nhạc → **B**.
 
-            **B. Câu hỏi về người nói / người nghe** — _Who is the man? / What is the woman's job? / Who is the announcement for?_
+            **B. Câu hỏi về người nói / người nghe** - _Who is the man? / What is the woman's job? / Who is the announcement for?_
 
             Nghe từ vựng nghề nghiệp: _captain, seat belt sign_ → tiếp viên (flight attendant); _homework, midterm test_ → giáo viên; _prescription, symptoms_ → bác sĩ/dược sĩ; _invoice, budget_ → kế toán.
 
-            **C. Câu hỏi về chủ đề / mục đích** — _What is the talk mainly about? / What is the purpose of the message?_ Thông tin nằm ở **1–2 câu đầu**. Mục đích tin nhắn thoại: _I'm calling to… / I'm calling about… / This is a reminder that…_
+            **C. Câu hỏi về chủ đề / mục đích** - _What is the talk mainly about? / What is the purpose of the message?_ Thông tin nằm ở **1–2 câu đầu**. Mục đích tin nhắn thoại: _I'm calling to… / I'm calling about… / This is a reminder that…_
 
-            **D. Câu hỏi về hoạt động** — _What are the speakers doing? / What will the man probably do next?_ Câu "do next" → đáp án nằm ở **câu cuối**: _I'll…, Let me…, I'm going to…, Why don't we…_
+            **D. Câu hỏi về hoạt động** - _What are the speakers doing? / What will the man probably do next?_ Câu "do next" → đáp án nằm ở **câu cuối**: _I'll…, Let me…, I'm going to…, Why don't we…_
 
             ~~~tip Mẹo Part 1 – dạng tổng quan
             - Trước khi nghe, đọc nhanh 4 lựa chọn và tưởng tượng 4 khung cảnh khác nhau. Khi nghe, gạch dần lựa chọn không khớp.
@@ -134,7 +134,7 @@ export const listeningDoc: VDoc = {
           body: md`
             Sách luyện track **08–14**. Câu hỏi chi tiết hỏi đúng một thông tin cụ thể, thường có **nhiều thông tin gây nhiễu cùng loại** (2–3 mốc giờ, 2–3 địa điểm).
 
-            **A. Thời gian** — _When…? What time…? How long…? How often…?_ Bài nói hay nhắc nhiều mốc giờ rồi **đổi lại**: "_The meeting was at 2, but it's been moved to 3:30._" → đáp án là 3:30.
+            **A. Thời gian** - _When…? What time…? How long…? How often…?_ Bài nói hay nhắc nhiều mốc giờ rồi **đổi lại**: "_The meeting was at 2, but it's been moved to 3:30._" → đáp án là 3:30.
 
             ~~~vocab Số và thời gian dễ nghe nhầm
             thirteen | /ˌθɜːˈtiːn/ | num | 13 (nhấn âm sau) | The bus leaves at one thirteen.
@@ -147,11 +147,11 @@ export const listeningDoc: VDoc = {
             postpone | /pəˈspəʊn/ | v | hoãn lại | The match has been postponed.
             ~~~
 
-            **B. Địa điểm cụ thể** — _Where should the man go? Where did the woman leave her keys?_ Nghe giới từ chỉ vị trí: _next to, opposite, behind, on the second floor, at the end of the corridor_.
+            **B. Địa điểm cụ thể** - _Where should the man go? Where did the woman leave her keys?_ Nghe giới từ chỉ vị trí: _next to, opposite, behind, on the second floor, at the end of the corridor_.
 
-            **C. Lý do** — _Why…?_ Nghe từ nối chỉ nguyên nhân: _because, since, as, due to, because of, that's why, the reason is_.
+            **C. Lý do** - _Why…?_ Nghe từ nối chỉ nguyên nhân: _because, since, as, due to, because of, that's why, the reason is_.
 
-            **D. Yêu cầu – đề nghị – hướng dẫn** — _What does the man ask the woman to do? What does the speaker suggest?_
+            **D. Yêu cầu – đề nghị – hướng dẫn** - _What does the man ask the woman to do? What does the speaker suggest?_
 
             ~~~say Mẫu câu yêu cầu/đề nghị (nghe là biết đáp án tới)
             Could you please send me the report by Friday? | Bạn có thể gửi báo cáo cho tôi trước thứ Sáu không?
@@ -206,9 +206,9 @@ export const listeningDoc: VDoc = {
 
             **Thứ tự câu hỏi = thứ tự thông tin trong bài.** Câu 1 thường hỏi chủ đề/mục đích (nghe ở đầu), câu 2–3 hỏi chi tiết (giữa bài), câu 4 hỏi việc sắp làm hoặc kết luận (cuối bài).
 
-            **A. Ý chính (main idea)** — _What are the speakers mainly discussing?_ Nghe 2–3 lượt lời đầu; ý chính là điều **cả hai người cùng nói tới nhiều lần**, không phải chi tiết nhỏ.
+            **A. Ý chính (main idea)** - _What are the speakers mainly discussing?_ Nghe 2–3 lượt lời đầu; ý chính là điều **cả hai người cùng nói tới nhiều lần**, không phải chi tiết nhỏ.
 
-            **B. Mục đích (purpose)** — _Why does the woman visit the office? What is the purpose of the call?_
+            **B. Mục đích (purpose)** - _Why does the woman visit the office? What is the purpose of the call?_
 
             ~~~say Câu nêu mục đích
             I'm here to ask about the job you advertised. | Tôi đến để hỏi về công việc bạn đã đăng tuyển.
@@ -217,9 +217,9 @@ export const listeningDoc: VDoc = {
             I'd like to complain about the service. | Tôi muốn phàn nàn về dịch vụ.
             ~~~
 
-            **C. Chi tiết (details)** — tìm **từ khoá (key words)** trong câu hỏi, nghe đoạn có từ khoá hoặc từ đồng nghĩa. Ví dụ câu hỏi: _How much does the course cost?_ → nghe con số đi cùng _fee, price, cost, pay_.
+            **C. Chi tiết (details)** - tìm **từ khoá (key words)** trong câu hỏi, nghe đoạn có từ khoá hoặc từ đồng nghĩa. Ví dụ câu hỏi: _How much does the course cost?_ → nghe con số đi cùng _fee, price, cost, pay_.
 
-            **D. Nhận biết cách diễn đạt khác (paraphrase)** — đáp án hầu như luôn viết lại bằng từ khác:
+            **D. Nhận biết cách diễn đạt khác (paraphrase)** - đáp án hầu như luôn viết lại bằng từ khác:
 
             ~~~vocab Paraphrase thường gặp
             cheap | /tʃiːp/ | adj | rẻ | = inexpensive, doesn't cost much, affordable
@@ -237,7 +237,7 @@ export const listeningDoc: VDoc = {
             ~~~tip Mẹo Part 2
             - Dùng thời gian chờ để đọc **cả 4 câu hỏi** của đoạn, không chỉ câu đầu. Biết trước 4 thông tin cần nghe thì dễ theo dõi.
             - Xác định ai nói gì: câu hỏi "*What does the* **man** *suggest?*" → chỉ nghe lượt lời của người đàn ông.
-            - Nếu lỡ câu 2, vẫn tập trung câu 3 — các câu độc lập với nhau.
+            - Nếu lỡ câu 2, vẫn tập trung câu 3 - các câu độc lập với nhau.
             ~~~
           `,
         },
@@ -247,7 +247,7 @@ export const listeningDoc: VDoc = {
           body: md`
             3 bài × 5 câu, mỗi bài 3–5 phút: bài giảng đại học (động vật, lịch sử, môi trường, tâm lý học), bài thuyết trình, phỏng vấn trên radio. Đây là phần khó nhất; người ôn B1 **chỉ cần chắc 4–5 câu**. Sách luyện track **55–64** (phần mở rộng: suy luận, mục đích/chức năng).
 
-            **Cấu trúc bài giảng — nghe "biển chỉ đường" (signposting):**
+            **Cấu trúc bài giảng - nghe "biển chỉ đường" (signposting):**
 
             ~~~vocab Từ báo hiệu cấu trúc bài nói
             Today we're going to look at… | | phr | Hôm nay chúng ta sẽ tìm hiểu… | → chủ đề (câu hỏi số 1)
@@ -260,11 +260,11 @@ export const listeningDoc: VDoc = {
             To sum up | /tə sʌm ʌp/ | phr | Tóm lại | → kết luận
             ~~~
 
-            **A. Câu hỏi suy luận** — _What can be inferred about…? What does the speaker imply?_ Đáp án **không nói thẳng** nhưng suy ra được. Ví dụ: "_Tickets sold out within an hour._" → suy ra "_The event was very popular._"
+            **A. Câu hỏi suy luận** - _What can be inferred about…? What does the speaker imply?_ Đáp án **không nói thẳng** nhưng suy ra được. Ví dụ: "_Tickets sold out within an hour._" → suy ra "_The event was very popular._"
 
-            **B. Câu hỏi mục đích/chức năng của một câu nói** — _Why does the speaker say "…"?_ Nghe lại ngữ cảnh: người nói đang đưa ví dụ, đổi chủ đề, nhấn mạnh, hay đùa?
+            **B. Câu hỏi mục đích/chức năng của một câu nói** - _Why does the speaker say "…"?_ Nghe lại ngữ cảnh: người nói đang đưa ví dụ, đổi chủ đề, nhấn mạnh, hay đùa?
 
-            **C. Thái độ người nói** — _What is the speaker's attitude towards…?_ Nghe tính từ: _impressive, worrying, surprisingly, unfortunately_.
+            **C. Thái độ người nói** - _What is the speaker's attitude towards…?_ Nghe tính từ: _impressive, worrying, surprisingly, unfortunately_.
 
             ~~~tip Chiến thuật Part 3 cho B1
             1. Câu đầu tiên của mỗi bài gần như luôn hỏi **chủ đề** → nghe kỹ 30 giây đầu, ăn chắc 3 câu này.
@@ -363,16 +363,16 @@ export const listeningDoc: VDoc = {
           title: '3.3. Bí quyết phòng thi',
           body: md`
             ~~~tip 10 điều cần nhớ trong phòng thi Nghe
-            1. Đeo tai nghe, chỉnh âm lượng ở phần nghe thử — đừng ngại giơ tay báo nếu tai nghe rè.
+            1. Đeo tai nghe, chỉnh âm lượng ở phần nghe thử - đừng ngại giơ tay báo nếu tai nghe rè.
             2. Trong lúc nghe hướng dẫn chung của mỗi phần (bạn đã biết rồi), **đọc trước câu hỏi**.
             3. Part 1: đọc câu hỏi + 4 lựa chọn, đoán bối cảnh trong 5 giây.
             4. Part 2: đọc lướt cả 4 câu hỏi của đoạn trước khi đoạn chạy.
             5. Đáp án đúng thường là **cách nói khác**; lựa chọn lặp y nguyên từ trong bài thường là bẫy.
-            6. Nghe từ đổi ý *but, actually, unfortunately* — đáp án ở sau.
+            6. Nghe từ đổi ý *but, actually, unfortunately* - đáp án ở sau.
             7. Câu "do next/will probably do" → nghe câu cuối.
             8. Part 3: ăn chắc câu hỏi chủ đề đầu mỗi bài.
             9. Không để trống câu nào; câu không nghe được chọn cùng một chữ cái.
-            10. Xong phần Nghe là xong — không nghĩ lại khi đang làm Đọc.
+            10. Xong phần Nghe là xong - không nghĩ lại khi đang làm Đọc.
             ~~~
 
             **Tuần cuối trước thi:** mỗi ngày nghe 1 đề hoàn chỉnh (hoặc 3 track của sách) đúng tốc độ, rồi nghe lại có lời thoại. Trước khi ngủ nghe thụ động 15 phút bài giảng tiếng Anh ngắn để quen tốc độ.

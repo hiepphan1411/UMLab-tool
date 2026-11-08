@@ -6,6 +6,7 @@ import { Button, IconButton, toast } from '@/ui';
 import { computeLayout, hitNode } from '../editors/mindmap/layout';
 import { MindScene, useMindPal } from '../editors/mindmap/scene';
 import { MIND_DETAIL, VSTEP_MINDMAP } from './content/mindmap';
+import { Drawer } from './layout';
 import { Rich } from './rich';
 
 export function MindmapView() {
@@ -78,7 +79,7 @@ export function MindmapView() {
     const rec: DiagramRecord = {
       id: 'dg_vstep_b1_mindmap',
       type: 'mindmap',
-      name: 'VSTEP B1 — lộ trình đậu',
+      name: 'VSTEP B1 - lộ trình đậu',
       folderId: null,
       order: 0,
       createdAt: now,
@@ -150,10 +151,15 @@ export function MindmapView() {
           </g>
         </svg>
       </div>
-      <aside className="vs-mm-side">
-        {node ? (
+      <Drawer
+        id="mindmap"
+        title={node?.title ?? 'Chi tiết'}
+        open={!!node}
+        onClose={() => setSel(null)}
+        defaultWidth={440}
+      >
+        {node && (
           <>
-            <h2>{node.title}</h2>
             {node.summary && <p className="text-muted">{node.summary}</p>}
             {detail ? (
               <Rich src={detail} />
@@ -161,10 +167,8 @@ export function MindmapView() {
               <p className="text-muted">Bấm vào nhánh để mở/thu gọn; bấm vào mục lá để xem nội dung.</p>
             )}
           </>
-        ) : (
-          <p className="text-muted">Chọn một node.</p>
         )}
-      </aside>
+      </Drawer>
     </div>
   );
 }

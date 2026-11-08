@@ -52,7 +52,7 @@ export function toPlainMarkdown(body: string): string {
               .filter(Boolean)
               .map((l) => {
                 const [en, ...vi] = l.split(' | ');
-                return `- **${en.trim()}** — ${vi.join(' | ').trim()}`;
+                return `- **${en.trim()}** - ${vi.join(' | ').trim()}`;
               })
               .join('\n')
           );
@@ -94,7 +94,7 @@ interface RawNode {
   collapsed: boolean;
 }
 
-/** Nội dung gốc (cú pháp riêng) theo id node — để xem bằng Rich trong app. */
+/** Nội dung gốc (cú pháp riêng) theo id node - để xem bằng Rich trong app. */
 export const MIND_DETAIL = new Map<string, string>();
 
 function build(): MindmapData {
@@ -118,7 +118,7 @@ function build(): MindmapData {
       id: 'root',
       parentId: null,
       kind: 'root',
-      title: 'VSTEP B1 — lộ trình đậu',
+      title: 'VSTEP B1 - lộ trình đậu',
       summary: 'Nghe, Đọc, Viết, Nói ≥ 4,0 trung bình',
       detail: rootDetail,
       color: null,
@@ -167,7 +167,7 @@ function build(): MindmapData {
     }
   }
   const planDetail = PLAN_PHASES.map(
-    (p) => `- **Giai đoạn ${p.id} — ${p.name}** (${Math.round(p.share * 100)}% số ngày): ${p.goal}.`,
+    (p) => `- **Giai đoạn ${p.id} - ${p.name}** (${Math.round(p.share * 100)}% số ngày): ${p.goal}.`,
   ).join('\n');
   add(
     {
@@ -193,7 +193,7 @@ function build(): MindmapData {
     });
 
   return normMindmap(
-    { title: 'VSTEP B1 — lộ trình đậu', layout: 'both', locked: true, references: [], nodes },
+    { title: 'VSTEP B1 - lộ trình đậu', layout: 'both', locked: true, references: [], nodes },
     'VSTEP B1',
   );
 }

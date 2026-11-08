@@ -1,5 +1,5 @@
 // Sinh từ OCR sách "Ôn tổng hợp VSTEP bậc 3 (B1)": track → trang sách (book) và trang lời thoại/đáp án (keys).
-// Trang lời thoại là gần đúng (OCR không đọc được nhãn track) — trong trình xem có nút lật trang.
+// Trang lời thoại là gần đúng (OCR không đọc được nhãn track) - trong trình xem có nút lật trang.
 export interface BookTrack {
   n: number;
   file: string;

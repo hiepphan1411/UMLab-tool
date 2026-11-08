@@ -1,4 +1,5 @@
 import { md, type VDoc } from './types';
+import { WRITING_T1_EXTRA } from './writing-task1-extra';
 
 export const writingDoc: VDoc = {
   id: 'writing',
@@ -24,10 +25,10 @@ export const writingDoc: VDoc = {
 
             **4 tiêu chí chấm** (mỗi bài):
 
-            1. **Hoàn thành yêu cầu (Task fulfilment)** — trả lời **đủ mọi ý** đề hỏi, đúng giọng văn, đủ số từ.
-            2. **Tổ chức bài (Organisation)** — bố cục rõ, có đoạn, có từ nối.
-            3. **Từ vựng (Vocabulary)** — đủ dùng, đúng nghĩa, có vài từ "ăn điểm".
-            4. **Ngữ pháp (Grammar)** — câu đơn đúng + một số câu phức (câu điều kiện, mệnh đề quan hệ, bị động).
+            1. **Hoàn thành yêu cầu (Task fulfilment)** - trả lời **đủ mọi ý** đề hỏi, đúng giọng văn, đủ số từ.
+            2. **Tổ chức bài (Organisation)** - bố cục rõ, có đoạn, có từ nối.
+            3. **Từ vựng (Vocabulary)** - đủ dùng, đúng nghĩa, có vài từ "ăn điểm".
+            4. **Ngữ pháp (Grammar)** - câu đơn đúng + một số câu phức (câu điều kiện, mệnh đề quan hệ, bị động).
 
             ~~~warn Lỗi mất điểm nặng nhất
             - **Thiếu ý đề yêu cầu** (đề hỏi 3 ý mà chỉ viết 2) → tiêu chí 1 tụt mạnh.
@@ -59,9 +60,10 @@ export const writingDoc: VDoc = {
       id: 'w2',
       title: 'Phần 2. Task 1 – Thư/email: template vạn năng',
       sections: [
+        ...WRITING_T1_EXTRA,
         {
           id: 'w2-universal',
-          title: '2.1. Template vạn năng cho MỌI loại thư',
+          title: '2.3. Khung 5 phần dùng cho mọi loại thư',
           body: md`
             Đề Task 1 luôn có dạng: _"You received an email from… Write a reply/letter to… In your letter, you should: (1)… (2)… (3)…"_. Cả thư thân mật lẫn trang trọng **dùng chung một khung 5 phần**; chỉ đổi lời chào, câu mở và câu kết theo giọng văn.
 
@@ -82,7 +84,7 @@ export const writingDoc: VDoc = {
             [Tên]
             ~~~
 
-            Bảng đổi giọng văn — **chỉ cần thay 4 chỗ này**:
+            Bảng đổi giọng văn - **chỉ cần thay 4 chỗ này**:
 
             | Chỗ thay | Thân mật (bạn bè, người thân)               | Trang trọng (công ty, giáo sư, người lạ)                            |
             | -------- | ------------------------------------------- | ------------------------------------------------------------------- |
@@ -98,7 +100,7 @@ export const writingDoc: VDoc = {
         },
         {
           id: 'w2-informal',
-          title: '2.2. Thư thân mật (informal): template + bài mẫu',
+          title: '2.4. Thư thân mật (informal): bài mẫu',
           body: md`
             Hay gặp: trả lời bạn hỏi thăm, rủ đi chơi/cắm trại, xin lời khuyên, kể về một trải nghiệm, giới thiệu món ăn/lễ hội, cảm ơn.
 
@@ -158,7 +160,7 @@ export const writingDoc: VDoc = {
         },
         {
           id: 'w2-formal',
-          title: '2.3. Thư trang trọng (formal): xin việc, phàn nàn, hỏi thông tin, xin thư giới thiệu',
+          title: '2.5. Thư trang trọng (formal): xin việc, phàn nàn, hỏi thông tin',
           body: md`
             ~~~template Template thư trang trọng
             Dear [Mr/Ms + họ / Sir or Madam],
@@ -207,7 +209,7 @@ export const writingDoc: VDoc = {
             Kính gửi Quý ông/bà,
             Tôi viết thư này để phàn nàn về tour 3 ngày đi Đà Nẵng mà tôi đặt với công ty từ ngày 10 đến 12/10.
             Thứ nhất, tour được quảng cáo gồm khách sạn bốn sao gần biển. Tuy nhiên khách sạn chúng tôi ở cũ, bẩn và cách biển khoảng 5 km.
-            Thứ hai, hướng dẫn viên thường đến muộn và có vẻ không biết nhiều về các điểm tham quan. Kết quả là chúng tôi lỡ chuyến thăm Ngũ Hành Sơn — một trong những lý do chính tôi chọn tour này.
+            Thứ hai, hướng dẫn viên thường đến muộn và có vẻ không biết nhiều về các điểm tham quan. Kết quả là chúng tôi lỡ chuyến thăm Ngũ Hành Sơn - một trong những lý do chính tôi chọn tour này.
             Cuối cùng, tôi rất mong công ty hoàn lại cho tôi ít nhất 50% giá tour. Tôi tin đây là khoản bồi thường hợp lý.
             Tôi mong nhận được phản hồi. Trân trọng, Nguyễn Văn Nam
             ~~~
@@ -215,7 +217,7 @@ export const writingDoc: VDoc = {
         },
         {
           id: 'w2-semi',
-          title: '2.4. Thư bán trang trọng (semi-formal) và bộ câu theo chức năng',
+          title: '2.6. Thư bán trang trọng và bộ câu theo chức năng',
           body: md`
             Gửi **người biết nhưng không thân**: chủ nhà, thầy cô, hàng xóm, đồng nghiệp lớn tuổi. Dùng _Dear Mr Peterson_, câu lịch sự nhưng được phép viết tắt nhẹ; kết thư **Best regards / Kind regards**.
 
@@ -392,9 +394,9 @@ export const writingDoc: VDoc = {
           body: md`
             Tổng hợp từ các bộ đề luyện thi công bố năm 2025–2026 (mang tính tham khảo):
 
-            **Task 1** — tỷ lệ thư trang trọng/bán trang trọng tăng (xin thư giới thiệu học bổng, xin gia nhập câu lạc bộ tình nguyện, phàn nàn tour du lịch, báo chủ nhà chuyển đi, đề xuất thư viện mua sách). Thư thân mật vẫn phổ biến: rủ cắm trại, kể về thói quen tốt mới, khuyên bạn tự học tiếng Anh, giới thiệu món ăn truyền thống, kể về nghề nghiệp mơ ước.
+            **Task 1** - tỷ lệ thư trang trọng/bán trang trọng tăng (xin thư giới thiệu học bổng, xin gia nhập câu lạc bộ tình nguyện, phàn nàn tour du lịch, báo chủ nhà chuyển đi, đề xuất thư viện mua sách). Thư thân mật vẫn phổ biến: rủ cắm trại, kể về thói quen tốt mới, khuyên bạn tự học tiếng Anh, giới thiệu món ăn truyền thống, kể về nghề nghiệp mơ ước.
 
-            **Task 2** — chủ đề quanh **giáo dục** (học trực tuyến, du học, đại học hay học nghề, trẻ em học ngoại ngữ sớm), **công nghệ** (mạng xã hội, trò chơi điện tử, nghiện internet), **công việc** (lương cao hay yêu thích công việc, làm việc tại nhà), **xã hội** (căng thẳng, béo phì, chảy máu chất xám, sống độc thân), **môi trường** (rác thải nhựa, giao thông công cộng).
+            **Task 2** - chủ đề quanh **giáo dục** (học trực tuyến, du học, đại học hay học nghề, trẻ em học ngoại ngữ sớm), **công nghệ** (mạng xã hội, trò chơi điện tử, nghiện internet), **công việc** (lương cao hay yêu thích công việc, làm việc tại nhà), **xã hội** (căng thẳng, béo phì, chảy máu chất xám, sống độc thân), **môi trường** (rác thải nhựa, giao thông công cộng).
 
             Dạng **Problem – Solution** và **Advantages – Disadvantages** xuất hiện nhiều nhất; dạng **Opinion** đứng thứ ba.
           `,

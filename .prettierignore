@@ -7,3 +7,4 @@ docs/reference
 packages/uml-icons/src/index.ts
 apps/desktop/src/renderer/src/features/editors/architecture/icon-data.ts
 apps/desktop/src/renderer/src/features/editors/engine/roboto-font.ts
+apps/desktop/src/renderer/src/features/vstep/data

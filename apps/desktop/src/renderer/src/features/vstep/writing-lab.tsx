@@ -5,41 +5,15 @@ import { WRITING_KIND_LABEL, type VstepWriting } from '@umlab/core';
 import { cn } from '@/lib/cn';
 import { Button, Segmented, openMenuAt, toast } from '@/ui';
 import { Panel, completeLink, fmtDate, mmss, useElapsed } from './common';
+import { MY_FORMAL, MY_INFORMAL } from './content/writing-task1-extra';
 import { Rich } from './rich';
 import { allSets } from './skill-view';
+import { SidePane } from './layout';
 import { uid, useVstep } from './store';
 
 const TEMPLATES: Record<string, string> = {
-  informal: `Dear [name],
-
-Thanks for your email. It was great to hear from you. I'm sorry for not writing back sooner, but I've been really busy with [my exams].
-
-You asked me about [topic], so let me tell you about it.
-
-Firstly, [point 1]. [Explain: It is… because…].
-
-Secondly, [point 2]. [Example: For example, …].
-
-Finally, [point 3]. [Suggestion: Why don't you…? / If I were you, I would…].
-
-I hope this helps. Write back soon and tell me [what you want to know].
-
-Best wishes,
-[Your name]`,
-  formal: `Dear [Mr/Ms surname / Sir or Madam],
-
-I am writing to [apply for… / complain about… / ask for information about… / request…].
-
-Firstly, [point 1]. [Details: date, place, numbers].
-
-Secondly, [point 2]. [Details].
-
-Finally, [point 3]. I would be grateful if you could [request].
-
-Thank you for your time and consideration. I look forward to hearing from you.
-
-Yours sincerely, / Yours faithfully,
-[Full name]`,
+  informal: MY_INFORMAL,
+  formal: MY_FORMAL,
   essay: `It is often said that [paraphrase the topic]. This issue has become a hot topic in recent years. In this essay, I will discuss [both sides / the advantages and disadvantages / the causes and solutions] and give my own opinion.
 
 To begin with, [main idea 1]. This is because [explanation]. For example, [specific example]. As a result, [result]. In addition, [extra idea 1].
@@ -61,7 +35,8 @@ const countWords = (t: string) =>
 const draftKey = (id: string) => `umlab.vstep.draft.${id}`;
 
 function Editor({ task }: { task: VstepWriting }) {
-  const writings = useVstep((s) => s.state!.writings.filter((w) => w.taskId === task.id));
+  const allWritings = useVstep((s) => s.state!.writings);
+  const writings = useMemo(() => allWritings.filter((w) => w.taskId === task.id), [allWritings, task.id]);
   const [text, setText] = useState(() => {
     try {
       return localStorage.getItem(draftKey(task.id)) ?? '';
@@ -193,7 +168,7 @@ function Editor({ task }: { task: VstepWriting }) {
         </div>
         <p className="vs-muted-line">
           Gợi ý: 4 = đủ ý nhưng nhiều lỗi; 5 = đủ ý, bố cục rõ theo template, lỗi nhỏ; 6 = có câu phức đúng, từ vựng đa
-          dạng. Điểm tự chấm: <b>{self == null ? '—' : self.toFixed(1)}</b>
+          dạng. Điểm tự chấm: <b>{self == null ? '-' : self.toFixed(1)}</b>
         </p>
       </Panel>
 
@@ -230,7 +205,7 @@ export function WritingLab() {
   const doneIds = new Set(s.writings.map((w) => w.taskId));
   return (
     <div className="vs-lab">
-      <aside className="vs-lab-list">
+      <SidePane id="writing" title="Đề viết" className="vs-lab-list">
         <Segmented<0 | 1 | 2>
           value={filter}
           onChange={setFilter}
@@ -251,7 +226,7 @@ export function WritingLab() {
             {doneIds.has(t.id) && <span className="vs-lab-done">đã viết</span>}
           </button>
         ))}
-      </aside>
+      </SidePane>
       <div className="vs-lab-main">
         {cur ? (
           <Editor key={cur.id} task={cur} />
@@ -261,7 +236,7 @@ export function WritingLab() {
               <ol className="vs-ul">
                 <li>Chọn một đề bên trái (Task 1 = thư 120 từ/20 phút, Task 2 = luận 250 từ/40 phút).</li>
                 <li>Gạch các ý đề yêu cầu, xem "Gợi ý dàn ý" nếu bí ý.</li>
-                <li>Bấm "Chèn template" rồi thay các [chỗ trống] bằng ý của bạn — đồng hồ tự chạy khi bắt đầu gõ.</li>
+                <li>Bấm "Chèn template" rồi thay các [chỗ trống] bằng ý của bạn - đồng hồ tự chạy khi bắt đầu gõ.</li>
                 <li>Soát lỗi theo bảng kiểm tra trong Tài liệu Viết (mục 3.6), tự chấm 4 tiêu chí rồi lưu.</li>
               </ol>
             </Panel>

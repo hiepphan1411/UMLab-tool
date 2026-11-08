@@ -6,8 +6,15 @@ import { registerIpc } from './ipc';
 import { presence } from './presence.service';
 import { sync } from './sync.service';
 import { registerVstepScheme, vstep } from './vstep.service';
+import { APP_TITLE, IS_VSTEP_APP } from '@shared/app-mode';
 
 const isDev = !app.isPackaged;
+// App VSTEP riêng: tên + thư mục dữ liệu + khoá chạy một bản riêng, không đụng UMLab đầy đủ
+if (IS_VSTEP_APP) {
+  app.setName('UMLab VSTEP');
+  app.setPath('userData', join(app.getPath('appData'), 'UMLab VSTEP'));
+}
+const ICON = join(__dirname, '../../build', IS_VSTEP_APP ? 'vstep-icon.png' : 'icon.png');
 registerVstepScheme();
 // Giao diện tiếng Việt: ô chọn ngày hiện dd/mm/yyyy, thông báo hệ thống tiếng Việt
 app.commandLine.appendSwitch('lang', 'vi');
@@ -21,7 +28,7 @@ if (process.env.UMLAB_PROFILE) {
 
 /** Màn hình chờ (logo + hiệu ứng load) khi chạy bản cài; dev / e2e bỏ qua trừ khi đặt UMLAB_SPLASH=1. */
 function createSplash(): BrowserWindow | null {
-  const want = process.env.UMLAB_SPLASH ? process.env.UMLAB_SPLASH === '1' : app.isPackaged;
+  const want = process.env.UMLAB_SPLASH ? process.env.UMLAB_SPLASH === '1' : app.isPackaged && !IS_VSTEP_APP;
   if (!want) return null;
   const splash = new BrowserWindow({
     width: 380,
@@ -33,8 +40,8 @@ function createSplash(): BrowserWindow | null {
     fullscreenable: false,
     show: false,
     center: true,
-    title: 'UMLab',
-    icon: join(__dirname, '../../build/icon.png'),
+    title: APP_TITLE,
+    icon: ICON,
     webPreferences: { sandbox: true, contextIsolation: true, nodeIntegration: false },
   });
   splash.once('ready-to-show', () => splash.show());
@@ -65,9 +72,9 @@ function createWindow(splash: BrowserWindow | null = null): BrowserWindow {
     minWidth: 600,
     minHeight: 480,
     show: false,
-    title: 'UMLab',
+    title: APP_TITLE,
     backgroundColor: dark ? '#15171C' : '#EEF0F3',
-    icon: join(__dirname, '../../build/icon.png'),
+    icon: ICON,
     titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'hidden',
     titleBarOverlay:
       process.platform === 'darwin'
@@ -104,7 +111,7 @@ app.on('second-instance', () => {
 });
 
 app.whenReady().then(async () => {
-  app.setAppUserModelId('vn.umlab.desktop');
+  app.setAppUserModelId(IS_VSTEP_APP ? 'vn.umlab.vstep' : 'vn.umlab.desktop');
   if (!isDev) Menu.setApplicationMenu(null);
   const splash = createSplash();
   registerIpc(isDev);

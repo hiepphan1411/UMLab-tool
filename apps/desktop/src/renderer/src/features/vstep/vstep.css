@@ -1,4 +1,4 @@
-/* Ôn thi VSTEP — chỉ dùng token màu của app (tokens.css), tự theo sáng/tối. */
+/* Ôn thi VSTEP - chỉ dùng token màu của app (tokens.css), tự theo sáng/tối. */
 .vs-brand {
   font-weight: 600;
   font-size: 14px;
@@ -374,18 +374,6 @@ ol.vs-ul {
 }
 .vs-phase span {
   color: var(--muted);
-}
-.vs-phase[data-phase='1'] {
-  box-shadow: inset 0 3px 0 #2e62e6;
-}
-.vs-phase[data-phase='2'] {
-  box-shadow: inset 0 3px 0 #1f9d66;
-}
-.vs-phase[data-phase='3'] {
-  box-shadow: inset 0 3px 0 #d98a1c;
-}
-.vs-phase[data-phase='4'] {
-  box-shadow: inset 0 3px 0 #d9463e;
 }
 .vs-cal-wrap {
   display: grid;
@@ -883,15 +871,15 @@ ol.vs-ul {
 .vt-dl {
   padding: 2px 0;
 }
-.vt-callout.tip {
+.vt-callout[data-kind='tip'] {
   background: color-mix(in srgb, var(--ok) 8%, var(--panel));
   border-color: color-mix(in srgb, var(--ok) 35%, var(--line));
 }
-.vt-callout.warn {
+.vt-callout[data-kind='warn'] {
   background: color-mix(in srgb, var(--warn) 9%, var(--panel));
   border-color: color-mix(in srgb, var(--warn) 35%, var(--line));
 }
-.vt-callout.note {
+.vt-callout[data-kind='note'] {
   background: var(--accent-soft);
   border-color: color-mix(in srgb, var(--accent) 30%, var(--line));
 }

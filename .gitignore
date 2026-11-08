@@ -11,3 +11,6 @@ test-results/
 playwright-report/
 packages/uml-icons/preview.html
 .vercel/
+
+# Tài liệu ôn VSTEP (MP3, ảnh trang sách, PDF ~380 MB) - chỉ để trên máy
+assets/vstep/

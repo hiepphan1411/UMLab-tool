@@ -2,7 +2,7 @@
   "name": "umlab",
   "private": true,
   "version": "0.1.0",
-  "description": "UMLab — công cụ desktop vẽ sơ đồ UML/kiến trúc/ERD/Gantt, cộng tác thời gian thực qua MongoDB",
+  "description": "UMLab - công cụ desktop vẽ sơ đồ UML/kiến trúc/ERD/Gantt, cộng tác thời gian thực qua MongoDB",
   "workspaces": [
     "packages/*",
     "apps/*"
@@ -11,6 +11,8 @@
     "dev": "npm run dev -w @umlab/desktop",
     "build": "npm run build -w @umlab/desktop",
     "dist": "npm run dist -w @umlab/desktop",
+    "dev:vstep": "npm run dev:vstep -w @umlab/desktop",
+    "dist:vstep": "npm run dist:vstep -w @umlab/desktop",
     "icons": "npm run build -w @umlab/uml-icons",
     "test": "npm run test --workspaces --if-present",
     "lint": "eslint .",

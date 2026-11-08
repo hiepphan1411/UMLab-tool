@@ -1,0 +1,41 @@
+# App riêng "UMLab VSTEP" - chỉ mục Ôn thi VSTEP. Build: npm run dist:vstep -w @umlab/desktop
+# (electron-vite build --mode vstep → __APP_MODE__ = 'vstep'; xem src/shared/app-mode.ts)
+appId: vn.umlab.vstep
+productName: UMLab VSTEP
+copyright: Copyright © 2026 Phan Phuoc Hiep
+directories:
+  output: release/vstep-${version}
+  buildResources: build
+files:
+  - out/**
+  - package.json
+  - '!**/*.map'
+extraMetadata:
+  main: out/main/index.js
+  name: umlab-vstep
+  productName: UMLab VSTEP
+# Sách + MP3 + ảnh trang (~300 MB) đóng kèm → resources/vstep (app tự lấy làm thư mục tài liệu mặc định)
+extraResources:
+  - from: ../../assets/vstep
+    to: vstep
+    filter:
+      - '**/*'
+asar: true
+electronVersion: 38.8.6
+npmRebuild: false
+nodeGypRebuild: false
+win:
+  icon: build/vstep-icon.png
+  target:
+    - target: nsis
+      arch: [x64]
+  artifactName: UMLab-VSTEP-${version}-${arch}.${ext}
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: always
+  createStartMenuShortcut: true
+  shortcutName: Ôn thi VSTEP
+  artifactName: UMLab-VSTEP-Setup-${version}.${ext}
+  deleteAppDataOnUninstall: false

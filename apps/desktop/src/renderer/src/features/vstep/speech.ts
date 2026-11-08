@@ -8,6 +8,8 @@ interface SpeechPrefs {
   accent: Accent;
   showIpa: boolean;
   showMeaning: boolean;
+  /** Hiện IPA cả câu dưới mẫu câu / template / bài mẫu. */
+  sentenceIpa: boolean;
   set(p: Partial<Omit<SpeechPrefs, 'set'>>): void;
 }
 
@@ -26,12 +28,13 @@ export const useSpeechPrefs = create<SpeechPrefs>((set, get) => ({
   accent: 'en-GB',
   showIpa: true,
   showMeaning: true,
+  sentenceIpa: false,
   ...read(),
   set(p) {
     set(p);
-    const { rate, accent, showIpa, showMeaning } = { ...get(), ...p };
+    const { rate, accent, showIpa, showMeaning, sentenceIpa } = { ...get(), ...p };
     try {
-      localStorage.setItem(KEY, JSON.stringify({ rate, accent, showIpa, showMeaning }));
+      localStorage.setItem(KEY, JSON.stringify({ rate, accent, showIpa, showMeaning, sentenceIpa }));
     } catch {}
   },
 }));

@@ -10,6 +10,7 @@ import { DOCS } from './content';
 import { Rich } from './rich';
 import { allSets } from './skill-view';
 import { speak, stopSpeaking } from './speech';
+import { SidePane } from './layout';
 import { uid, useVstep } from './store';
 
 const templateFor = (part: number) => {
@@ -270,7 +271,7 @@ export function SpeakingLab() {
   const done = new Set(s.speaking.map((x) => x.taskId));
   return (
     <div className="vs-lab">
-      <aside className="vs-lab-list">
+      <SidePane id="speaking" title="Đề nói" className="vs-lab-list">
         <Segmented<0 | 1 | 2 | 3>
           value={part}
           onChange={setPart}
@@ -294,7 +295,7 @@ export function SpeakingLab() {
               {done.has(t.id) && <span className="vs-lab-done">đã luyện</span>}
             </button>
           ))}
-      </aside>
+      </SidePane>
       <div className="vs-lab-main">
         {cur ? (
           <Practice key={cur.id} task={cur} />
@@ -303,7 +304,7 @@ export function SpeakingLab() {
             <Panel title="Luyện nói như thi trên máy">
               <ol className="vs-ul">
                 <li>Chọn một đề bên trái. Máy đọc đề bằng giọng tiếng Anh (như giám khảo trên máy).</li>
-                <li>Part 2, 3 có 1 phút chuẩn bị — ghi từ khoá, không viết cả câu.</li>
+                <li>Part 2, 3 có 1 phút chuẩn bị - ghi từ khoá, không viết cả câu.</li>
                 <li>Hết giờ chuẩn bị máy tự ghi âm. Part 1 bấm "Câu tiếp" để nghe câu hỏi sau.</li>
                 <li>Nghe lại bản ghi, so với template và bài mẫu, tự chấm rồi lưu.</li>
               </ol>

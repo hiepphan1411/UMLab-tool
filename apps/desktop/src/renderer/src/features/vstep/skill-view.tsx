@@ -14,37 +14,43 @@ import {
 import { Button, EmptyState, IconButton, Tabs, confirmDialog } from '@/ui';
 import { AREA_LABEL, Bar, Panel, fmtDate, mmss, type Area } from './common';
 import { BUILTIN_SETS } from './content';
+import { BookView, TracksView } from './book-view';
 import { CardsView } from './cards-view';
+import { ProgressRows, ScoreBars } from './charts';
+import { TRACK_GROUPS } from './content/tracks';
 import { DocView } from './doc-view';
 import { docProgress, estimate } from './progress';
 import { SpeakingLab } from './speaking-lab';
 import { useVstep } from './store';
-import { TracksView } from './tracks-view';
 import { WritingLab } from './writing-lab';
 
-type Tab = 'doc' | 'practice' | 'tracks' | 'progress' | 'cards';
+type Tab = 'doc' | 'practice' | 'tracks' | 'book' | 'progress' | 'cards';
 
 const TABS: Record<Area, { value: Tab; label: string }[]> = {
   listening: [
     { value: 'doc', label: 'Tài liệu' },
     { value: 'tracks', label: 'Luyện với sách (64 track)' },
+    { value: 'book', label: 'Lý thuyết sách' },
     { value: 'practice', label: 'Làm đề' },
     { value: 'progress', label: 'Tiến độ' },
   ],
   reading: [
     { value: 'doc', label: 'Tài liệu' },
+    { value: 'book', label: 'Sách (lý thuyết + bài tập)' },
     { value: 'practice', label: 'Làm đề' },
     { value: 'progress', label: 'Tiến độ' },
   ],
   writing: [
     { value: 'doc', label: 'Tài liệu & template' },
     { value: 'practice', label: 'Luyện viết' },
+    { value: 'book', label: 'Sách' },
     { value: 'progress', label: 'Tiến độ' },
   ],
   speaking: [
     { value: 'doc', label: 'Tài liệu & template' },
     { value: 'practice', label: 'Luyện nói' },
     { value: 'tracks', label: 'Track sách (65–89)' },
+    { value: 'book', label: 'Sách' },
     { value: 'progress', label: 'Tiến độ' },
   ],
   grammar: [{ value: 'doc', label: 'Tài liệu' }],
@@ -87,7 +93,7 @@ export function SetList({ skill }: { skill: 'listening' | 'reading' }) {
               <div className="vs-row-title">{x.title}</div>
               <div className="vs-row-sub">
                 {questionCount(x)} câu{x.minutes ? `, ${x.minutes} phút` : ''}
-                {x.description ? ` — ${x.description}` : ''}
+                {x.description ? ` - ${x.description}` : ''}
               </div>
             </div>
             {best >= 0 && (
@@ -146,7 +152,7 @@ function ProgressTab({ area }: { area: VstepSkill }) {
       <div className="vs-stats">
         <div className="vs-stat">
           <span>Điểm ước tính</span>
-          <b>{est == null ? '—' : est.toFixed(1)}</b>
+          <b>{est == null ? '-' : est.toFixed(1)}</b>
           <small>Mục tiêu B1: {B1_PLAN[area].toFixed(1)}</small>
         </div>
         <div className="vs-stat">
@@ -169,6 +175,46 @@ function ProgressTab({ area }: { area: VstepSkill }) {
           <span>Số bài đã làm</span>
           <b>{area === 'writing' ? s.writings.length : area === 'speaking' ? s.speaking.length : attempts.length}</b>
         </div>
+      </div>
+
+      <div className="vs-grid-2">
+        <Panel
+          title={
+            area === 'writing' || area === 'speaking' ? 'Điểm tự chấm các lần gần đây' : 'Điểm các lần làm đề (0–10)'
+          }
+        >
+          <ScoreBars
+            target={B1_PLAN[area]}
+            data={(area === 'writing' ? s.writings : area === 'speaking' ? s.speaking : [])
+              .filter((w) => w.self != null)
+              .slice(-20)
+              .map((w) => ({
+                label: new Date(w.at).toLocaleDateString('vi-VN').slice(0, 5),
+                value: w.self!,
+                tip: `${new Date(w.at).toLocaleDateString('vi-VN')}: ${w.self!.toFixed(1)}`,
+              }))
+              .concat(
+                (area === 'listening' || area === 'reading' ? attempts.slice().reverse() : []).slice(-20).map((a) => ({
+                  label: new Date(a.at).toLocaleDateString('vi-VN').slice(0, 5),
+                  value: bandFromRaw(a.correct, a.total),
+                  tip: `${a.setTitle}: ${a.correct}/${a.total} (${bandFromRaw(a.correct, a.total).toFixed(1)})`,
+                })),
+              )}
+          />
+        </Panel>
+        <Panel title={area === 'listening' || area === 'speaking' ? 'Track sách theo nhóm' : 'Tài liệu đã học'}>
+          {area === 'listening' || area === 'speaking' ? (
+            <ProgressRows
+              rows={TRACK_GROUPS.filter((g) => g.skill === area).map((g) => ({
+                label: g.code,
+                done: Object.entries(s.tracks).filter(([n, t]) => +n >= g.from && +n <= g.to && t.done).length,
+                total: g.to - g.from + 1,
+              }))}
+            />
+          ) : (
+            <ProgressRows rows={[{ label: 'Mục tài liệu', done: dp.done, total: dp.total }]} />
+          )}
+        </Panel>
       </div>
 
       {(area === 'listening' || area === 'reading') && (
@@ -252,7 +298,7 @@ function ProgressTab({ area }: { area: VstepSkill }) {
                         Task {w.task}: {w.title}
                       </td>
                       <td>{w.words}</td>
-                      <td>{w.self == null ? '—' : w.self.toFixed(1)}</td>
+                      <td>{w.self == null ? '-' : w.self.toFixed(1)}</td>
                     </tr>
                   ))}
               </tbody>
@@ -286,7 +332,7 @@ function ProgressTab({ area }: { area: VstepSkill }) {
                         Part {w.part}: {w.topic}
                       </td>
                       <td>{mmss(w.durationSec)}</td>
-                      <td>{w.self == null ? '—' : w.self.toFixed(1)}</td>
+                      <td>{w.self == null ? '-' : w.self.toFixed(1)}</td>
                     </tr>
                   ))}
               </tbody>
@@ -313,6 +359,8 @@ export function SkillView({ area }: { area: Area }) {
         );
       case 'tracks':
         return <TracksView skill={area === 'speaking' ? 'speaking' : 'listening'} />;
+      case 'book':
+        return <BookView skill={area as 'listening' | 'reading' | 'writing' | 'speaking'} />;
       case 'cards':
         return <CardsView />;
       case 'progress':

@@ -2,7 +2,7 @@ import { MongoClient, type Collection, type Db, type Document } from 'mongodb';
 import type { ConnStatus } from '@shared/api';
 import { hostOf, loadSettings } from './config';
 
-/** Kiểu tài liệu trong các collection — xem docs/ARCHITECTURE.md mục 3. */
+/** Kiểu tài liệu trong các collection - xem docs/ARCHITECTURE.md mục 3. */
 export interface UserDoc {
   _id: string;
   email: string;
@@ -148,7 +148,7 @@ class Database {
     if (n !== this.status.pending) this.emit({ pending: n });
   }
 
-  /** Số lần đã kết nối (lại) — service dùng để biết phải dựng lại change stream. */
+  /** Số lần đã kết nối (lại) - service dùng để biết phải dựng lại change stream. */
   get gen(): number {
     return this.generation;
   }
@@ -266,7 +266,7 @@ class Database {
     return this.db;
   }
 
-  /** operationTime hiện tại của cụm (replica set) — mốc bắt đầu cho change stream. */
+  /** operationTime hiện tại của cụm (replica set) - mốc bắt đầu cho change stream. */
   async clusterTime(): Promise<import('mongodb').Timestamp | undefined> {
     try {
       const r = (await this.get().command({ ping: 1 })) as Document;
@@ -293,6 +293,7 @@ class Database {
   assets = () => this.col<AssetDoc>('assets');
   audit = () => this.col<AuditDoc>('audit_log');
   vstep = () => this.col<VstepProgressDoc>('vstep_progress');
+  vstepAnnots = () => this.col<VstepProgressDoc>('vstep_annots');
 }
 
 export function friendlyError(msg: string): string {

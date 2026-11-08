@@ -235,6 +235,19 @@ export const vstepStateSchema = z.object({
   sets: z.array(z.unknown()).default([]),
   /** Từ vựng: id → hộp Leitner (0–5) + lần ôn tới. */
   cards: z.record(z.object({ box: z.number().int().min(0).max(5), due: ts })).default({}),
+  /** Từ/cụm tự thêm khi bôi đen tra nghĩa (cũng thành thẻ ôn). */
+  myWords: z
+    .array(
+      z.object({
+        word: z.string().max(200),
+        ipa: z.string().max(300).default(''),
+        mean: z.string().max(500).default(''),
+        at: ts,
+      }),
+    )
+    .default([]),
+  /** Kiểu ảnh nền thẻ tổng quan. */
+  heroStyle: z.string().max(40).default('auto'),
   updatedAt: ts.default(0),
 });
 export type VstepState = z.infer<typeof vstepStateSchema>;

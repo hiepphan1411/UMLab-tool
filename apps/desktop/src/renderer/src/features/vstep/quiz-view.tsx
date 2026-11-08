@@ -148,7 +148,7 @@ export function QuizView() {
     if (!force && blank > 0) {
       const ok = await confirmDialog({
         title: 'Nộp bài?',
-        text: `Còn ${blank} câu chưa chọn. Thi thật không bị trừ điểm câu sai — nên chọn hết trước khi nộp.`,
+        text: `Còn ${blank} câu chưa chọn. Thi thật không bị trừ điểm câu sai - nên chọn hết trước khi nộp.`,
         confirmLabel: 'Vẫn nộp',
       });
       if (!ok) return;
@@ -181,7 +181,7 @@ export function QuizView() {
   if (!set) return <EmptyState title="Không tìm thấy bộ đề" text="Bộ đề có thể đã bị xoá khỏi kho." />;
   if (!set.sections.length)
     return (
-      <EmptyState title={set.title} text="Bộ đề này chỉ có đề Viết/Nói — mở ở mục Luyện viết/Luyện nói.">
+      <EmptyState title={set.title} text="Bộ đề này chỉ có đề Viết/Nói - mở ở mục Luyện viết/Luyện nói.">
         <Button
           onClick={() => nav(set.writing.length ? '/vstep/writing?tab=practice' : '/vstep/speaking?tab=practice')}
         >

@@ -1,5 +1,5 @@
 // Hợp đồng IPC giữa main process (truy cập MongoDB) và renderer (React).
-// Renderer không bao giờ cầm chuỗi kết nối hay truy vấn DB trực tiếp — chỉ gọi các hàm dưới đây qua window.umlab.
+// Renderer không bao giờ cầm chuỗi kết nối hay truy vấn DB trực tiếp - chỉ gọi các hàm dưới đây qua window.umlab.
 
 export type Result<T> = { ok: true; data: T } | { ok: false; error: string; code?: ErrorCode };
 
@@ -20,7 +20,7 @@ export interface PublicUser {
 export const FEATURE_VSTEP = 'vstep';
 export const hasFeature = (u: PublicUser | null | undefined, f: string) => !!u?.features?.includes(f);
 
-/** Thư mục tài liệu VSTEP trên máy (MP3 + ảnh trang sách) — chỉ lưu cục bộ, không đồng bộ. */
+/** Thư mục tài liệu VSTEP trên máy (MP3 + ảnh trang sách) - chỉ lưu cục bộ, không đồng bộ. */
 export interface VstepMediaInfo {
   dir: string | null;
   /** Đường dẫn tương đối (dấu /) của các tệp âm thanh trong thư mục (quét tối đa 3 cấp). */
@@ -28,6 +28,17 @@ export interface VstepMediaInfo {
   /** Có ảnh trang sách / đáp án đã tách sẵn (_umlab/book, _umlab/keys). */
   bookPages: number;
   keyPages: number;
+}
+
+/** Tệp PDF trong mục "Tài liệu của tôi" (đường dẫn chỉ có nghĩa trên máy này). */
+export interface VstepDoc {
+  id: string;
+  name: string;
+  path: string;
+  size: number;
+  addedAt: number;
+  lastPage?: number;
+  missing?: boolean;
 }
 
 export interface VstepSaveResult {
@@ -91,7 +102,7 @@ export interface ConnStatus {
   error?: string;
   /** Số bản cập nhật đang chờ gửi lên DB (khi mất mạng). */
   pending: number;
-  /** Độ trễ heartbeat gần nhất tới MongoDB (ms) — để báo kết nối yếu. */
+  /** Độ trễ heartbeat gần nhất tới MongoDB (ms) - để báo kết nối yếu. */
   latencyMs?: number;
 }
 
@@ -175,6 +186,8 @@ export interface UmlabApi {
     setTitleBarTheme(theme: { color: string; symbolColor: string }): void;
     openExternal(url: string): Promise<void>;
     reload(): void;
+    /** Chụp một vùng cửa sổ (toạ độ CSS) → ảnh JPEG thu nhỏ (data URL) cho ảnh xem trước tab. */
+    capture(rect: { x: number; y: number; width: number; height: number }, width?: number): Promise<string | null>;
   };
   conn: {
     status(): Promise<ConnStatus>;
@@ -210,6 +223,18 @@ export interface UmlabApi {
     save(state: unknown): Promise<Result<VstepSaveResult>>;
     media(): Promise<Result<VstepMediaInfo>>;
     pickMediaDir(): Promise<Result<VstepMediaInfo | null>>;
+    /** Nét vẽ + ghi chú trên trang sách/PDF (lưu tách khỏi tiến độ). */
+    loadAnnots(): Promise<Result<unknown>>;
+    saveAnnots(data: unknown): Promise<Result<VstepSaveResult>>;
+    docs(): Promise<Result<VstepDoc[]>>;
+    pickPdf(): Promise<Result<string | null>>;
+    addDoc(input: { name: string; path: string }): Promise<Result<VstepDoc>>;
+    updateDoc(id: string, patch: { name?: string; lastPage?: number }): Promise<Result<VstepDoc[]>>;
+    removeDoc(id: string): Promise<Result<void>>;
+    /** Dịch Anh → Việt trực tuyến (Google Translate, dự phòng MyMemory). */
+    translate(text: string): Promise<Result<string>>;
+    /** Ảnh PNG của vùng chọn → chữ (OCR của Windows, tiếng Anh). */
+    ocr(png: Uint8Array): Promise<Result<string>>;
   };
   projects: {
     list(): Promise<Result<ProjectSummary[]>>;
@@ -221,7 +246,7 @@ export interface UmlabApi {
     addMember(id: string, email: string, role: Role): Promise<Result<ProjectSummary>>;
     setMemberRole(id: string, userId: string, role: Role): Promise<Result<ProjectSummary>>;
     removeMember(id: string, userId: string): Promise<Result<ProjectSummary>>;
-    /** Tải toàn bộ cập nhật của project (không mở realtime) — dùng cho nhân bản/xuất JSON. */
+    /** Tải toàn bộ cập nhật của project (không mở realtime) - dùng cho nhân bản/xuất JSON. */
     loadUpdates(id: string): Promise<Result<Uint8Array[]>>;
     onChanged(cb: () => void): Unsubscribe;
   };
@@ -230,7 +255,7 @@ export interface UmlabApi {
     push(projectId: string, update: Uint8Array): Promise<Result<void>>;
     close(projectId: string): Promise<void>;
     onUpdate(cb: (projectId: string, update: Uint8Array) => void): Unsubscribe;
-    /** Bắn khi project vừa được nạp lại toàn bộ (sau khi mất kết nối) — renderer áp dụng lại cho chắc. */
+    /** Bắn khi project vừa được nạp lại toàn bộ (sau khi mất kết nối) - renderer áp dụng lại cho chắc. */
     onResync(cb: (projectId: string, updates: Uint8Array[]) => void): Unsubscribe;
   };
   presence: {
@@ -261,6 +286,7 @@ export const IPC = {
   appTitleBar: 'app:titlebar',
   appOpenExternal: 'app:openExternal',
   appReload: 'app:reload',
+  appCapture: 'app:capture',
   connStatus: 'conn:status',
   connStatusEvt: 'conn:status:evt',
   connRetry: 'conn:retry',
@@ -281,6 +307,15 @@ export const IPC = {
   vstepSave: 'vstep:save',
   vstepMedia: 'vstep:media',
   vstepPickMedia: 'vstep:pickMedia',
+  vstepLoadAnnots: 'vstep:loadAnnots',
+  vstepSaveAnnots: 'vstep:saveAnnots',
+  vstepDocs: 'vstep:docs',
+  vstepPickPdf: 'vstep:pickPdf',
+  vstepAddDoc: 'vstep:addDoc',
+  vstepUpdateDoc: 'vstep:updateDoc',
+  vstepRemoveDoc: 'vstep:removeDoc',
+  vstepTranslate: 'vstep:translate',
+  vstepOcr: 'vstep:ocr',
   projList: 'proj:list',
   projGet: 'proj:get',
   projCreate: 'proj:create',

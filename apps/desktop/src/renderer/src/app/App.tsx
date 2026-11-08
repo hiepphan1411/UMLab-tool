@@ -10,6 +10,7 @@ import { EditorPage } from '@/features/workspace/editor-page';
 import { useConn } from '@/lib/conn';
 import { UiKitPage } from '@/pages/ui-kit-page';
 import { VstepPage } from '@/features/vstep/vstep-page';
+import { APP_TITLE, HOME_PATH, IS_VSTEP_APP } from '@shared/app-mode';
 import { HelpPage, useHelpShortcut } from '@/pages/help-page';
 import { DialogHost, FullScreenSpinner, MenuHost, ToastHost, TooltipHost } from '@/ui';
 
@@ -28,6 +29,9 @@ function RequireAuth({ children }: { children: ReactNode }) {
 
 function Boot() {
   useHelpShortcut();
+  useEffect(() => {
+    document.title = APP_TITLE;
+  }, []);
   useEffect(() => {
     const a = useConn.getState().init();
     const b = useSession.getState().init();
@@ -52,25 +56,37 @@ export function App() {
           <Route
             path="/projects"
             element={
-              <RequireAuth>
-                <ProjectsPage />
-              </RequireAuth>
+              IS_VSTEP_APP ? (
+                <Navigate to="/vstep" replace />
+              ) : (
+                <RequireAuth>
+                  <ProjectsPage />
+                </RequireAuth>
+              )
             }
           />
           <Route
             path="/p/:projectId"
             element={
-              <RequireAuth>
-                <WorkspacePage />
-              </RequireAuth>
+              IS_VSTEP_APP ? (
+                <Navigate to="/vstep" replace />
+              ) : (
+                <RequireAuth>
+                  <WorkspacePage />
+                </RequireAuth>
+              )
             }
           />
           <Route
             path="/p/:projectId/d/:diagramId"
             element={
-              <RequireAuth>
-                <EditorPage />
-              </RequireAuth>
+              IS_VSTEP_APP ? (
+                <Navigate to="/vstep" replace />
+              ) : (
+                <RequireAuth>
+                  <EditorPage />
+                </RequireAuth>
+              )
             }
           />
           <Route
@@ -81,7 +97,7 @@ export function App() {
               </RequireAuth>
             }
           />
-          <Route path="*" element={<Navigate to="/projects" replace />} />
+          <Route path="*" element={<Navigate to={HOME_PATH} replace />} />
         </Routes>
         <DialogHost />
         <MenuHost />

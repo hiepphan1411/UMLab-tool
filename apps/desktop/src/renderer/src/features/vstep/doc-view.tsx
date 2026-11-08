@@ -7,6 +7,7 @@ import { Bar, completeLink } from './common';
 import { DOCS, docSections, sectionKey } from './content';
 import { toPlainMarkdown } from './content/mindmap';
 import type { DocId } from './content/types';
+import { SidePane } from './layout';
 import { Rich } from './rich';
 import { useVstep } from './store';
 
@@ -60,7 +61,7 @@ export function DocView({
 
   return (
     <div className="vs-doc">
-      <aside className="vs-toc">
+      <SidePane id={'doc-' + id} title="Mục lục" className="vs-toc">
         <div className="vs-toc-head">
           <b>{doc.title}</b>
           <span className="text-muted">
@@ -84,7 +85,7 @@ export function DocView({
             ))}
           </div>
         ))}
-      </aside>
+      </SidePane>
       <article className="vs-doc-body" ref={body}>
         <div className="vs-doc-inner">
           <div className="vs-doc-crumb">{doc.parts.find((p) => p.sections.includes(cur))?.title}</div>

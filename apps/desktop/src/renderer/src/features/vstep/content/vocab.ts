@@ -1,4 +1,5 @@
 import { md, type VDoc } from './types';
+import { VOCAB_DAILY, VOCAB_MORE } from './vocab-extra';
 
 const topic = (id: string, title: string, rows: string, tip = '') => ({
   id,
@@ -6,7 +7,7 @@ const topic = (id: string, title: string, rows: string, tip = '') => ({
   body:
     md`
     ~~~vocab ${title}
-    ${rows
+    ${(rows + (VOCAB_MORE[id] ?? ''))
       .trim()
       .split('\n')
       .map((l) => l.trim())
@@ -18,7 +19,7 @@ const topic = (id: string, title: string, rows: string, tip = '') => ({
 export const vocabDoc: VDoc = {
   id: 'vocab',
   title: 'Từ vựng theo chủ đề',
-  subtitle: '12 chủ đề hay gặp ở cả 4 kỹ năng, có phiên âm và câu ví dụ',
+  subtitle: '12 chủ đề (~20 từ mỗi chủ đề) + câu nói hằng ngày, có phiên âm và câu ví dụ',
   parts: [
     {
       id: 'v1',
@@ -201,5 +202,6 @@ export const vocabDoc: VDoc = {
         ),
       ],
     },
+    VOCAB_DAILY,
   ],
 };

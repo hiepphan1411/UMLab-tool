@@ -36,6 +36,10 @@ export function linkPath(link?: string): string | null {
       return `/vstep/writing?tab=practice&task=${encodeURIComponent(rest)}`;
     case 'speak':
       return `/vstep/speaking?tab=practice&task=${encodeURIComponent(rest)}`;
+    case 'book': {
+      const [skill, sec] = rest.split('#');
+      return `/vstep/${skill}?tab=book${sec ? `&sec=${encodeURIComponent(sec)}` : ''}`;
+    }
     case 'cards':
       return '/vstep/vocab?tab=cards';
     case 'progress':
@@ -176,6 +180,10 @@ function SpeechDialog({ done }: { done: () => void }) {
           <label className="chk">
             <input type="checkbox" checked={p.showMeaning} onChange={(e) => p.set({ showMeaning: e.target.checked })} />
             Hiện nghĩa tiếng Việt cạnh từ in đậm
+          </label>
+          <label className="chk">
+            <input type="checkbox" checked={p.sentenceIpa} onChange={(e) => p.set({ sentenceIpa: e.target.checked })} />
+            Hiện IPA cả câu dưới mẫu câu, template, bài mẫu (để luyện nói)
           </label>
         </div>
         <p className="text-muted">

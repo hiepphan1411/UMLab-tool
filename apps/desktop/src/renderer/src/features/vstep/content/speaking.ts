@@ -1,3 +1,4 @@
+import { SPEAKING_EXTRA } from './speaking-extra';
 import { md, type VDoc } from './types';
 
 export const speakingDoc: VDoc = {
@@ -60,17 +61,18 @@ export const speakingDoc: VDoc = {
           id: 's2-review',
           title: '2.1. Có nên học template theo dạng câu hỏi không?',
           body: md`
-            **Có — và nên học.** Câu hỏi Part 1 lặp lại theo vài dạng cố định; mỗi dạng một khung câu giúp bạn **trả lời ngay trong 1 giây**, đúng ngữ pháp, đủ dài. 5 dạng bạn đưa ra rất chuẩn. Góp ý để dùng hiệu quả hơn:
+            **Có - và nên học.** Câu hỏi Part 1 lặp lại theo vài dạng cố định; mỗi dạng một khung câu giúp bạn **trả lời ngay trong 1 giây**, đúng ngữ pháp, đủ dài. 5 dạng bạn đưa ra rất chuẩn. Góp ý để dùng hiệu quả hơn:
 
             1. Mỗi khung chỉ có 2 câu → nói khoảng 10–12 giây, **hơi ngắn**. Hãy thêm **câu thứ 3** (ví dụ hoặc cảm xúc) để đạt 20–30 giây.
-            2. Đừng đọc thuộc lòng y hệt cho mọi câu — giám khảo nhận ra "học vẹt". Thuộc **2–3 cách mở** cho mỗi dạng và đổi luân phiên.
+            2. Đừng đọc thuộc lòng y hệt cho mọi câu - giám khảo nhận ra "học vẹt". Thuộc **2–3 cách mở** cho mỗi dạng và đổi luân phiên.
             3. Bổ sung **3 dạng** hay gặp mà 5 dạng chưa phủ: **mô tả người/nơi/vật**, **kế hoạch tương lai**, **câu hỏi lạ/không biết trả lời**.
             4. Lưu ý ngữ pháp: sau _enjoy / like / love / prefer_ dùng **V-ing** (_enjoy listening_); _prefer A_ **to** _B_ (không dùng _rather than_ trong mẫu này); _helps me_ + **V nguyên mẫu** (_helps me relax_).
           `,
         },
+        ...SPEAKING_EXTRA,
         {
           id: 's2-type1',
-          title: '2.2. Dạng 1 – Sở thích / Thói quen',
+          title: '2.4. Dạng 1 – Sở thích / Thói quen',
           body: md`
             _What do you like doing in your free time? What do you usually do at weekends? Do you like music?_
 
@@ -97,7 +99,7 @@ export const speakingDoc: VDoc = {
         },
         {
           id: 's2-type2',
-          title: '2.3. Dạng 2 – Lựa chọn / So sánh',
+          title: '2.5. Dạng 2 – Lựa chọn / So sánh',
           body: md`
             _Do you prefer A or B? Which do you like better, …? Would you rather… or…?_
 
@@ -112,13 +114,13 @@ export const speakingDoc: VDoc = {
             ~~~
 
             ~~~note Ngữ pháp
-            **prefer + V-ing + to + V-ing**: *I prefer reading* **to** *watching TV.* — **prefer + N + to + N**: *I prefer tea* **to** *coffee.* — Với "Would you rather…?": *I'd rather* **stay** *at home.* (động từ nguyên mẫu).
+            **prefer + V-ing + to + V-ing**: *I prefer reading* **to** *watching TV.* - **prefer + N + to + N**: *I prefer tea* **to** *coffee.* - Với "Would you rather…?": *I'd rather* **stay** *at home.* (động từ nguyên mẫu).
             ~~~
           `,
         },
         {
           id: 's2-type3',
-          title: '2.4. Dạng 3 – Ý kiến / Tầm quan trọng',
+          title: '2.6. Dạng 3 – Ý kiến / Tầm quan trọng',
           body: md`
             _Is X important? Do you think X is useful? Should people…?_
 
@@ -137,7 +139,7 @@ export const speakingDoc: VDoc = {
         },
         {
           id: 's2-type4',
-          title: '2.5. Dạng 4 – Tần suất / Thời gian / Quá khứ',
+          title: '2.7. Dạng 4 – Tần suất / Thời gian / Quá khứ',
           body: md`
             _How often…? When did you start…? Did you use to…? What did you do last weekend?_
 
@@ -167,7 +169,7 @@ export const speakingDoc: VDoc = {
         },
         {
           id: 's2-type5',
-          title: '2.6. Dạng 5 – Trải nghiệm / Mô tả yêu thích',
+          title: '2.8. Dạng 5 – Trải nghiệm / Mô tả yêu thích',
           body: md`
             _Tell me about… / What is your favourite…? / Have you ever…?_
 
@@ -186,7 +188,7 @@ export const speakingDoc: VDoc = {
         },
         {
           id: 's2-type678',
-          title: '2.7. Dạng 6, 7, 8 – Mô tả, dự định tương lai, câu hỏi lạ',
+          title: '2.9. Dạng 6, 7, 8 – Mô tả, dự định tương lai, câu hỏi lạ',
           body: md`
             **Dạng 6 – Mô tả người/nơi/vật** (_Describe your hometown / your best friend / your house_)
 
@@ -195,7 +197,9 @@ export const speakingDoc: VDoc = {
             ~~~
 
             ~~~sample Ví dụ – quê hương
-            My hometown is **Hue**, a city in central Vietnam. It is quite **peaceful** and has a lot of **historic buildings**. What I like most about it is the **food**, especially *bun bo Hue*. Whenever I come back, I feel relaxed and happy.
+            My hometown is **Tay Ninh**, a province in the south-east of Vietnam. It is quite **peaceful** and **green**, with a lot of rice fields. What I like most about it is **Ba Den Mountain**, the highest mountain in southern Vietnam. Whenever I come back, I feel relaxed and happy.
+            ---
+            Quê tôi là Tây Ninh, một tỉnh ở Đông Nam Bộ. Nơi đây khá yên bình và xanh mát, có nhiều ruộng lúa. Điều tôi thích nhất là núi Bà Đen, ngọn núi cao nhất Nam Bộ. Mỗi lần về quê tôi thấy thư thái và vui vẻ.
             ~~~
 
             **Dạng 7 – Kế hoạch tương lai** (_What will you do after graduation? Would you like to…in the future?_)
@@ -205,10 +209,10 @@ export const speakingDoc: VDoc = {
             ~~~
 
             ~~~sample Ví dụ
-            In the future, I'm planning to **work as a software developer** for a big technology company. I'd like to do this because I love creating useful apps. To achieve this goal, I'm now **improving my English** and **learning new programming skills**.
+            In the future, I'm planning to **work as a software developer** for a technology company in Ho Chi Minh City. I'd like to do this because I love creating useful apps. To achieve this goal, I'm now **improving my English** and **learning new programming skills**.
             ~~~
 
-            **Dạng 8 – Câu hỏi lạ, chưa có ý** — đừng im lặng; dùng câu câu giờ rồi trả lời bằng ý đơn giản nhất:
+            **Dạng 8 – Câu hỏi lạ, chưa có ý** - đừng im lặng; dùng câu câu giờ rồi trả lời bằng ý đơn giản nhất:
 
             ~~~sample Ví dụ – "Do you like collecting things?"
             Well, to be honest, I've never really thought about it. I don't collect anything at the moment, but when I was a child, I used to collect stamps. I think collecting things is a nice hobby because it teaches people to be patient.
@@ -335,10 +339,10 @@ export const speakingDoc: VDoc = {
           body: md`
             Sách luyện phần phát âm ở trang 302–306 (track **65–69**). 4 lỗi người Việt hay mắc và **giám khảo trừ điểm rõ nhất**:
 
-            1. **Nuốt âm cuối** — _like, book, want, students_. Đọc rõ /k/, /t/, /s/.
+            1. **Nuốt âm cuối** - _like, book, want, students_. Đọc rõ /k/, /t/, /s/.
             2. **Đuôi -s/-es**: /s/ sau âm vô thanh (_books, cats_), /z/ sau âm hữu thanh (_dogs, plays_), /ɪz/ sau s, z, ʃ, tʃ, dʒ (_buses, watches_).
             3. **Đuôi -ed**: /t/ (_watched, helped_), /d/ (_played, lived_), /ɪd/ sau t, d (_wanted, needed_).
-            4. **Trọng âm từ** — sai trọng âm khiến người nghe không hiểu.
+            4. **Trọng âm từ** - sai trọng âm khiến người nghe không hiểu.
 
             ~~~vocab Từ hay đọc sai trọng âm
             hotel | /həʊˈtel/ | n | khách sạn | nhấn âm 2
@@ -388,7 +392,7 @@ export const speakingDoc: VDoc = {
             2. Part 1: trả lời **ngay**, đủ 3 câu (A-R-E). Không hỏi lại giám khảo được (thi máy).
             3. Part 2 và 3: dùng 1 phút chuẩn bị để **ghi từ khoá**, không viết cả câu.
             4. Nói đến khi hết giờ; nếu hết ý, quay lại nêu ví dụ bản thân.
-            5. Lỡ nói sai thì tự sửa nhanh (*Sorry, I mean…*) rồi nói tiếp — không dừng lại.
+            5. Lỡ nói sai thì tự sửa nhanh (*Sorry, I mean…*) rồi nói tiếp - không dừng lại.
             ~~~
           `,
         },

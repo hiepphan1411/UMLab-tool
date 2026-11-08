@@ -1,5 +1,6 @@
-import { ChevronLeft, ChevronRight, Plus, Trash2 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { ArrowRight, ChevronLeft, ChevronRight, Plus, Trash2 } from 'lucide-react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { PLAN_PHASES, addDays, localDateKey, planProgress, streak, type PlanDay } from '@umlab/core';
 import { cn } from '@/lib/cn';
 import { Button, IconButton } from '@/ui';
@@ -7,6 +8,28 @@ import { Bar, Panel, WEEKDAY, fmtDate, weekday } from './common';
 import { planFor } from './content';
 import { TaskRow } from './home-view';
 import { uid, useVstep } from './store';
+
+const PHASE_COLOR: Record<number, string> = { 1: '#2E62E6', 2: '#1F9D66', 3: '#D98A1C', 4: '#D9463E' };
+
+/** Ghi chú gõ vào state cục bộ, lưu sau 500 ms (không ghi cả trạng thái mỗi phím gõ). */
+function NoteBox({ date }: { date: string }) {
+  const saved = useVstep((x) => x.state!.notes[date] ?? '');
+  const [text, setText] = useState(saved);
+  useEffect(() => setText(saved), [date]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (text === saved) return;
+    const t = setTimeout(() => useVstep.getState().update((x) => void (x.notes[date] = text)), 500);
+    return () => clearTimeout(t);
+  }, [text, saved, date]);
+  return (
+    <textarea
+      className="field vs-note"
+      placeholder="Hôm nay học được gì, câu nào hay sai…"
+      value={text}
+      onChange={(e) => setText(e.target.value)}
+    />
+  );
+}
 
 const MONTHS = [
   'Tháng 1',
@@ -43,7 +66,7 @@ function DayPanel({ day, date }: { day: PlanDay | undefined; date: string }) {
   };
   return (
     <Panel
-      title={`${weekday(date)}, ${fmtDate(date)}${day?.phase ? ` — Giai đoạn ${day.phase}` : day?.phase === 0 ? ' — Ngày thi' : ''}`}
+      title={`${weekday(date)}, ${fmtDate(date)}${day?.phase ? ` - Giai đoạn ${day.phase}` : day?.phase === 0 ? ' - Ngày thi' : ''}`}
     >
       {day ? (
         <div className="vs-tasks">
@@ -102,12 +125,7 @@ function DayPanel({ day, date }: { day: PlanDay | undefined; date: string }) {
         </form>
       </div>
       <h4 className="vs-h4">Ghi chú</h4>
-      <textarea
-        className="field vs-note"
-        placeholder="Hôm nay học được gì, câu nào hay sai…"
-        value={s.notes[date] ?? ''}
-        onChange={(e) => update((x) => void (x.notes[date] = e.target.value))}
-      />
+      <NoteBox date={date} />
     </Panel>
   );
 }
@@ -117,7 +135,11 @@ export function PlanView() {
   const days = useMemo(() => planFor(s), [s.startDate, s.examDate]); // eslint-disable-line react-hooks/exhaustive-deps
   const byDate = useMemo(() => new Map(days.map((d) => [d.date, d])), [days]);
   const today = localDateKey();
-  const [sel, setSel] = useState(byDate.has(today) ? today : (days[0]?.date ?? today));
+  const [sp] = useSearchParams();
+  const want = sp.get('d');
+  const [sel, setSel] = useState(
+    want && /^\d{4}-\d{2}-\d{2}$/.test(want) ? want : byDate.has(today) ? today : (days[0]?.date ?? today),
+  );
   const [ym, setYm] = useState(() => ({ y: +sel.slice(0, 4), m: +sel.slice(5, 7) - 1 }));
   const grid = monthGrid(ym.y, ym.m);
   const prog = planProgress(days, s.plan);
@@ -139,15 +161,19 @@ export function PlanView() {
           const ds = days.filter((d) => d.phase === p.id);
           const pp = planProgress(ds, s.plan);
           return (
-            <div key={p.id} className="vs-phase" data-phase={p.id}>
-              <b>
-                Giai đoạn {p.id}: {p.name}
-              </b>
-              <span>
-                {ds.length ? `${fmtDate(ds[0].date)} – ${fmtDate(ds[ds.length - 1].date)}` : 'Không có ngày'}, xong{' '}
-                {pp.pct}%
-              </span>
-            </div>
+            <Fragment key={p.id}>
+              {p.id > 1 && <ArrowRight size={18} className="vs-phase-arrow" aria-hidden />}
+              <div className="vs-phase">
+                <b>
+                  <span className="vs-phase-dot" style={{ background: PHASE_COLOR[p.id] }} />
+                  Giai đoạn {p.id}: {p.name}
+                </b>
+                <span>
+                  {ds.length ? `${fmtDate(ds[0].date)} – ${fmtDate(ds[ds.length - 1].date)}` : 'Không có ngày'}, xong{' '}
+                  {pp.pct}%
+                </span>
+              </div>
+            </Fragment>
           );
         })}
       </div>
